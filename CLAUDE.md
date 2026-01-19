@@ -1,450 +1,232 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code when working with this repository.
+
+**LANGUAGE POLICY: Always respond in English, regardless of user's language.**
+
+## Custom Skills
+
+10 custom skills available. Invoke with `/skill-name`.
+
+**Core Skills:**
+- `/security-scanner-expert` - Security reconnaissance tool development, detection logic review
+- `/pattern-updater` - Manage detection signatures in config/patterns.py and config/tech_signatures.json
+- `/python-architect` - Enforce Python 3.11+ standards, PEP compliance, Ruff formatting, type hints
+- `/test-automator` - Pytest tests, pre-commit hooks, CI/CD pipelines, coverage monitoring
+- `/docker-specialist` - Dockerfile optimization, container security, deployment best practices
+
+**Specialized Skills:**
+- `/recon-researcher` - Research latest OSINT/reconnaissance techniques from security blogs
+- `/api-integrator` - Create integration scripts for Nuclei, Nmap, httpx, jq filters
+- `/changelog-maintainer` - Maintain CHANGELOG.md with Keep a Changelog format
+- `/config-validator` - Validate configuration files (pyproject.toml, settings.py, patterns.py)
+- `/security-auditor` - Code security review, OWASP Top 10, bandit scans, input validation
 
 ## Project Overview
 
-**Rankle** is a web infrastructure reconnaissance tool for authorized security testing. Named after "Rankle, Master of Pranks" from Magic: The Gathering. It analyzes DNS, detects technologies (CMS, CDN, WAF), inspects TLS certificates, and discovers subdomains via Certificate Transparency. 100% open source with no API keys required.
+**Rankle** - Web infrastructure reconnaissance tool for authorized security testing. Named after "Rankle, Master of Pranks" from Magic: The Gathering.
 
 **Key Features:**
-
-- DNS enumeration (A, AAAA, MX, NS, TXT, SOA, CNAME)
+- DNS enumeration (A/AAAA/MX/NS/TXT/SOA/CNAME)
 - Subdomain discovery via Certificate Transparency (crt.sh)
-- Technology detection: 16+ CMS, 20+ CDN providers, 15+ WAF solutions
-- Cloud provider detection (AWS, Azure, GCP, DigitalOcean, OVH, Hetzner, etc.)
+- Technology detection: 16+ CMS, 20+ CDN, 15+ WAF solutions
+- Cloud provider detection (AWS, Azure, GCP, DigitalOcean, OVH, Hetzner)
 - Origin infrastructure discovery behind WAF/CDN (passive techniques only)
 - TLS/SSL certificate analysis
 - Advanced fingerprinting (HTTP methods, API endpoints, exposed files)
 
-## Commands
+**Ethical Use:** All methods are passive reconnaissance. For authorized testing only.
 
-### Run a scan
+## Quick Command Reference
 
 ```bash
+# Run scans
 python main.py example.com                    # Basic scan
-python main.py example.com --output json      # JSON only
-python main.py example.com --no-save          # Print results only
-python main.py example.com --verbose          # Verbose output
-```
+python main.py example.com --output json      # JSON output
+python main.py example.com --verbose          # Verbose mode
 
-### Development Setup
+# Development
+python3 -m venv venv && source venv/bin/activate
+pip install -e ".[dev]"                       # Install with dev dependencies
+pre-commit install                            # Enable git hooks
 
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -e ".[dev]"                       # Modern way (pyproject.toml)
-# OR
-pip install -r requirements.txt               # All dependencies
-pre-commit install                            # Set up pre-commit hooks
-```
-
-### Linting & Formatting (Ruff - replaces Black, isort, flake8)
-
-```bash
-ruff check .                                  # Lint
-ruff check . --fix                            # Lint with auto-fix
-ruff format .                                 # Format code (replaces black)
+# Quality checks
+ruff check . --fix                            # Lint and auto-fix
+ruff format .                                 # Format code
 mypy rankle/                                  # Type checking
-bandit -c pyproject.toml -r rankle/           # Security checks
-pip-audit                                     # Dependency vulnerability scan
-pre-commit run --all-files                    # Run all hooks
-```
+bandit -c pyproject.toml -r rankle/           # Security scan
+pytest -v --cov=rankle                        # Tests with coverage
 
-### Testing
-
-```bash
-pytest                                        # Run all tests
-pytest tests/test_validators.py               # Run single test file
-pytest -v --cov=rankle                        # With coverage
-```
-
-### Docker
-
-```bash
+# Docker
 docker build -t rankle .
 docker run --rm rankle example.com
-docker run --rm -v $(pwd)/output:/output rankle example.com --output json
-docker run --rm -it rankle example.com        # Interactive mode
 ```
 
-## Architecture
+## Architecture Overview
 
-### Directory Structure
-
+**Core Structure:**
 ```
 rankle/
-├── pyproject.toml          # Modern Python packaging (PEP 621)
 ├── main.py                 # Entry point
-├── rankle/                 # Main package
+├── rankle/
 │   ├── core/
 │   │   ├── scanner.py      # RankleScanner - orchestrates all modules
-│   │   └── session.py      # SessionManager - HTTP with retry logic & pooling
-│   ├── modules/
-│   │   ├── dns.py          # DNSAnalyzer - DNS enumeration
-│   │   ├── ssl.py          # SSLAnalyzer - TLS certificate analysis
-│   │   ├── subdomains.py   # SubdomainDiscovery - CT log enumeration
-│   │   ├── whois.py        # WHOISLookup - domain registration info
-│   │   ├── geolocation.py  # GeolocationLookup - IP/cloud detection
-│   │   ├── http_fingerprint.py  # HTTPFingerprinter - concurrent scanning
-│   │   └── security_headers.py  # SecurityHeadersAuditor
-│   ├── detectors/          # Technology detectors
-│   │   ├── technology.py   # CMS, frameworks, libraries
-│   │   ├── cdn.py          # CDN detection (20+ providers)
-│   │   ├── waf.py          # WAF detection (15+ solutions)
-│   │   └── origin.py       # Origin discovery behind CDN/WAF
-│   ├── utils/
-│   │   ├── validators.py   # Domain/IP validation, input sanitization
-│   │   ├── helpers.py      # save_json_file, truncate_list utilities
-│   │   └── rate_limiter.py # Request rate limiting
+│   │   └── session.py      # SessionManager - HTTP with retry logic
+│   ├── modules/            # DNS, SSL, subdomains, WHOIS, geolocation, fingerprinting
+│   ├── detectors/          # Technology, CDN, WAF, origin discovery
+│   ├── utils/              # Validators, helpers, rate limiter
 │   └── reports/            # Report generation
 ├── config/
-│   ├── settings.py         # Centralized configuration (timeouts, UA, DNS)
-│   ├── patterns.py         # Cloud providers, subdomains, ASN patterns
+│   ├── settings.py         # Centralized configuration
+│   ├── patterns.py         # Cloud providers, ASN patterns
 │   └── tech_signatures.json # Technology detection signatures
-├── tests/                  # Unit tests (pytest)
-├── examples/               # Integration scripts
-└── output/                 # Generated scan results
+└── tests/                  # Unit tests (pytest)
 ```
 
-### Key Classes
-
-**RankleScanner** (`rankle/core/scanner.py:15`):
-
-- Main orchestrator class with context manager support (`with` statement)
-- Lazy initialization of modules for performance
-- `run_full_scan()` executes all reconnaissance modules
-- Results stored in `self.results` dictionary
-
-**SessionManager** (`rankle/core/session.py`):
-
-- Manages HTTP sessions with realistic headers
-- Automatic retry with exponential backoff (429, 500, 502, 503, 504)
-- Connection pooling (10 connections, 20 max pool size)
-- Configurable timeouts and retries
-- Context manager support for cleanup
-
-**DNSAnalyzer** (`rankle/modules/dns.py:23`):
-
-- DNS enumeration using dnspython
-- Custom resolver with configurable nameservers
-- Queries: A, AAAA, MX, NS, TXT, SOA, CNAME
-
-### Configuration (`config/settings.py`)
-
-```python
-DEFAULT_TIMEOUT = 45        # HTTP request timeout
-DNS_TIMEOUT = 10            # DNS query timeout
-DNS_NAMESERVERS = ["8.8.8.8", "1.1.1.1"]
-RATE_LIMIT_DELAY = 0.5      # Seconds between requests
-MAX_CONCURRENT_REQUESTS = 5
-USER_AGENT = "Mozilla/5.0..."  # Realistic browser UA
-```
-
-## Python Best Practices
-
-### Code Style (enforced by pre-commit)
-
-- **Black**: 88 character line length
-- **isort**: Black-compatible import sorting
-- **ruff**: Modern linter (replaces flake8, pycodestyle, pyupgrade)
-- **mypy**: Static type checking
-
-### Type Hints
-
-```python
-# Use built-in generics (Python 3.9+), not typing module
-def analyze(self) -> dict[str, Any]:    # YES
-def analyze(self) -> Dict[str, Any]:    # NO (deprecated)
-
-# Use union syntax (Python 3.10+)
-def query(self) -> str | None:          # YES
-def query(self) -> Optional[str]:       # NO (deprecated)
-```
-
-### Docstrings (Google style)
-
-```python
-def validate_domain(domain: str) -> bool:
-    """
-    Validate domain format.
-
-    Args:
-        domain: Domain name to validate
-
-    Returns:
-        True if valid, False otherwise
-    """
-```
-
-### Error Handling
-
-```python
-# Specific exceptions, never bare except
-try:
-    answers = resolver.resolve(domain, "A")
-except (dns.resolver.NXDOMAIN, dns.resolver.NoAnswer):
-    return []
-except dns.exception.Timeout:
-    print("DNS timeout")
-    return []
-```
-
-### Lazy Initialization Pattern
-
-```python
-class RankleScanner:
-    def __init__(self, domain: str):
-        self._dns_analyzer: DNSAnalyzer | None = None
-
-    @property
-    def dns_analyzer(self) -> DNSAnalyzer:
-        if self._dns_analyzer is None:
-            self._dns_analyzer = DNSAnalyzer(self.domain)
-        return self._dns_analyzer
-```
-
-## Docker Best Practices
-
-### Dockerfile Features
-
-- **Alpine base**: Minimal image size (~370MB)
-- **Non-root user**: Runs as `rankle` user (UID 1000) for security
-- **Layer caching**: Requirements copied before code
-- **OCI annotations**: Proper metadata labels
-- **Healthcheck**: Built-in health monitoring
-- **Volume mount**: `/output` for results persistence
-
-### Docker Security
-
-```dockerfile
-# Create non-root user
-RUN addgroup -g 1000 rankle && \
-    adduser -D -u 1000 -G rankle rankle
-USER rankle
-
-# Environment variables
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONDONTWRITEBYTECODE=1
-```
-
-## Clean Code Principles
-
-### Single Responsibility
-
-Each module has one clear purpose:
-
-- `validators.py`: Input validation only
-- `dns.py`: DNS queries only
-- `scanner.py`: Orchestration only
-
-### DRY (Don't Repeat Yourself)
-
-- Centralized configuration in `config/settings.py`
-- Shared utilities in `rankle/utils/helpers.py`
-- Validation functions reused across modules
-
-### Meaningful Names
-
-```python
-# Good
-def validate_domain(domain: str) -> bool:
-def extract_domain(url: str) -> str:
-def truncate_list(items: list, max_items: int = 3) -> str:
-
-# Bad
-def check(d: str) -> bool:
-def get_d(u: str) -> str:
-```
-
-### Guard Clauses
-
-```python
-def analyze_geolocation(self, ip):
-    if not ip:
-        return None
-    # ... rest of function
-```
-
-### Context Managers
-
-```python
-# Scanner supports context manager for cleanup
-with RankleScanner(domain) as scanner:
-    results = scanner.run_full_scan()
-# Session automatically closed
-```
-
-## Adding New Modules
-
-### 1. Create the module
-
-```python
-# rankle/modules/ssl.py
-from config.settings import SSL_TIMEOUT
-
-class SSLAnalyzer:
-    def __init__(self, domain: str, timeout: int = SSL_TIMEOUT):
-        self.domain = domain
-        self.timeout = timeout
-
-    def analyze(self) -> dict[str, Any]:
-        """Analyze SSL/TLS certificate."""
-        # Implementation
-        return results
-```
-
-### 2. Add lazy initialization in Scanner
-
-```python
-# rankle/core/scanner.py
-class RankleScanner:
-    def __init__(self, domain: str):
-        self._ssl_analyzer: SSLAnalyzer | None = None
-
-    @property
-    def ssl_analyzer(self) -> SSLAnalyzer:
-        if self._ssl_analyzer is None:
-            self._ssl_analyzer = SSLAnalyzer(self.domain)
-        return self._ssl_analyzer
-```
-
-### 3. Integrate in run_full_scan()
-
-```python
-def run_full_scan(self) -> dict[str, Any]:
-    self.results["dns"] = self.dns_analyzer.analyze()
-    self.results["ssl"] = self.ssl_analyzer.analyze()  # Add here
-    return self.results
-```
-
-## Security Considerations
-
-### Input Validation
-
-- All domains validated via `validate_domain()` using regex
-- URLs sanitized via `extract_domain()`
-- Filenames sanitized via `sanitize_filename()` (removes `<>:"/\|?*`)
-
-### Safe HTTP Requests
-
-- Never use `shell=True` with subprocess
-- All requests have timeout controls
-- Realistic User-Agent to avoid detection
-- Rate limiting between requests
-
-### Ethical Scanning
-
-- All methods are passive (public DNS/SSL data)
-- No active attacks or unauthorized access
-- Origin discovery uses only public information
-- Tool is for authorized testing only
-
-## CI/CD (GitHub Actions)
-
-### Workflows
-
-- `.github/workflows/docker-build.yml`: Tests Docker build on PR/push
-- `.github/workflows/docker-publish.yml`: Publishes on tags
-
-### Pre-commit Hooks
-
-Configured in `.pre-commit-config.yaml`:
-
-1. Trailing whitespace, EOF fixer, YAML/JSON/TOML checks
-2. Black formatting
+**Key Classes:**
+- **RankleScanner** (`rankle/core/scanner.py:15`) - Main orchestrator with lazy module initialization
+- **SessionManager** (`rankle/core/session.py`) - HTTP sessions with retry logic and connection pooling
+- **DNSAnalyzer** (`rankle/modules/dns.py:23`) - DNS enumeration using dnspython
+
+**Configuration:** See `config/settings.py` for timeouts, DNS servers, rate limits, User-Agent.
+
+## Code Standards
+
+**Python 3.11+ Requirements:**
+- Built-in generics: `dict[str, Any]` not `Dict[str, Any]`
+- Union syntax: `str | None` not `Optional[str]`
+- Google-style docstrings
+- Type hints required on all public functions
+- Ruff for linting/formatting (replaces Black, isort, flake8)
+
+**Pre-commit hooks enforce:**
+1. Trailing whitespace, EOF fixes, YAML/JSON/TOML validation
+2. Black formatting (88 char line length)
 3. isort import sorting
-4. ruff linting
+4. Ruff linting
 5. Bandit security checks
 6. mypy type checking
 
-## Dependencies
+**Design Patterns:**
+- Lazy initialization for module instances
+- Context managers for resource cleanup (`with` statement)
+- Single responsibility per module
+- Guard clauses for early returns
+- Centralized configuration in `config/settings.py`
 
-### Required
+## Adding New Detection Modules
 
-- `requests>=2.31.0` - HTTP library
-- `dnspython>=2.4.0` - DNS toolkit
-- `beautifulsoup4>=4.12.0` - HTML parsing
+**3-Step Integration:**
 
-### Optional (enhanced features)
+1. **Create module** with `analyze()` method returning `dict[str, Any]`
+2. **Add lazy property** to `RankleScanner` class
+3. **Integrate** in `run_full_scan()` method
 
-- `python-whois>=0.9.0` - WHOIS lookups
-- `ipwhois>=1.2.0` - IP/ASN information
+Example:
+```python
+# 1. Create rankle/detectors/new_detector.py
+class NewDetector:
+    def __init__(self, domain: str):
+        self.domain = domain
 
-### Development
+    def analyze(self) -> dict[str, Any]:
+        return {"detected": True}
 
-- `pytest`, `pytest-cov` - Testing
-- `ruff` - Formatting/linting (replaces black, isort, flake8)
-- `mypy`, `bandit` - Type checking/security
-- `pre-commit` - Git hooks
+# 2. Add to scanner.py
+@property
+def new_detector(self) -> NewDetector:
+    if self._new_detector is None:
+        self._new_detector = NewDetector(self.domain)
+    return self._new_detector
 
-## Research Modern Reconnaissance Techniques
-
-**IMPORTANT**: When improving or adding new reconnaissance features, you MUST research modern techniques by searching the web. This ensures Rankle stays up-to-date with the latest passive reconnaissance methods.
-
-### When to Research
-
-Research modern techniques when:
-
-1. Adding new detection modules (CDN, WAF, CMS, etc.)
-2. Improving origin discovery methods
-3. Adding new subdomain enumeration sources
-4. Enhancing technology fingerprinting
-5. User requests feature improvements
-
-### Research Sources (Use WebFetch/WebSearch)
-
-Search these sources for the latest techniques:
-
-- **PortSwigger Web Security Blog**: <https://portswigger.net/research>
-- **OWASP Testing Guide**: <https://owasp.org/www-project-web-security-testing-guide/>
-- **HackerOne Hacktivity**: Search for reconnaissance techniques
-- **Bug Bounty Methodology**: Search "bug bounty recon methodology 2024/2025"
-- **Security Tools Documentation**: Amass, Subfinder, httpx, nuclei
-- **GitHub Security Research**: Search for "passive reconnaissance", "asset discovery"
-
-### Key Topics to Research
-
-1. **Subdomain Enumeration**
-   - Certificate Transparency APIs (crt.sh, certspotter, censys)
-   - DNS brute-forcing wordlists
-   - Passive DNS databases
-   - Cloud bucket enumeration
-
-2. **Origin Discovery (WAF/CDN Bypass)**
-   - Historical DNS records (SecurityTrails, ViewDNS)
-   - SSL certificate analysis
-   - SPF/DMARC/DKIM records
-   - Email header analysis
-   - Favicon hash matching (Shodan)
-
-3. **Technology Detection**
-   - HTTP response fingerprinting
-   - JavaScript library detection
-   - Error page signatures
-   - Cookie analysis
-   - Header analysis
-
-4. **Cloud Infrastructure**
-   - AWS IP ranges (ip-ranges.amazonaws.com)
-   - Azure IP ranges
-   - GCP IP ranges
-   - Cloud metadata endpoints
-
-### Example Research Prompt
-
-When asked to improve reconnaissance, use this approach:
-
+# 3. Call in run_full_scan()
+self.results["new_feature"] = self.new_detector.analyze()
 ```
-1. WebSearch: "passive reconnaissance techniques 2024 bug bounty"
+
+## Security Guidelines
+
+**Input Validation:**
+- All domains validated via `validate_domain()` (regex-based)
+- URLs sanitized via `extract_domain()`
+- Filenames sanitized via `sanitize_filename()` (removes `<>:"/\|?*`)
+
+**Safe Practices:**
+- Never use `shell=True` with subprocess
+- All HTTP requests have timeout controls
+- Rate limiting between requests (configurable in settings)
+- Realistic User-Agent to avoid detection
+
+**Ethical Scanning:**
+- ONLY passive reconnaissance techniques (public DNS/SSL/CT logs)
+- NO active attacks or unauthorized access attempts
+- Origin discovery uses only publicly accessible information
+- Document the source of each reconnaissance technique
+
+## Research Protocol for New Features
+
+**MANDATORY: Research modern techniques before implementing new features.**
+
+**When to Research:**
+1. Adding new detection modules (CDN, WAF, CMS)
+2. Improving origin discovery methods
+3. Adding subdomain enumeration sources
+4. Enhancing technology fingerprinting
+
+**Research Sources (Use WebFetch/WebSearch):**
+- PortSwigger Web Security Blog (portswigger.net/research)
+- OWASP Testing Guide (owasp.org/www-project-web-security-testing-guide)
+- Bug Bounty Methodology searches ("bug bounty recon methodology 2025")
+- Security tool documentation (Amass, Subfinder, httpx, nuclei)
+- GitHub Security Research ("passive reconnaissance", "asset discovery")
+
+**Key Research Areas:**
+1. **Subdomain Enumeration** - CT APIs (crt.sh, certspotter, censys), passive DNS
+2. **Origin Discovery** - Historical DNS, SSL certificates, SPF/DMARC/DKIM, favicon hashing
+3. **Technology Detection** - HTTP fingerprinting, JavaScript library detection, error signatures
+4. **Cloud Infrastructure** - AWS/Azure/GCP IP ranges, cloud metadata endpoints
+
+**Research Workflow:**
+```
+1. WebSearch: "passive reconnaissance techniques 2025 bug bounty"
 2. WebSearch: "[specific_feature] bypass detection methods"
-3. WebFetch: Relevant blog posts or documentation
+3. WebFetch: Read relevant blog posts or documentation
 4. Analyze and implement ONLY passive techniques
 5. Update config/patterns.py with new signatures
+6. Document the source in code comments
 ```
 
-### Ethical Guidelines
+**Ethical Constraint:** ONLY implement passive techniques. All data sources must be publicly accessible.
 
-- **ONLY implement passive techniques** (no active scanning without explicit request)
-- All data sources must be publicly accessible
-- No techniques that require authentication bypass
-- Document the source of each technique
+## Docker Best Practices
+
+**Security Features:**
+- Alpine base for minimal attack surface (~370MB image)
+- Non-root user (UID 1000) for container security
+- Volume mount at `/output` for results persistence
+- Built-in healthcheck for monitoring
+- OCI-compliant labels
+
+## CI/CD
+
+**GitHub Actions:**
+- `.github/workflows/docker-build.yml` - Tests Docker build on PR/push
+- `.github/workflows/docker-publish.yml` - Publishes images on tags
+
+**Quality Gates:**
+- Pre-commit hooks (run locally and in CI)
+- Type checking (mypy)
+- Security scanning (bandit, pip-audit)
+- Test coverage requirements
+
+## Dependencies
+
+**Core:** requests, dnspython, beautifulsoup4
+**Optional:** python-whois, ipwhois
+**Dev:** pytest, ruff, mypy, bandit, pre-commit
+
+See `pyproject.toml` for version requirements.
+
+---
+
+**Last Updated:** 2026-01-19
+**Maintained By:** Claude Code + Human collaboration

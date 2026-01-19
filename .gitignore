@@ -22,6 +22,15 @@ share/python-wheels/
 *.egg
 MANIFEST
 
+# Python 3.13+ inline script metadata
+__pypackages__/
+
+# Security scanning results
+.bandit
+bandit-report.json
+pip-audit.cache
+safety-report.json
+
 # Virtual Environment
 venv/
 env/
@@ -54,9 +63,23 @@ logs/
 .coverage
 htmlcov/
 .tox/
+coverage.xml
+.hypothesis/
 
 # Jupyter Notebook
 .ipynb_checkpoints
+
+# Linting and formatting (Ruff - modern Python 2025)
+.ruff_cache/
+ruff.toml
+
+# Type checking (mypy)
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pre-commit
+.pre-commit-config-cache/
 
 # Environment variables
 .env
@@ -107,6 +130,10 @@ tmp/
 *.sqlite
 *.sqlite3
 
+# Docker artifacts
+.dockerignore.local
+docker-compose.override.yml
+
 # Additional secrets/credentials (extra protection)
 secrets/
 *.key
@@ -121,7 +148,14 @@ config.ini
 .env.test
 .env.production
 
-# Additional IDE/Editors
+# Additional IDE/Editors (2025)
 .fleet/
 *.sublime-project
 *.sublime-workspace
+.zed/
+*.code-workspace
+.helix/
+.cursor/
+
+# Claude Code configuration (local settings and skills)
+.claude/

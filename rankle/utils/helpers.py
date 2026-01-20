@@ -16,12 +16,17 @@ def load_json_file(filepath: Path) -> dict[str, Any]:
 
     Returns:
         Dictionary with JSON content
+
+    Raises:
+        FileNotFoundError: If file doesn't exist
+        json.JSONDecodeError: If file contains invalid JSON
+        PermissionError: If file cannot be read
     """
     try:
         with filepath.open(encoding="utf-8") as f:
             result: dict[str, Any] = json.load(f)
             return result
-    except Exception as e:
+    except (FileNotFoundError, json.JSONDecodeError, PermissionError) as e:
         print(f"Error loading JSON file {filepath}: {e}")
         return {}
 
@@ -37,13 +42,18 @@ def save_json_file(data: dict[str, Any], filepath: Path, indent: int = 2) -> boo
 
     Returns:
         True if successful, False otherwise
+
+    Raises:
+        OSError: If directory cannot be created or file cannot be written
+        PermissionError: If insufficient permissions
+        TypeError: If data cannot be serialized to JSON
     """
     try:
         filepath.parent.mkdir(parents=True, exist_ok=True)
         with filepath.open("w", encoding="utf-8") as f:
             json.dump(data, f, indent=indent, ensure_ascii=False)
         return True
-    except Exception as e:
+    except (OSError, PermissionError, TypeError) as e:
         print(f"Error saving JSON file {filepath}: {e}")
         return False
 

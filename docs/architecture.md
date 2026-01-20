@@ -50,8 +50,12 @@ rankle/
 │   ├── settings.py         # Centralized configuration (timeouts, UA, DNS)
 │   ├── patterns.py         # Cloud providers, subdomains, ASN patterns
 │   └── tech_signatures.json # Technology detection signatures
+├── docs/
+│   ├── examples/           # Integration scripts (Nuclei, Nmap, httpx)
+│   ├── getting-started.md  # Installation and usage guide
+│   ├── architecture.md     # This file
+│   └── detection-capabilities.md # Detection methods documentation
 ├── tests/                  # Unit tests (pytest)
-├── examples/               # Integration scripts
 └── output/                 # Generated scan results
 ```
 

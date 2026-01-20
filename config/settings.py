@@ -65,3 +65,22 @@ GEO_API_TIMEOUT = 10
 ETHICAL_MODE = True
 RATE_LIMIT_DELAY = 0.5  # seconds between requests
 MAX_CONCURRENT_REQUESTS = 5
+
+# Detection Thresholds
+MINIMUM_DETECTION_CONFIDENCE = 0.2  # Minimum confidence for technology detection
+CDN_DETECTION_THRESHOLD = 0.3  # Minimum confidence for CDN detection
+WAF_DETECTION_THRESHOLD = 0.3  # Minimum confidence for WAF detection
+
+# Display Limits
+MAX_DISPLAY_TECHS = 10  # Maximum technologies to display in summary
+MAX_DISPLAY_ORIGINS = 5  # Maximum origin IPs to display
+MAX_DISPLAY_SUBDOMAINS = 6  # Maximum subdomains to display
+MAX_DISPLAY_ITEMS = 3  # Default maximum items in truncated lists
+
+# HTTP Response Limits
+MAX_BODY_SIZE = 100000  # Maximum HTTP body size to analyze (100KB)
+MAX_RESPONSE_TIME_SAMPLES = 10  # Number of response times to track for rate limiting
+
+# Rate Limiting
+MAX_RETRY_WAIT_SECONDS = 60.0  # Maximum time to wait on retry-after
+RATE_LIMIT_DIMINISHING_FACTOR = 0.5  # Diminishing factor for confidence calculation

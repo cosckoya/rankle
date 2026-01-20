@@ -2,8 +2,8 @@
 
 ![Rankle](../img/rankle.png)
 
-**Version:** 2.0.0
-**Last Updated:** 2026-01-19
+**Version:** 2.0.0 Enhanced
+**Last Updated:** 2026-01-20
 
 ---
 
@@ -12,6 +12,8 @@
 **Rankle** is a comprehensive web infrastructure reconnaissance tool for authorized security testing. Named after "Rankle, Master of Pranks" from Magic: The Gathering, it analyzes DNS, detects technologies (CMS, CDN, WAF), inspects TLS certificates, and discovers subdomains via Certificate Transparency.
 
 **Key Features:**
+- **Enhanced Technology Detection (v2.0)** - 3000+ signatures via Wappalyzer, favicon hashing, error page fingerprinting
+- **Advanced Fingerprinting** - JavaScript endpoint extraction, WordPress plugin detection, CVE mapping
 - 100% Open Source Python libraries with **no API keys required**
 - Modular architecture with centralized configuration
 - Automatic retry logic with exponential backoff
@@ -30,6 +32,11 @@
 ### Technical Documentation
 - [Architecture](architecture.md) - Modular design, key classes, and patterns
 - [Detection Capabilities](detection-capabilities.md) - CMS, CDN, WAF, cloud providers, and more
+- [Enhanced Detection (v2.0)](TECHNOLOGY_DETECTION_ENHANCEMENT.md) - Wappalyzer, favicon hashing, CVE mapping
+- [Type Checking Guide](MYPY_GUIDE.md) - mypy configuration and best practices
+- [API Usage Examples](api-usage-examples.md) - Using Rankle as a Python library
+- [Troubleshooting](troubleshooting.md) - Common issues and solutions
+- [Performance Tuning](performance-tuning.md) - Optimization strategies
 - [API Reference](architecture.md#api-reference) - Core classes and modules
 - [Configuration](architecture.md#configuration) - Settings and pattern management
 
@@ -38,11 +45,17 @@
 - [Development Setup](development.md#development-setup) - Environment configuration
 - [Testing](development.md#testing) - pytest, coverage, pre-commit hooks
 - [Coding Standards](development.md#coding-standards) - Python best practices
+- [Utility Scripts](../scripts/README.md) - Demo and diagnostic tools
 
 ### Additional Resources
 - [CHANGELOG.md](../CHANGELOG.md) - Version history and release notes
 - [SECURITY.md](../SECURITY.md) - Security policy and vulnerability reporting
 - [LICENSE](../LICENSE) - MIT License
+
+### Claude Code Configuration
+- [CLAUDE.md](../CLAUDE.md) - Claude Code project instructions and skills
+- [Codebase Map](../.claude/CODEBASE_MAP.md) - Quick reference for code navigation
+- [Claude Settings](../.claude/README.md) - Configuration and token optimization
 
 ---
 

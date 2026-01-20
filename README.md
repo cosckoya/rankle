@@ -54,6 +54,7 @@ docker run --rm rankle example.com
 - **[Contributing Guide](docs/development.md)** - How to contribute to Rankle
 - **[Development Setup](docs/development.md#development-setup)** - Environment configuration
 - **[Testing](docs/development.md#testing)** - pytest, coverage, pre-commit hooks
+- **[Utility Scripts](scripts/README.md)** - Demo and diagnostic scripts
 
 ### Claude Code Skills
 - **[Skills Overview](docs/skills/index.md)** - Custom Claude Code skills for development

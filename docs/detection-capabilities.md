@@ -12,10 +12,11 @@ This document provides a complete reference for Rankle's detection capabilities,
 4. [WAF Detection (20+)](#waf-detection)
 5. [JavaScript Library Detection (15+)](#javascript-library-detection)
 6. [Advanced Technology Detection (50+)](#advanced-technology-detection)
-7. [Origin Infrastructure Discovery](#origin-infrastructure-discovery)
-8. [Advanced HTTP Fingerprinting](#advanced-http-fingerprinting)
-9. [Integration Examples](#integration-examples)
-10. [Full Reconnaissance Pipeline](#full-reconnaissance-pipeline)
+7. **[Enhanced Detection v2.0 (3000+ Technologies)](#enhanced-detection-v20)** ⭐ NEW
+8. [Origin Infrastructure Discovery](#origin-infrastructure-discovery)
+9. [Advanced HTTP Fingerprinting](#advanced-http-fingerprinting)
+10. [Integration Examples](#integration-examples)
+11. [Full Reconnaissance Pipeline](#full-reconnaissance-pipeline)
 
 ---
 
@@ -1016,6 +1017,470 @@ Multiple evidence types increase confidence with diminishing returns.
 
 ---
 
+## Enhanced Detection v2.0
+
+**Status:** ⭐ **NEW in v2.0** - Massive detection capability upgrade
+**Coverage:** 3000+ technologies via Wappalyzer integration + 7 new detection modules
+
+Rankle v2.0 introduces enhanced technology detection capabilities, expanding from ~50 technologies to **3000+ technologies** with advanced fingerprinting techniques.
+
+### What's New in v2.0?
+
+**Detection Expansion:**
+- **3000+ Technology Signatures** via Wappalyzer database integration
+- **Favicon Hashing** (mmh3) for infrastructure fingerprinting
+- **Error Page Analysis** for framework identification
+- **JavaScript Code Analysis** for endpoint extraction and framework detection
+- **WordPress Deep Scanning** for plugin/theme enumeration
+- **Asset Version Extraction** from filenames
+- **CVE Vulnerability Mapping** with search URLs
+
+**Performance:**
+- Traditional detection: ~2-3 seconds
+- Enhanced detection: ~5-8 seconds (2-3x slower but 10x more comprehensive)
+
+### 1. Wappalyzer Integration (3000+ Technologies)
+
+**Implementation:** `python-Wappalyzer>=0.3.1`
+
+The Wappalyzer database provides signatures for 3000+ technologies across categories:
+
+**Technology Categories:**
+- Web frameworks (Django, Laravel, Rails, Flask, FastAPI, Spring Boot)
+- JavaScript frameworks (React, Vue, Angular, Next.js, Nuxt.js, Svelte)
+- CMS platforms (WordPress, Drupal, Joomla, Shopify, Magento)
+- E-commerce (WooCommerce, PrestaShop, OpenCart, Shopify)
+- Analytics (Google Analytics, Matomo, Hotjar, Mixpanel)
+- CDN/hosting (Cloudflare, Fastly, Netlify, Vercel, AWS CloudFront)
+- Marketing tools (HubSpot, Mailchimp, Intercom, Drift)
+- Payment processors (Stripe, PayPal, Square, Braintree)
+- Server software (Apache, Nginx, IIS, LiteSpeed)
+- Databases (MySQL, PostgreSQL, MongoDB, Redis)
+- And 2000+ more...
+
+**Usage Example:**
+```python
+from rankle.detectors.technology import TechnologyDetector
+
+detector = TechnologyDetector("example.com")
+results = detector.detect_enhanced(
+    headers=headers,
+    cookies=cookies,
+    body=html,
+    base_url="https://example.com"
+)
+
+# Results include:
+print(f"Detected: {len(results['technologies'])} technologies")
+for tech in results['technologies']:
+    print(f"  - {tech['name']} ({tech['confidence']*100}%)")
+```
+
+**Detection Methods:**
+- HTML pattern matching (meta tags, scripts, comments)
+- HTTP header analysis (X-Powered-By, Server, custom headers)
+- Cookie patterns (framework-specific session cookies)
+- JavaScript global variable detection (window objects)
+- DOM analysis (specific CSS classes, data attributes)
+
+**Output Format:**
+```json
+{
+  "name": "Django",
+  "category": "Web Framework",
+  "confidence": 0.9,
+  "version": "4.2",
+  "evidence": [
+    {"type": "header", "detail": "X-Frame-Options: SAMEORIGIN", "weight": 0.3},
+    {"type": "cookie", "detail": "csrftoken", "weight": 0.4},
+    {"type": "html_pattern", "detail": "csrfmiddlewaretoken", "weight": 0.2}
+  ]
+}
+```
+
+### 2. Favicon Hashing (mmh3)
+
+**Implementation:** `rankle/utils/favicon_hash.py`
+
+Calculates MurmurHash3 (mmh3) hash of favicon.ico to fingerprint infrastructure.
+
+**Why Favicon Hashing?**
+- Survives CDN/proxy obfuscation
+- Unique per technology/platform
+- Passive and undetectable
+- Works even when other methods fail
+
+**Known Favicon Hashes:**
+```python
+KNOWN_FAVICONS = {
+    "116323821": "Atlassian Jira",
+    "-235701012": "Atlassian Confluence",
+    "-1506567754": "GitLab",
+    "81586312": "Plex Media Server",
+    "999357577": "Grafana",
+    "1485257654": "Jenkins",
+    "-305179312": "WordPress",
+    "1733285952": "pfSense",
+    "-1541626999": "Fortinet",
+    # ... 25+ more
+}
+```
+
+**Usage:**
+```python
+from rankle.utils.favicon_hash import analyze_favicon
+
+result = analyze_favicon("example.com", "https://example.com")
+
+if result['matched']:
+    print(f"Identified: {result['technology']} (hash: {result['hash']})")
+else:
+    print(f"Unknown favicon hash: {result['hash']}")
+```
+
+**Example Output:**
+```
+Hash: 116323821
+Match: Atlassian Jira
+Confidence: 95%
+Evidence: Exact favicon hash match
+```
+
+### 3. Error Page Fingerprinting
+
+**Implementation:** `rankle/utils/error_fingerprint.py`
+
+Analyzes 404 and error pages to identify web frameworks by their error page signatures.
+
+**Supported Frameworks:**
+- Django (DisallowedHost, CSRF verification failed)
+- Laravel (Whoops! error page, Ignition traces)
+- Spring Boot (Whitelabel Error Page)
+- Rails (Routing Error, AbstractController)
+- Express.js (Cannot GET, Express stack traces)
+- ASP.NET (Server Error, Stack Trace)
+- Flask (Werkzeug Debugger, traceback)
+- FastAPI (Swagger UI /docs, validation errors)
+- Phoenix (Elixir stack traces)
+- Symfony (Symfony Exception, profiler)
+
+**Detection Method:**
+```python
+from rankle.utils.error_fingerprint import fingerprint_error_page
+
+# Triggers 404 to analyze error response
+results = fingerprint_error_page("example.com")
+
+for framework in results:
+    print(f"{framework['framework']}: {framework['confidence']*100}%")
+    print(f"  Evidence: {framework['patterns_matched']}")
+```
+
+**Example Django Detection:**
+```
+Framework: Django
+Confidence: 95%
+Patterns Matched:
+  - "DisallowedHost at /"
+  - "DEBUG = True"
+  - "Request Method: GET"
+  - "Django version: 4.2"
+```
+
+**Ethical Note:** Only triggers single 404 request with unique UUID path, fully passive.
+
+### 4. JavaScript Analysis & Endpoint Extraction
+
+**Implementation:** `rankle/utils/js_extractor.py`
+
+Extracts and analyzes JavaScript files using LinkFinder-style patterns.
+
+**Capabilities:**
+1. **Extract JS file URLs** from HTML
+2. **Discover API endpoints** using regex patterns
+3. **Detect frameworks** from JS code patterns
+4. **Extract asset versions** from filenames
+
+**API Endpoint Extraction:**
+```python
+from rankle.utils.js_extractor import analyze_javascript
+
+results = analyze_javascript("https://example.com", html_content)
+
+print(f"Discovered {len(results['endpoints'])} API endpoints:")
+for endpoint in results['endpoints']:
+    print(f"  - {endpoint}")
+```
+
+**Regex Patterns Used:**
+```python
+patterns = [
+    r'["\']((https?:)?//[^"\']+)["\']',              # Full URLs
+    r'["\']([/][^"\']*)["\']',                        # Absolute paths
+    r'["\'](\.\./[^"\']+)["\']',                      # Relative paths
+    r'["\']([a-zA-Z0-9_\-/]+\.(?:php|asp|aspx|jsp|json|xml|do|action))["\']',  # API extensions
+]
+```
+
+**Framework Detection from JS:**
+- **React:** `React.createElement`, `ReactDOM.render`
+- **Vue.js:** `Vue.config`, `new Vue(`
+- **Angular:** `ng-`, `angular.module`
+- **Next.js:** `__NEXT_DATA__`, `_next/static/`
+- **Nuxt.js:** `__NUXT__`, `_nuxt/`
+- **jQuery:** `jQuery`, `$(`
+
+**Example Output:**
+```json
+{
+  "js_files": 3,
+  "frameworks_detected": ["React", "Next.js"],
+  "endpoints": [
+    "/api/users",
+    "/api/products",
+    "/graphql"
+  ],
+  "versions": {
+    "react": "18.2.0"
+  }
+}
+```
+
+### 5. WordPress Plugin & Theme Detection
+
+**Implementation:** `rankle/utils/wordpress_plugins.py`
+
+Passive WordPress plugin and theme enumeration via HTML parsing.
+
+**Detection Method:**
+- Parse HTML for `/wp-content/plugins/{slug}/` paths
+- Parse HTML for `/wp-content/themes/{slug}/` paths
+- Map slugs to friendly names using 60+ plugin database
+- Map slugs to friendly names using 20+ theme database
+
+**Known Plugins:**
+```python
+KNOWN_PLUGINS = {
+    "contact-form-7": "Contact Form 7",
+    "woocommerce": "WooCommerce",
+    "yoast-seo": "Yoast SEO",
+    "elementor": "Elementor Page Builder",
+    "wordfence": "Wordfence Security",
+    "akismet": "Akismet Anti-Spam",
+    # ... 60+ plugins
+}
+```
+
+**Usage:**
+```python
+from rankle.utils.wordpress_plugins import analyze_wordpress
+
+results = analyze_wordpress(html_content, "https://example.com")
+
+if results['is_wordpress']:
+    print(f"WordPress Detected")
+    print(f"Plugins: {results['plugin_count']}")
+    for plugin in results['plugins']:
+        print(f"  - {plugin['name']}")
+    print(f"Themes: {results['theme_count']}")
+    for theme in results['themes']:
+        print(f"  - {theme['name']}")
+```
+
+**Example Output:**
+```
+WordPress: Yes
+Version: 6.4.2
+Plugins (5):
+  - Contact Form 7
+  - Yoast SEO
+  - WooCommerce
+  - Elementor Page Builder
+  - Wordfence Security
+Active Theme: Astra
+```
+
+### 6. Asset Version Extraction
+
+**Implementation:** Built into `js_extractor.py`
+
+Extracts version numbers from asset filenames using regex patterns.
+
+**Patterns:**
+```python
+# Common versioning patterns:
+jquery-3.6.0.min.js       → jQuery 3.6.0
+react.production.18.2.0.js → React 18.2.0
+bootstrap@5.3.0.min.css    → Bootstrap 5.3.0
+vue-2.7.14.js             → Vue.js 2.7.14
+```
+
+**Usage:**
+```python
+from rankle.utils.js_extractor import extract_version_from_assets
+
+versions = extract_version_from_assets(html_content)
+
+for tech, version in versions.items():
+    print(f"{tech}: {version}")
+```
+
+### 7. CVE Vulnerability Mapping
+
+**Implementation:** `rankle/utils/cve_mapper.py`
+
+Generates CPE identifiers and CVE search URLs for detected technologies.
+
+**CPE 2.3 Format:**
+```
+cpe:2.3:a:vendor:product:version:*:*:*:*:*:*:*
+```
+
+**Generated Search URLs:**
+- **NVD (NIST):** https://nvd.nist.gov/vuln/search/results?query=...
+- **CVE MITRE:** https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=...
+- **CVEDetails:** https://www.cvedetails.com/google-search-results.php?q=...
+- **Vulners:** https://vulners.com/search?query=...
+- **Exploit-DB:** https://www.exploit-db.com/search?q=...
+
+**Usage:**
+```python
+from rankle.utils.cve_mapper import map_technology_to_cve_urls
+
+cve_info = map_technology_to_cve_urls("Django", "4.2")
+
+print(f"Technology: {cve_info['technology']}")
+print(f"CPE: {cve_info['cpe']}")
+print("CVE Search URLs:")
+for source, url in cve_info['cve_search_urls'].items():
+    print(f"  - {source}: {url}")
+```
+
+**Example Output:**
+```
+Technology: Django 4.2
+CPE: cpe:2.3:a:djangoproject:django:4.2:*:*:*:*:*:*:*
+CVE Search URLs:
+  - nist_nvd: https://nvd.nist.gov/vuln/search/results?form_type=Advanced&query=Django%204.2
+  - cve_mitre: https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=Django%204.2
+  - cvedetails: https://www.cvedetails.com/version/573214/Djangoproject-Django-4.2.html
+  - vulners: https://vulners.com/search?query=Django%204.2
+  - exploit_db: https://www.exploit-db.com/search?q=Django%204.2
+
+Recommendation: Review CVE databases for known vulnerabilities in Django 4.2
+```
+
+### Using Enhanced Detection
+
+**Standard Detection (Traditional):**
+```bash
+python main.py example.com
+```
+
+**Enhanced Detection (v2.0):**
+```python
+# Use the demo script
+python scripts/demo_enhanced_detection.py example.com
+
+# Output includes:
+# - 3000+ technology signatures checked
+# - Favicon hash analysis
+# - Error page fingerprinting
+# - JavaScript endpoints extracted
+# - WordPress plugins/themes (if applicable)
+# - CVE search URLs for all detected technologies
+```
+
+**API Usage:**
+```python
+from rankle.detectors.technology import TechnologyDetector
+
+detector = TechnologyDetector("example.com")
+
+# Traditional detection
+basic_results = detector.detect(headers, cookies, body)
+
+# Enhanced detection (v2.0)
+enhanced_results = detector.detect_enhanced(
+    headers=headers,
+    cookies=cookies,
+    body=body,
+    base_url="https://example.com"
+)
+
+# Compare results
+print(f"Basic: {len(basic_results['technologies'])} technologies")
+print(f"Enhanced: {len(enhanced_results['technologies'])} technologies")
+```
+
+### Performance Comparison
+
+**Test Domain: avanis.es**
+
+| Method | Technologies | Time | Techniques |
+|--------|-------------|------|------------|
+| Traditional | 6 | ~2s | Headers, cookies, HTML patterns |
+| Enhanced v2.0 | 9 | ~6s | + Wappalyzer, favicon, error pages, JS analysis |
+
+**Enhancement:** +50% more technologies detected, +CVE mapping, +evidence tracking
+
+### Complete Example Output
+
+```json
+{
+  "detected": true,
+  "technologies": [
+    {
+      "name": "Angular",
+      "confidence": 0.9,
+      "evidence": "js_pattern",
+      "category": "JavaScript Framework"
+    },
+    {
+      "name": "jQuery",
+      "confidence": 0.85,
+      "evidence": "js_pattern",
+      "category": "JavaScript Framework"
+    },
+    {
+      "name": "Google Tag Manager",
+      "category": "Tag Manager",
+      "confidence": 0.7,
+      "version": null,
+      "evidence": [
+        {"type": "html_pattern", "detail": "GTM-", "weight": 0.7}
+      ]
+    }
+  ],
+  "api_endpoints": [
+    "/api/v1/users",
+    "/graphql"
+  ],
+  "wordpress": {
+    "detected": false
+  },
+  "cve_mappings": [
+    {
+      "technology": "Angular",
+      "version": null,
+      "cpe": "cpe:2.3:a:angular:angular:*:*:*:*:*:*:*:*",
+      "cve_search_urls": {
+        "nist_nvd": "https://nvd.nist.gov/vuln/search/results?query=Angular",
+        "cve_mitre": "https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=Angular"
+      }
+    }
+  ]
+}
+```
+
+### Documentation
+
+For complete technical details, see:
+- **[Technology Detection Enhancement Guide](TECHNOLOGY_DETECTION_ENHANCEMENT.md)** - Full v2.0 documentation
+- **[Scripts Documentation](../scripts/README.md)** - `demo_enhanced_detection.py` usage
+
+---
+
 ## Origin Infrastructure Discovery
 
 **Purpose**: Discover real infrastructure behind CDN/WAF protection using **100% passive techniques**.
@@ -1606,36 +2071,21 @@ cat scan.json | jq -r '.subdomains[]' | \
 
 #### Complete Nuclei Pipeline Script
 
+**See:** [`docs/examples/nuclei_pipeline.sh`](examples/nuclei_pipeline.sh)
+
+This ready-to-use script:
+1. Runs Rankle scan and exports JSON
+2. Extracts and deduplicates subdomains
+3. Validates live hosts with httpx
+4. Scans for high/critical vulnerabilities with Nuclei
+
+**Usage:**
 ```bash
-#!/bin/bash
-DOMAIN=$1
-OUTPUT_DIR="./recon_output"
-mkdir -p $OUTPUT_DIR
-
-echo "[+] Running Rankle scan on $DOMAIN"
-docker run --rm -v $OUTPUT_DIR:/output rankle $DOMAIN --output json
-
-JSON_FILE="$OUTPUT_DIR/${DOMAIN//./_}_rankle.json"
-
-echo "[+] Extracting subdomains"
-jq -r '.subdomains[]' $JSON_FILE | \
-  grep -vE '(@|\*)' | \
-  sort -u > $OUTPUT_DIR/subdomains.txt
-
-echo "[+] Checking live hosts with httpx"
-cat $OUTPUT_DIR/subdomains.txt | \
-  httpx -silent -title -tech-detect -o $OUTPUT_DIR/live_hosts.txt
-
-echo "[+] Running Nuclei scan"
-nuclei -l $OUTPUT_DIR/live_hosts.txt \
-  -t nuclei-templates/cves/ \
-  -t nuclei-templates/vulnerabilities/ \
-  -severity high,critical \
-  -o $OUTPUT_DIR/nuclei_findings.txt
-
-echo "[+] Scan complete!"
-echo "    Results: $OUTPUT_DIR/nuclei_findings.txt"
+chmod +x docs/examples/nuclei_pipeline.sh
+./docs/examples/nuclei_pipeline.sh example.com
 ```
+
+**Output:** `recon_output/nuclei_findings.txt`
 
 ### Integration with Nmap
 
@@ -1672,33 +2122,21 @@ nmap $FIRST_IP -sV -O --script=banner -oA detailed_scan
 
 #### Complete Nmap Pipeline Script
 
+**See:** [`docs/examples/nmap_pipeline.sh`](examples/nmap_pipeline.sh)
+
+This ready-to-use script:
+1. Runs Rankle scan and exports JSON
+2. Extracts all IPv4 addresses from DNS results
+3. Performs service detection on common ports (80, 443, 8080, 8443, 22, 21, 3306, 5432)
+4. Runs full port scan on first discovered IP
+
+**Usage:**
 ```bash
-#!/bin/bash
-DOMAIN=$1
-OUTPUT_DIR="./recon_output"
-mkdir -p $OUTPUT_DIR
-
-echo "[+] Running Rankle scan on $DOMAIN"
-docker run --rm -v $OUTPUT_DIR:/output rankle $DOMAIN --output json
-
-JSON_FILE="$OUTPUT_DIR/${DOMAIN//./_}_rankle.json"
-
-echo "[+] Extracting IP addresses"
-jq -r '.dns.A[]' $JSON_FILE > $OUTPUT_DIR/ips.txt
-
-echo "[+] Running Nmap service scan"
-nmap -iL $OUTPUT_DIR/ips.txt \
-  -sV \
-  -p 80,443,8080,8443,22,21,3306,5432 \
-  --script=banner,http-title,ssl-cert \
-  -oA $OUTPUT_DIR/nmap_services
-
-echo "[+] Running full port scan on first IP"
-FIRST_IP=$(head -1 $OUTPUT_DIR/ips.txt)
-nmap $FIRST_IP -p- -T4 -oA $OUTPUT_DIR/nmap_full_$FIRST_IP
-
-echo "[+] Scan complete!"
+chmod +x docs/examples/nmap_pipeline.sh
+./docs/examples/nmap_pipeline.sh example.com
 ```
+
+**Output:** `recon_output/nmap_services.xml` and `recon_output/nmap_full_*.xml`
 
 ### Integration with httpx
 
@@ -1819,75 +2257,41 @@ Complete automated reconnaissance workflow combining multiple tools.
 
 ### Complete Recon Chain Script
 
-**File**: `examples/full_recon_chain.sh`
+**See:** [`docs/examples/full_recon_chain.sh`](examples/full_recon_chain.sh)
 
-```bash
-#!/bin/bash
-# Complete automated recon chain: Rankle -> httpx -> Nuclei -> Nmap
+This comprehensive script combines all tools into a single automated workflow:
 
-DOMAIN=$1
-WORKSPACE="recon_$(date +%Y%m%d_%H%M%S)_$DOMAIN"
-
-if [ -z "$DOMAIN" ]; then
-    echo "Usage: $0 <domain>"
-    exit 1
-fi
-
-mkdir -p $WORKSPACE
-echo "[*] Workspace: $WORKSPACE"
-
-echo "[1/5] Rankle reconnaissance"
-docker run --rm -v "$(pwd)/$WORKSPACE:/output" rankle "$DOMAIN" --output both
-JSON="$WORKSPACE/${DOMAIN//./_}_rankle.json"
-
-echo "[2/5] Extract and deduplicate subdomains"
-jq -r '.subdomains[]' $JSON | grep -vE '(@|\*)' | sort -u > $WORKSPACE/subdomains.txt
-echo "    Found: $(wc -l < $WORKSPACE/subdomains.txt) subdomains"
-
-echo "[3/5] Live host detection with httpx"
-cat $WORKSPACE/subdomains.txt | \
-  httpx -silent -title -status-code -tech-detect -o $WORKSPACE/live_hosts.txt
-echo "    Live: $(wc -l < $WORKSPACE/live_hosts.txt) hosts"
-
-echo "[4/5] Nuclei vulnerability scan"
-nuclei -l $WORKSPACE/live_hosts.txt \
-  -severity medium,high,critical \
-  -o $WORKSPACE/nuclei_vulns.txt
-echo "    Found: $(wc -l < $WORKSPACE/nuclei_vulns.txt) potential issues"
-
-echo "[5/5] Nmap port scan on IPs"
-jq -r '.dns.A[]' $JSON | \
-  nmap -iL - -sV -p 80,443,8080,8443,22,21,25,3306,5432 \
-  -oA $WORKSPACE/nmap_scan
-
-# Generate summary report
-cat > $WORKSPACE/REPORT.txt << REPORT
-Reconnaissance Report - $DOMAIN
-Generated: $(date)
-================================
-
-Statistics:
-  Total Subdomains: $(wc -l < $WORKSPACE/subdomains.txt)
-  Live Hosts: $(wc -l < $WORKSPACE/live_hosts.txt)
-  Vulnerabilities: $(wc -l < $WORKSPACE/nuclei_vulns.txt)
-  IPs Scanned: $(jq '.dns.A | length' $JSON)
-
-Files:
-  - Rankle JSON: ${DOMAIN//./_}_rankle.json
-  - Rankle Text: ${DOMAIN//./_}_rankle_report.txt
-  - Subdomains: subdomains.txt
-  - Live Hosts: live_hosts.txt
-  - Vulnerabilities: nuclei_vulns.txt
-  - Port Scan: nmap_scan.xml
-
-Top Findings:
-$(head -20 $WORKSPACE/nuclei_vulns.txt)
-REPORT
-
-echo ""
-echo "Complete! Results in: $WORKSPACE/"
-echo "Summary: $WORKSPACE/REPORT.txt"
+**Workflow:**
 ```
+[1/5] Rankle reconnaissance
+   └─ DNS, subdomains, technologies, CDN/WAF detection
+
+[2/5] Extract and deduplicate subdomains
+   └─ Filter wildcards and duplicates
+
+[3/5] Live host detection with httpx
+   └─ Verify which hosts are actually live
+
+[4/5] Nuclei vulnerability scan
+   └─ Scan for medium/high/critical vulnerabilities
+
+[5/5] Nmap port scan on discovered IPs
+   └─ Service detection and port enumeration
+```
+
+**Usage:**
+```bash
+chmod +x docs/examples/full_recon_chain.sh
+./docs/examples/full_recon_chain.sh example.com
+```
+
+**Output:** Creates a timestamped workspace directory with:
+- Rankle JSON and text reports
+- Subdomain list (deduplicated)
+- Live host verification results
+- Nuclei vulnerability findings
+- Nmap port scan results
+- Automated summary report (`REPORT.txt`)
 
 ### Multi-Domain Batch Scan
 

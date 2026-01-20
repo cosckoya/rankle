@@ -4,23 +4,37 @@ This file provides guidance to Claude Code when working with this repository.
 
 **LANGUAGE POLICY: Always respond in English, regardless of user's language.**
 
-## Custom Skills
+## Available Skills
 
-10 custom skills available. Invoke with `/skill-name`.
+This project uses Claude Code's global skill system (17 global skills). All skills work across projects.
 
-**Core Skills:**
-- `/security-scanner-expert` - Security reconnaissance tool development, detection logic review
-- `/pattern-updater` - Manage detection signatures in config/patterns.py and config/tech_signatures.json
-- `/python-architect` - Enforce Python 3.11+ standards, PEP compliance, Ruff formatting, type hints
-- `/test-automator` - Pytest tests, pre-commit hooks, CI/CD pipelines, coverage monitoring
-- `/docker-specialist` - Dockerfile optimization, container security, deployment best practices
+### Task Orchestration
 
-**Specialized Skills:**
-- `/recon-researcher` - Research latest OSINT/reconnaissance techniques from security blogs
-- `/api-integrator` - Create integration scripts for Nuclei, Nmap, httpx, jq filters
-- `/changelog-maintainer` - Maintain CHANGELOG.md with Keep a Changelog format
-- `/config-validator` - Validate configuration files (pyproject.toml, settings.py, patterns.py)
-- `/security-auditor` - Code security review, OWASP Top 10, bandit scans, input validation
+**For complex or multi-domain tasks:**
+- `/task-router` ⭐ - Intelligent task orchestrator - Analyzes tasks, routes to appropriate skill(s), creates execution plans, coordinates multi-skill workflows
+
+### Most Relevant Skills for Rankle
+
+**Development:**
+- `/python-architect` - Python 3.11+ standards, type hints, Ruff formatting
+- `/test-automator` - Pytest tests, pre-commit hooks, CI/CD pipelines
+- `/docker-specialist` - Container optimization and security
+
+**Security:**
+- `/security-scanner-expert` - Security reconnaissance tool development, detection logic
+- `/recon-researcher` - Research latest OSINT/reconnaissance techniques
+- `/pattern-updater` - Manage detection signatures (config/patterns.py, tech_signatures.json)
+- `/security-auditor` - OWASP Top 10 review, bandit scans, input validation
+
+**Integration & Validation:**
+- `/api-integrator` - Integration scripts for Nuclei, Nmap, httpx
+- `/config-validator` - Validate pyproject.toml, settings.py, patterns.py
+
+**Documentation:**
+- `/changelog-maintainer` - Maintain CHANGELOG.md (Keep a Changelog format)
+- `/cheatsheet-generator` - Create command reference sheets
+
+**See all skills:** `~/.claude/skills/README.md` or `find ~/.claude/skills/ -name SKILL.md`
 
 ## Project Overview
 
@@ -29,11 +43,14 @@ This file provides guidance to Claude Code when working with this repository.
 **Key Features:**
 - DNS enumeration (A/AAAA/MX/NS/TXT/SOA/CNAME)
 - Subdomain discovery via Certificate Transparency (crt.sh)
-- Technology detection: 16+ CMS, 20+ CDN, 15+ WAF solutions
+- Enhanced technology detection: 3000+ technologies via Wappalyzer (CMS, frameworks, CDN, WAF, libraries)
+- Advanced fingerprinting: Favicon hashing (mmh3), error page analysis, JS endpoint extraction
+- WordPress detection: Plugin and theme enumeration (60+ plugins, 20+ themes)
+- CVE vulnerability mapping: Automatic CVE search URL generation for detected technologies
 - Cloud provider detection (AWS, Azure, GCP, DigitalOcean, OVH, Hetzner)
 - Origin infrastructure discovery behind WAF/CDN (passive techniques only)
 - TLS/SSL certificate analysis
-- Advanced fingerprinting (HTTP methods, API endpoints, exposed files)
+- HTTP fingerprinting (methods, API endpoints, exposed files)
 
 **Ethical Use:** All methods are passive reconnaissance. For authorized testing only.
 
@@ -74,7 +91,12 @@ rankle/
 │   │   └── session.py      # SessionManager - HTTP with retry logic
 │   ├── modules/            # DNS, SSL, subdomains, WHOIS, geolocation, fingerprinting
 │   ├── detectors/          # Technology, CDN, WAF, origin discovery
-│   ├── utils/              # Validators, helpers, rate limiter
+│   ├── utils/              # Validators, helpers, rate limiter, favicon hashing, error fingerprinting
+│   │   ├── favicon_hash.py       # mmh3 favicon hashing (NEW v2.0)
+│   │   ├── error_fingerprint.py  # Error page analysis (NEW v2.0)
+│   │   ├── js_extractor.py       # JavaScript endpoint extraction (NEW v2.0)
+│   │   ├── wordpress_plugins.py  # WordPress detection (NEW v2.0)
+│   │   └── cve_mapper.py         # CVE vulnerability mapping (NEW v2.0)
 │   └── reports/            # Report generation
 ├── config/
 │   ├── settings.py         # Centralized configuration
@@ -220,13 +242,18 @@ self.results["new_feature"] = self.new_detector.analyze()
 
 ## Dependencies
 
-**Core:** requests, dnspython, beautifulsoup4
+**Core:** requests, dnspython, beautifulsoup4, python-wappalyzer, mmh3
 **Optional:** python-whois, ipwhois
-**Dev:** pytest, ruff, mypy, bandit, pre-commit
+**Dev:** pytest, ruff, mypy, bandit, pre-commit, setuptools
 
-See `pyproject.toml` for version requirements.
+**New in v2.0:**
+- `python-wappalyzer>=0.3.1` - 3000+ technology signatures
+- `mmh3>=5.0.0` - Favicon hashing for fingerprinting
+
+See `pyproject.toml` and `requirements.txt` for version requirements.
 
 ---
 
-**Last Updated:** 2026-01-19
+**Last Updated:** 2026-01-20
 **Maintained By:** Claude Code + Human collaboration
+**Version:** 2.0 (Enhanced Technology Detection)

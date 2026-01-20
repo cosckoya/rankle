@@ -157,5 +157,9 @@ config.ini
 .helix/
 .cursor/
 
-# Claude Code configuration (local settings and skills)
-.claude/
+# Claude Code configuration (2026 best practices)
+# Track shared configuration, exclude local overrides
+.claude/settings.local.json
+.claude/*.local.json
+.claude/cache/
+.claude/logs/

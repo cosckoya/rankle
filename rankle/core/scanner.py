@@ -7,7 +7,14 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
-from config.settings import DEFAULT_TIMEOUT
+from config.settings import (
+    CDN_DETECTION_THRESHOLD,
+    DEFAULT_TIMEOUT,
+    MAX_BODY_SIZE,
+    MAX_DISPLAY_ORIGINS,
+    MAX_DISPLAY_SUBDOMAINS,
+    MAX_DISPLAY_TECHS,
+)
 from rankle.core.session import SessionManager
 from rankle.detectors.cdn import CDNDetector
 from rankle.detectors.origin import OriginDiscovery
@@ -237,10 +244,15 @@ class RankleScanner:
         try:
             response = self.session.get(f"https://{self.domain}", timeout=self.timeout)
             self._http_headers = dict(response.headers)
-            self._http_body = response.text[:100000]  # First 100KB
+            self._http_body = response.text[:MAX_BODY_SIZE]  # Limit body size
             self._http_cookies = list(response.cookies.keys())
             print(f"   Status: {response.status_code}")
-        except Exception as e:
+        except (
+            ConnectionError,
+            TimeoutError,
+            OSError,
+        ) as e:
+            # Network errors, SSL errors, or connection failures
             if self.verbose:
                 print(f"   HTTP fetch failed: {e}")
             self._http_headers = {}
@@ -318,7 +330,7 @@ class RankleScanner:
         if results.get("detected"):
             technologies = results.get("technologies", [])
             print(f"   Found {len(technologies)} technologies:")
-            for tech in technologies[:10]:  # Show top 10
+            for tech in technologies[:MAX_DISPLAY_TECHS]:  # Show top N
                 version = f" v{tech['version']}" if tech.get("version") else ""
                 confidence = int(tech["confidence"] * 100)
                 print(f"      - {tech['name']}{version} ({confidence}%)")
@@ -410,7 +422,7 @@ class RankleScanner:
         if results.get("potential_origins"):
             origins = results["potential_origins"]
             print(f"   Found {len(origins)} potential origins:")
-            for origin in origins[:5]:
+            for origin in origins[:MAX_DISPLAY_ORIGINS]:
                 provider = origin.get("cloud_provider", "")
                 provider_str = f" [{provider}]" if provider else ""
                 print(f"      - {origin['ip']} ({origin['source']}){provider_str}")
@@ -544,9 +556,8 @@ class RankleScanner:
 
         return results
 
-    def _print_full_summary(self):
-        """Print comprehensive summary report with friendly formatting"""
-        width = 70
+    def _print_summary_header(self, width: int = 70):
+        """Print summary report header."""
         print("\n")
         print("┌" + "─" * (width - 2) + "┐")
         print("│" + " RECONNAISSANCE RESULTS ".center(width - 2) + "│")
@@ -555,7 +566,8 @@ class RankleScanner:
         print(f"│  ⏰ Time:   {self.scan_timestamp}".ljust(width - 1) + "│")
         print("└" + "─" * (width - 2) + "┘")
 
-        # Infrastructure Section
+    def _print_infrastructure_summary(self):
+        """Print infrastructure section (CDN, WAF, SSL, Headers)."""
         cdn = self.results.get("cdn", {})
         waf = self.results.get("waf", {})
         ssl_data = self.results.get("ssl", {})
@@ -563,18 +575,21 @@ class RankleScanner:
 
         print("\n🏗️  INFRASTRUCTURE")
         print("─" * 40)
+
         # CDN
         if cdn.get("detected"):
             cdn_conf = int(cdn.get("confidence", 0) * 100)
             print(f"   CDN:     ✅ {cdn.get('cdn')} ({cdn_conf}%)")
         else:
             print("   CDN:     ❌ Not detected")
+
         # WAF
         if waf.get("detected"):
             waf_conf = int(waf.get("confidence", 0) * 100)
             print(f"   WAF:     🛡️  {waf.get('waf')} ({waf_conf}%)")
         else:
             print("   WAF:     ❌ Not detected")
+
         # SSL Grade
         if ssl_data.get("valid"):
             grade = ssl_data.get("security_grade", "N/A")
@@ -584,13 +599,15 @@ class RankleScanner:
             print(f"   SSL:     {grade_icon} Grade {grade}")
         else:
             print("   SSL:     ⚠️  Not available")
+
         # Headers Grade
         h_grade = headers_data.get("grade", "N/A")
         h_score = headers_data.get("score", 0)
         h_icon = "🟢" if h_score >= 80 else "🟡" if h_score >= 50 else "🔴"
         print(f"   Headers: {h_icon} {h_grade} ({h_score}/100)")
 
-        # Technologies Section
+    def _print_technologies_summary(self):
+        """Print detected technologies section."""
         tech = self.results.get("technologies", {})
         if tech.get("detected"):
             tech_list = tech.get("technologies", [])
@@ -604,42 +621,62 @@ class RankleScanner:
             if len(tech_list) > 8:
                 print(f"   ... +{len(tech_list) - 8} more")
 
-        # Origin Discovery Section
+    def _print_origin_summary(self):
+        """Print origin discovery section."""
         origin = self.results.get("origin", {})
         if origin.get("potential_origins"):
             origins = origin["potential_origins"]
             print(f"\n🎯 ORIGIN DISCOVERY ({len(origins)} potential IPs)")
             print("─" * 40)
-            for o in origins[:5]:
+            for o in origins[:MAX_DISPLAY_ORIGINS]:
                 provider = o.get("cloud_provider", "")
                 conf = int(o.get("confidence", 0) * 100)
                 provider_str = f" [{provider}]" if provider else ""
                 print(f"   📍 {o['ip']}{provider_str} ({conf}%)")
-            if len(origins) > 5:
-                print(f"   ... +{len(origins) - 5} more")
+            if len(origins) > MAX_DISPLAY_ORIGINS:
+                print(f"   ... +{len(origins) - MAX_DISPLAY_ORIGINS} more")
 
-        # Subdomains Section
+    def _print_subdomains_summary(self):
+        """Print subdomains section."""
         subs = self.results.get("subdomains", {})
         total = subs.get("total_found", 0)
         live = subs.get("live_count", 0)
         if total > 0:
             print(f"\n🌐 SUBDOMAINS ({total} found, {live} live)")
             print("─" * 40)
-            live_subs = [s for s in subs.get("subdomains", []) if s.get("is_live")][:6]
+            live_subs = [
+                s for s in subs.get("subdomains", []) if s.get("is_live")
+            ][:MAX_DISPLAY_SUBDOMAINS]
             for s in live_subs:
                 ips = s.get("ips", [])
                 ip_str = f" → {ips[0]}" if ips else ""
                 print(f"   ✓ {s['subdomain']}{ip_str}")
-            if total > 6:
-                print(f"   ... +{total - 6} more")
+            if total > MAX_DISPLAY_SUBDOMAINS:
+                print(f"   ... +{total - MAX_DISPLAY_SUBDOMAINS} more")
 
-        # DNS Summary
+    def _print_dns_summary(self):
+        """Print DNS summary section."""
         dns = self.results.get("dns", {})
         if dns:
             a_count = len(dns.get("A", []))
             mx_count = len(dns.get("MX", []))
             ns_count = len(dns.get("NS", []))
             print(f"\n📡 DNS: {a_count} A | {mx_count} MX | {ns_count} NS records")
+
+    def _print_full_summary(self):
+        """
+        Print comprehensive summary report with friendly formatting.
+
+        Orchestrates printing of all summary sections.
+        """
+        width = 70
+
+        self._print_summary_header(width)
+        self._print_infrastructure_summary()
+        self._print_technologies_summary()
+        self._print_origin_summary()
+        self._print_subdomains_summary()
+        self._print_dns_summary()
 
         print("\n" + "─" * width)
 

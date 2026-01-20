@@ -11,6 +11,8 @@ Detects Web Application Firewalls through passive techniques:
 import re
 from typing import Any
 
+from rankle.utils.confidence import calculate_confidence_score
+
 
 # WAF Signatures Database
 WAF_SIGNATURES: dict[str, dict[str, Any]] = {
@@ -457,26 +459,19 @@ class WAFDetector:
         return matches
 
     def _calculate_confidence(self, evidence: list[dict[str, Any]]) -> float:
-        """Calculate confidence score from evidence."""
-        if not evidence:
-            return 0.0
+        """
+        Calculate confidence score from evidence.
 
-        by_type: dict[str, list[float]] = {}
-        for ev in evidence:
-            ev_type = ev["type"]
-            if ev_type not in by_type:
-                by_type[ev_type] = []
-            by_type[ev_type].append(ev["weight"])
+        Uses shared confidence calculation utility with weighted scoring
+        and diminishing returns for multiple pieces of the same type.
 
-        total_score = 0.0
-        for weights in by_type.values():
-            weights.sort(reverse=True)
-            type_score = weights[0]
-            for i, w in enumerate(weights[1:], 1):
-                type_score += w * (0.5**i)
-            total_score += type_score
+        Args:
+            evidence: List of evidence dictionaries with 'type' and 'weight' keys
 
-        return min(1.0, total_score)
+        Returns:
+            Confidence score between 0.0 and 1.0
+        """
+        return calculate_confidence_score(evidence, diminishing_factor=0.5)
 
 
 def detect_waf(

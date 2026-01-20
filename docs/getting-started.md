@@ -316,6 +316,7 @@ After installing and running your first scan:
 
 2. **Integration with Other Tools**
    - See [Integration Examples](detection-capabilities.md#integration-examples) for Nuclei, Nmap, httpx
+   - Use ready-to-run scripts in [docs/examples/](examples/README.md)
    - Build reconnaissance pipelines
 
 3. **Development Setup**

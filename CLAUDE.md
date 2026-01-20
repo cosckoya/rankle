@@ -11,7 +11,14 @@ This project uses Claude Code's global skill system (17 global skills). All skil
 ### Task Orchestration
 
 **For complex or multi-domain tasks:**
-- `/task-router` ⭐ - Intelligent task orchestrator - Analyzes tasks, routes to appropriate skill(s), creates execution plans, coordinates multi-skill workflows
+- `/task-router` ⭐ - Intelligent task orchestrator
+  - Analyzes tasks, routes to appropriate skill(s)
+  - Creates execution plans, coordinates multi-skill workflows
+  - **Production Mode:** "make rankle production ready"
+    - 5 quality gates (Code, Security, Testing, Documentation, Pre-production)
+    - Automatic rollback plan generation
+    - 2-4 hour full production workflow
+    - Guide: `~/.claude/skills/PRODUCTION_WORKFLOW_GUIDE.md`
 
 ### Most Relevant Skills for Rankle
 

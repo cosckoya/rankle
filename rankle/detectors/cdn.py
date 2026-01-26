@@ -15,7 +15,8 @@ from typing import Any
 
 import dns.resolver
 
-from config.settings import DNS_TIMEOUT
+from config.settings import CDN_DETECTION_THRESHOLD, DNS_TIMEOUT
+from rankle.utils.confidence import calculate_confidence_score
 
 
 # CDN Signatures Database
@@ -360,7 +361,7 @@ class CDNDetector:
         # Sort by confidence
         cdn_scores.sort(key=lambda x: x["confidence"], reverse=True)
 
-        if cdn_scores and cdn_scores[0]["confidence"] >= 0.3:
+        if cdn_scores and cdn_scores[0]["confidence"] >= CDN_DETECTION_THRESHOLD:
             best_match = cdn_scores[0]
             results["detected"] = True
             results["cdn"] = best_match["cdn"]
@@ -509,32 +510,16 @@ class CDNDetector:
         """
         Calculate confidence score from evidence.
 
-        Uses weighted scoring with diminishing returns for multiple
-        pieces of the same type of evidence.
+        Uses shared confidence calculation utility with weighted scoring
+        and diminishing returns for multiple pieces of the same type.
+
+        Args:
+            evidence: List of evidence dictionaries with 'type' and 'weight' keys
+
+        Returns:
+            Confidence score between 0.0 and 1.0
         """
-        if not evidence:
-            return 0.0
-
-        # Group by evidence type
-        by_type: dict[str, list[float]] = {}
-        for ev in evidence:
-            ev_type = ev["type"]
-            if ev_type not in by_type:
-                by_type[ev_type] = []
-            by_type[ev_type].append(ev["weight"])
-
-        # Calculate score with diminishing returns
-        total_score = 0.0
-        for weights in by_type.values():
-            # Take best weight, with diminishing bonus for additional evidence
-            weights.sort(reverse=True)
-            type_score = weights[0]
-            for i, w in enumerate(weights[1:], 1):
-                type_score += w * (0.5**i)  # Diminishing returns
-            total_score += type_score
-
-        # Cap at 1.0
-        return min(1.0, total_score)
+        return calculate_confidence_score(evidence, diminishing_factor=0.5)
 
     def get_cdn_ips(self, cdn_name: str) -> list[str]:
         """Get known IP ranges for a specific CDN."""

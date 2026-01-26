@@ -19,6 +19,8 @@ dependencies = [
     "requests>=2.31.0",
     "dnspython>=2.4.0",
     "beautifulsoup4>=4.12.0",
+    "python-wappalyzer>=0.3.1",  # Technology detection (3000+ signatures)
+    "mmh3>=5.0.0",                # Favicon hashing for fingerprinting
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -158,15 +160,7 @@ unfixable = []
     "ARG",     # Unused arguments allowed in tests
     "PLR2004", # Magic values allowed in tests
 ]
-"examples/**/*.py" = [
-    "INP001",  # Implicit namespace packages
-    "T201",    # Print statements allowed
-    "PTH",     # pathlib usage (os.path OK in examples for simplicity)
-    "EXE001",  # Shebang checks
-    "PLR0912", # Too many branches (example code can be verbose)
-    "PLR0915", # Too many statements (example code can be verbose)
-    "PLC0415", # Import not at top (acceptable in examples)
-]
+# Examples are now shell scripts in docs/examples/ (not Python)
 "rankle/detectors/**/*.py" = [
     "PLR0912", # Too many branches (detection logic)
     "PLR0915", # Too many statements (detection signatures)
@@ -212,27 +206,56 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 # =============================================================================
-# MYPY - Static type checking
+# MYPY - Static type checking (2026 Best Practices)
 # =============================================================================
 [tool.mypy]
 python_version = "3.11"
-warn_return_any = true
-warn_unused_configs = true
-warn_redundant_casts = true
-warn_unused_ignores = true
-disallow_untyped_defs = false          # Enable gradually
-check_untyped_defs = true
-no_implicit_optional = true
-strict_equality = true
+
+# QUICK WINS - Enabled for immediate benefit ✅
+warn_return_any = true              # Catch accidental Any returns
+warn_unused_configs = true          # Clean config
+warn_redundant_casts = true         # Remove unnecessary casts
+warn_unused_ignores = true          # Clean up old type: ignore
+warn_no_return = true               # Catch missing returns
+warn_unreachable = true             # Dead code detection
+check_untyped_defs = true           # Check even untyped functions
+no_implicit_optional = true         # x: str = None is an error
+strict_equality = true              # Prevent == None bugs
+
+# Gradual adoption
+disallow_untyped_defs = false       # TODO: Enable per-module when ready
+
+# Display
 show_error_codes = true
 show_column_numbers = true
+show_error_context = true
 pretty = true
+color_output = true
+
+# Third-party libraries
 ignore_missing_imports = true
-exclude = ["tests/", "examples/", "venv/"]
+
+# Exclude patterns
+exclude = ["tests/", "examples/", "venv/", ".venv/", "build/", "dist/"]
+
+# =============================================================================
+# Per-Module Configuration (Gradual strictness)
+# =============================================================================
 
 [[tool.mypy.overrides]]
 module = "tests.*"
 disallow_untyped_defs = false
+ignore_errors = true
+
+# Core modules - Highest priority for strictness
+[[tool.mypy.overrides]]
+module = "rankle.core.*"
+warn_return_any = true
+
+# Utils - Second priority
+[[tool.mypy.overrides]]
+module = "rankle.utils.*"
+warn_return_any = true
 
 # =============================================================================
 # BANDIT - Security scanning

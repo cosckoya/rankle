@@ -1,45 +1,103 @@
 # Rankle - Web Infrastructure Reconnaissance Tool
-# All dependencies in one file
+# Requirements file following 2026 best practices
 #
-# Install production only:  pip install -r requirements.txt
-# Install with dev tools:   pip install -r requirements.txt --all-extras
-# Or use pyproject.toml:    pip install -e ".[dev]"
+# Installation methods:
+#   Production:  pip install -r requirements.txt
+#   Development: pip install -e ".[dev]"  (recommended - uses pyproject.toml)
+#   With UV:     uv pip install -r requirements.txt
+#
+# Note: This file is maintained for backwards compatibility.
+# Primary source of truth is pyproject.toml (PEP 621).
 
 # =============================================================================
-# PRODUCTION DEPENDENCIES
+# CORE PRODUCTION DEPENDENCIES
 # =============================================================================
 
-requests>=2.31.0
-dnspython>=2.4.0
-beautifulsoup4>=4.12.0
+# HTTP client with connection pooling and retry logic
+requests>=2.31.0,<3.0.0
 
-# Optional (enhanced features)
-python-whois>=0.9.0
-ipwhois>=1.2.0
+# DNS queries and enumeration
+dnspython>=2.4.0,<3.0.0
+
+# HTML/XML parsing for technology detection
+beautifulsoup4>=4.12.0,<5.0.0
+
+# Technology detection - 3000+ signatures (NEW in v2.0)
+python-wappalyzer>=0.3.1,<1.0.0
+
+# Favicon hashing for fingerprinting (NEW in v2.0)
+mmh3>=5.0.0,<6.0.0
+
+# =============================================================================
+# OPTIONAL DEPENDENCIES (Extended Features)
+# =============================================================================
+
+# WHOIS lookups for domain registration info
+python-whois>=0.9.0,<1.0.0
+
+# IP WHOIS and ASN lookups
+ipwhois>=1.2.0,<2.0.0
 
 # =============================================================================
 # DEVELOPMENT DEPENDENCIES
 # =============================================================================
+# Install with: pip install -e ".[dev]"
+# Or manually: pip install -r requirements.txt <package-name>
 
-# Linting & Formatting (Ruff replaces Black, isort, flake8)
-ruff>=0.8.0
+# Linting & Formatting (replaces Black, isort, flake8)
+ruff>=0.8.0,<1.0.0
 
-# Type checking
-mypy>=1.13.0
-types-requests>=2.31.0
-types-beautifulsoup4>=4.12.0
+# Static type checking
+mypy>=1.13.0,<2.0.0
+
+# Type stubs for third-party libraries
+types-requests>=2.32.0,<3.0.0
+types-beautifulsoup4>=4.12.0,<5.0.0
 
 # Security scanning
-bandit[toml]>=1.7.10
-pip-audit>=2.7.0
+bandit[toml]>=1.7.10,<2.0.0
+pip-audit>=2.7.0,<3.0.0
 
-# Testing
-pytest>=8.0.0
-pytest-cov>=4.1.0
-pytest-xdist>=3.5.0
+# Testing framework
+pytest>=8.0.0,<9.0.0
+pytest-cov>=4.1.0,<5.0.0
+pytest-xdist>=3.5.0,<4.0.0
 
-# Documentation
-interrogate>=1.7.0
+# Docstring coverage
+interrogate>=1.7.0,<2.0.0
 
-# Git hooks
-pre-commit>=3.8.0
+# Git hooks for pre-commit checks
+pre-commit>=3.8.0,<4.0.0
+
+# =============================================================================
+# PLATFORM-SPECIFIC NOTES
+# =============================================================================
+#
+# Linux (Debian/Ubuntu):
+#   sudo apt install python3-dev python3-pip
+#
+# macOS:
+#   brew install python@3.11
+#
+# Windows:
+#   Requires Python 3.11+ from python.org
+#   Or use WSL2 for Linux environment
+#
+# =============================================================================
+# VERSION CONSTRAINTS RATIONALE
+# =============================================================================
+#
+# Upper bounds (<X.0.0):
+#   - Prevent breaking changes from major version bumps
+#   - Can be relaxed after testing with newer versions
+#
+# Lower bounds (>=X.Y.Z):
+#   - Ensure minimum required features/security fixes
+#   - Based on features used in codebase
+#
+# =============================================================================
+# LAST UPDATED
+# =============================================================================
+# Date: 2026-01-20
+# Python: 3.11+
+# Maintainer: Javier Coscolla

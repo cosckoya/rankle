@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from threading import Lock
 from typing import Any
 
+from config.settings import MAX_RESPONSE_TIME_SAMPLES, MAX_RETRY_WAIT_SECONDS
+
 
 @dataclass
 class RateLimitConfig:
@@ -143,7 +145,7 @@ class RateLimiter:
 
             # Track response time
             state.response_times.append(response_time)
-            if len(state.response_times) > 10:
+            if len(state.response_times) > MAX_RESPONSE_TIME_SAMPLES:
                 state.response_times.pop(0)
 
             # Calculate average response time
@@ -203,7 +205,7 @@ class RateLimiter:
 
             if retry_after:
                 # Server specified wait time
-                wait_time = min(retry_after, 60.0)  # Cap at 60 seconds
+                wait_time = min(retry_after, MAX_RETRY_WAIT_SECONDS)
                 time.sleep(wait_time)
                 state.current_delay = max(state.current_delay, retry_after / 2)
             else:

@@ -1,0 +1,96 @@
+# .claudeignore - Optimize token consumption for Claude Code
+# Follows 2026 best practices for context window management
+
+# Test and build artifacts (high token cost, low value)
+*.pyc
+__pycache__/
+*.egg-info/
+build/
+dist/
+.eggs/
+*.egg
+
+# Virtual environments (never needed in context)
+venv/
+.venv/
+env/
+ENV/
+
+# IDE and editor files (not relevant for code understanding)
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Cache directories (high token cost)
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Output and temporary files
+output/
+reports/
+logs/
+*.log
+*.tmp
+temp/
+tmp/
+
+# JSON scan results (can be very large)
+*_enhanced_detection.json
+*_rankle.json
+*_rankle_report.txt
+avanis_*.json
+
+# Database files (not code)
+*.db
+*.sqlite
+*.sqlite3
+
+# Security scan results
+bandit-report.json
+pip-audit.cache
+safety-report.json
+
+# Git metadata (not needed)
+.git/
+.gitignore
+
+# Documentation images/media (if any)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.pdf
+
+# Large dependency files (reference only when needed)
+# Uncomment if these become too large:
+# node_modules/
+# package-lock.json
+
+# Binary files
+*.so
+*.dylib
+*.dll
+*.exe
+
+# Environment files (may contain secrets)
+.env
+.env.*
+secrets/
+*.key
+*.pem
+credentials.json
+
+# Pre-commit cache
+.pre-commit-config-cache/
+
+# Backup files
+*.backup
+*.bak
+*~

@@ -17,6 +17,9 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
+from config.settings import MINIMUM_DETECTION_CONFIDENCE
+from rankle.utils.confidence import calculate_confidence_score
+
 
 # Load signatures from config file
 def _load_signatures() -> dict[str, Any]:
@@ -121,6 +124,87 @@ ADDITIONAL_SIGNATURES: dict[str, dict[str, Any]] = {
         },
         "version_patterns": [],
         "confidence_weights": {"pattern": 0.4, "js_global": 0.6},
+    },
+    "Next.js": {
+        "category": "JavaScript Framework",
+        "patterns": {
+            "html": [
+                "/_next/static/",
+                "__NEXT_DATA__",
+                "_next/image",
+                "next-head",
+            ],
+            "headers": {"x-nextjs-cache": [""]},
+            "js_globals": ["__NEXT_DATA__"],
+        },
+        "version_patterns": ["/_next/static/([^/]+)/"],
+        "confidence_weights": {"pattern": 0.6, "header": 0.7, "js_global": 0.8},
+    },
+    "Nuxt.js": {
+        "category": "JavaScript Framework",
+        "patterns": {
+            "html": [
+                "/_nuxt/",
+                "__NUXT__",
+                "nuxt-link",
+                "nuxt-page",
+            ],
+            "headers": {"x-nuxt-": [""]},
+            "js_globals": ["__NUXT__", "$nuxt"],
+        },
+        "version_patterns": ["/_nuxt/([^/]+)/"],
+        "confidence_weights": {"pattern": 0.6, "header": 0.7, "js_global": 0.8},
+    },
+    "Astro": {
+        "category": "JavaScript Framework",
+        "patterns": {
+            "html": [
+                "data-astro-cid-",
+                "<!--astro:",
+                "/_astro/",
+                "astro-island",
+            ],
+        },
+        "version_patterns": [],
+        "confidence_weights": {"pattern": 0.7},
+    },
+    "SvelteKit": {
+        "category": "JavaScript Framework",
+        "patterns": {
+            "html": [
+                "__sveltekit",
+                "sveltekit:",
+                "data-sveltekit-",
+                "/_app/",
+            ],
+            "js_globals": ["__sveltekit"],
+        },
+        "version_patterns": [],
+        "confidence_weights": {"pattern": 0.7, "js_global": 0.8},
+    },
+    "Remix": {
+        "category": "JavaScript Framework",
+        "patterns": {
+            "html": [
+                "/__remix",
+                "remix-route",
+                "/__remix_manifest",
+            ],
+        },
+        "version_patterns": [],
+        "confidence_weights": {"pattern": 0.7},
+    },
+    "Vite": {
+        "category": "Build Tool",
+        "patterns": {
+            "html": [
+                "/@vite/",
+                "vite.svg",
+                "/@fs/",
+            ],
+        },
+        "version_patterns": [],
+        "confidence_weights": {"pattern": 0.6},
     },
     "Tailwind CSS": {
         "category": "CSS Framework",
@@ -636,7 +720,7 @@ class TechnologyDetector:
 
             if evidence:
                 confidence = self._calculate_confidence(evidence, signatures)
-                if confidence >= 0.2:  # Minimum threshold
+                if confidence >= MINIMUM_DETECTION_CONFIDENCE:
                     detection = {
                         "name": tech_name,
                         "category": signatures.get("category", "Unknown"),
@@ -823,12 +907,13 @@ class TechnologyDetector:
             generator = soup.find("meta", attrs={"name": "generator"})
             if generator and hasattr(generator, "get"):
                 content = generator.get("content", "")
+                content_str = str(content) if content else ""
                 for pattern in meta_patterns:
-                    if re.search(pattern, str(content), re.IGNORECASE):
+                    if re.search(pattern, content_str, re.IGNORECASE):
                         matches.append(
                             {
                                 "type": "meta_tag",
-                                "detail": f"Generator: {content[:50]}",
+                                "detail": f"Generator: {content_str[:50]}",
                                 "weight": signatures.get("confidence_weights", {}).get(
                                     "meta", 0.4
                                 ),
@@ -852,7 +937,8 @@ class TechnologyDetector:
                         )
                         break
 
-        except Exception:  # noqa: S110
+        except (AttributeError, TypeError, ValueError):
+            # BeautifulSoup parsing errors or invalid HTML
             pass
 
         return matches
@@ -890,31 +976,185 @@ class TechnologyDetector:
         """
         Calculate confidence score from evidence.
 
-        Uses weighted scoring with diminishing returns for multiple
-        pieces of the same type of evidence.
+        Uses shared confidence calculation utility with weighted scoring
+        and diminishing returns for multiple pieces of the same type.
+
+        Args:
+            evidence: List of evidence dictionaries
+            _signatures: Signature configuration (unused, kept for compatibility)
+
+        Returns:
+            Confidence score between 0.0 and 1.0
         """
-        if not evidence:
-            return 0.0
+        return calculate_confidence_score(evidence, diminishing_factor=0.5)
 
-        # Group by evidence type
-        by_type: dict[str, list[float]] = {}
-        for ev in evidence:
-            ev_type = ev["type"]
-            if ev_type not in by_type:
-                by_type[ev_type] = []
-            by_type[ev_type].append(ev["weight"])
+    def detect_enhanced(
+        self,
+        headers: dict[str, str] | None = None,
+        cookies: list[str] | None = None,
+        body: str | None = None,
+        base_url: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Enhanced technology detection with Wappalyzer, favicon hash, error fingerprinting.
 
-        # Calculate score with diminishing returns
-        total_score = 0.0
-        for weights in by_type.values():
-            weights.sort(reverse=True)
-            type_score = weights[0]
-            for i, w in enumerate(weights[1:], 1):
-                type_score += w * (0.5**i)  # Diminishing returns
-            total_score += type_score
+        Combines traditional detection with modern techniques:
+        - Wappalyzer (3000+ technologies)
+        - Favicon hashing (mmh3)
+        - Error page fingerprinting
+        - JavaScript endpoint extraction
+        - WordPress plugin detection
+        - CVE mapping for detected technologies
 
-        # Cap at 1.0
-        return min(1.0, total_score)
+        Args:
+            headers: HTTP response headers
+            cookies: List of cookie names
+            body: HTML response body
+            base_url: Base URL for fetching additional resources
+
+        Returns:
+            Enhanced detection results with CVE information
+        """
+        # Start with traditional detection
+        results = self.detect(headers=headers, cookies=cookies, body=body)
+
+        enhanced_detections: list[dict[str, Any]] = []
+
+        # 1. Wappalyzer integration
+        if body and headers and base_url:
+            try:
+                from Wappalyzer import Wappalyzer, WebPage
+
+                wappalyzer = Wappalyzer.latest()
+                webpage = WebPage(base_url, body, dict(headers))
+                wap_technologies = wappalyzer.analyze(webpage)
+
+                for tech_name in wap_technologies:
+                    enhanced_detections.append(
+                        {
+                            "name": tech_name,
+                            "category": "Unknown",  # Wappalyzer doesn't provide categories
+                            "confidence": 0.85,  # Wappalyzer is reliable
+                            "version": None,
+                            "evidence": [
+                                {
+                                    "type": "wappalyzer",
+                                    "detail": "Detected by Wappalyzer",
+                                    "weight": 0.85,
+                                }
+                            ],
+                        }
+                    )
+            except (ImportError, Exception):
+                pass  # Wappalyzer not available or failed
+
+        # 2. Favicon hashing
+        if base_url:
+            try:
+                from rankle.utils.favicon_hash import analyze_favicon
+
+                favicon_result = analyze_favicon(base_url)
+                if favicon_result:
+                    enhanced_detections.append(
+                        {
+                            "name": favicon_result["name"],
+                            "category": "Web Application",
+                            "confidence": favicon_result["confidence"],
+                            "version": None,
+                            "evidence": [
+                                {
+                                    "type": "favicon_hash",
+                                    "detail": f"Favicon hash: {favicon_result['hash']}",
+                                    "weight": favicon_result["confidence"],
+                                }
+                            ],
+                        }
+                    )
+            except Exception:
+                pass  # Favicon analysis failed
+
+        # 3. Error page fingerprinting
+        if self.domain:
+            try:
+                from rankle.utils.error_fingerprint import fingerprint_error_page
+
+                error_frameworks = fingerprint_error_page(self.domain)
+                for framework in error_frameworks:
+                    enhanced_detections.append(framework)
+            except Exception:
+                pass  # Error fingerprinting failed
+
+        # 4. JavaScript analysis
+        if body and base_url:
+            try:
+                from rankle.utils.js_extractor import analyze_javascript
+
+                js_results = analyze_javascript(base_url, body, max_files=3)
+
+                # Add detected frameworks
+                for framework in js_results["frameworks"]:
+                    enhanced_detections.append(framework)
+
+                # Add endpoints to results
+                if js_results["endpoints"]:
+                    results["api_endpoints"] = js_results["endpoints"][:10]
+
+            except Exception:
+                pass  # JS analysis failed
+
+        # 5. WordPress plugin detection
+        if body and headers:
+            try:
+                from rankle.utils.wordpress_plugins import analyze_wordpress
+
+                wp_results = analyze_wordpress(body, dict(headers))
+                if wp_results["is_wordpress"]:
+                    results["wordpress"] = wp_results
+            except Exception:
+                pass  # WordPress analysis failed
+
+        # 6. Enhanced version extraction from assets
+        if body:
+            try:
+                from rankle.utils.js_extractor import extract_version_from_assets
+
+                asset_versions = extract_version_from_assets(body)
+                if asset_versions:
+                    results["asset_versions"] = asset_versions
+            except Exception:
+                pass  # Version extraction failed
+
+        # Merge enhanced detections with existing
+        all_technologies = results.get("technologies", []) + enhanced_detections
+
+        # Deduplicate by name (keep highest confidence)
+        seen: dict[str, dict[str, Any]] = {}
+        for tech in all_technologies:
+            name = tech["name"]
+            if name not in seen or tech["confidence"] > seen[name]["confidence"]:
+                seen[name] = tech
+
+        results["technologies"] = sorted(
+            seen.values(), key=lambda x: x["confidence"], reverse=True
+        )
+        results["detected"] = len(results["technologies"]) > 0
+
+        # 7. Add CVE mapping for detected technologies
+        try:
+            from rankle.utils.cve_mapper import map_technology_to_cve_urls
+
+            cve_mappings: list[dict[str, Any]] = []
+            for tech in results["technologies"][:10]:  # Top 10 only
+                cve_info = map_technology_to_cve_urls(
+                    tech["name"], tech.get("version")
+                )
+                cve_mappings.append(cve_info)
+
+            results["cve_mappings"] = cve_mappings
+        except Exception:
+            pass  # CVE mapping failed
+
+        return results
 
 
 def detect_technologies(

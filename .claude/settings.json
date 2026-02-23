@@ -1,0 +1,76 @@
+{
+  "version": "2.0",
+  "project": {
+    "name": "Rankle",
+    "description": "Web Infrastructure Reconnaissance Tool",
+    "type": "python-security-tool"
+  },
+  "permissions": {
+    "description": "Shared permissions for Rankle development (2026 best practices)",
+    "allow": [
+      "Bash(python*:*)",
+      "Bash(pip*:*)",
+      "Bash(uv*:*)",
+      "Bash(git*:*)",
+      "Bash(ruff*:*)",
+      "Bash(mypy*:*)",
+      "Bash(pytest*:*)",
+      "Bash(bandit*:*)",
+      "Bash(pre-commit*:*)",
+      "Bash(ls:*)",
+      "Bash(tree:*)",
+      "Bash(chmod:*)",
+      "WebFetch(domain:portswigger.net)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:owasp.org)",
+      "WebFetch(domain:projectdiscovery.io)",
+      "WebFetch(domain:blog.projectdiscovery.io)",
+      "WebFetch(domain:cheatsheetseries.owasp.org)",
+      "WebFetch(domain:python.org)",
+      "WebFetch(domain:pypi.org)",
+      "WebFetch(domain:docs.python.org)",
+      "WebFetch(domain:peps.python.org)"
+    ]
+  },
+  "context": {
+    "primary_files": [
+      ".claude/README.claude.md",
+      "CLAUDE.md",
+      "README.md",
+      "pyproject.toml",
+      "requirements.txt"
+    ],
+    "important_directories": [
+      "rankle/core",
+      "rankle/detectors",
+      "rankle/modules",
+      "rankle/utils",
+      "config"
+    ]
+  },
+  "optimization": {
+    "token_budget": "conservative",
+    "description": "Optimize for token efficiency while maintaining code quality",
+    "strategies": [
+      "Use .claudeignore to exclude build artifacts and caches",
+      "Prefer targeted file reads over full directory scans",
+      "Summarize large files when possible",
+      "Focus on changed files in git operations"
+    ]
+  },
+  "development": {
+    "python_version": "3.11+",
+    "package_manager": "uv",
+    "linter": "ruff",
+    "type_checker": "mypy",
+    "test_framework": "pytest",
+    "security_scanner": "bandit",
+    "pre_commit": true
+  },
+  "metadata": {
+    "created": "2026-01-20",
+    "last_updated": "2026-02-19",
+    "maintained_by": "Claude Code + Human",
+    "config_version": "2.0"
+  }
+}

@@ -49,9 +49,13 @@ venv.bak/
 # Output files
 output/
 reports/
-*.json
 *_rankle.json
 *_rankle_report.txt
+*_enhanced_detection.json
+
+# Scan results and reports (be specific to avoid catching config JSON files)
+bandit-report.json
+coverage.json
 
 # Logs
 *.log

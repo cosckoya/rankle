@@ -166,8 +166,7 @@ These files remain in the repository root for standard GitHub conventions:
 
 Configuration files for Claude Code development:
 
-- **[README.md](../.claude/README.md)** - Claude configuration documentation
-- **[CODEBASE_MAP.md](../.claude/CODEBASE_MAP.md)** - Token-optimized quick reference (class locations, file purposes)
+- **[README.claude.md](../.claude/README.claude.md)** - Consolidated Claude Code documentation (architecture, configuration, skills)
 - **settings.json** - Shared team configuration (tracked)
 - **settings.local.json** - Local overrides (not tracked)
 
@@ -270,8 +269,7 @@ When contributing documentation:
 - **Use v2.0 enhanced detection** → [TECHNOLOGY_DETECTION_ENHANCEMENT.md](TECHNOLOGY_DETECTION_ENHANCEMENT.md)
 - **Fix type errors** → [MYPY_GUIDE.md](MYPY_GUIDE.md)
 - **Integrate with other tools** → [detection-capabilities.md](detection-capabilities.md)
-- **Configure Claude Code** → [../.claude/README.md](../.claude/README.md)
-- **Find code quickly** → [../.claude/CODEBASE_MAP.md](../.claude/CODEBASE_MAP.md)
+- **Configure Claude Code** → [../.claude/README.claude.md](../.claude/README.claude.md)
 - **Run utility scripts** → [../scripts/README.md](../scripts/README.md)
 - **Report security issues** → [../SECURITY.md](../SECURITY.md)
 - **Check version history** → [../CHANGELOG.md](../CHANGELOG.md)

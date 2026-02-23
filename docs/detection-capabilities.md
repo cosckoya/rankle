@@ -1415,7 +1415,7 @@ print(f"Enhanced: {len(enhanced_results['technologies'])} technologies")
 
 ### Performance Comparison
 
-**Test Domain: avanis.es**
+**Test Domain: example.com**
 
 | Method | Technologies | Time | Techniques |
 |--------|-------------|------|------------|

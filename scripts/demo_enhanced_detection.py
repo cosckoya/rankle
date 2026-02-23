@@ -21,7 +21,7 @@ def test_enhanced_detection(domain: str) -> None:
     Test enhanced detection on a domain.
 
     Args:
-        domain: Target domain (e.g., "avanis.es")
+        domain: Target domain (e.g., "example.com")
     """
     print("=" * 80)
     print(f"🔬 Testing Enhanced Technology Detection: {domain}")
@@ -155,6 +155,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         domain = sys.argv[1]
     else:
-        domain = "avanis.es"  # Default test domain
+        domain = "example.com"  # Default test domain
 
     test_enhanced_detection(domain)

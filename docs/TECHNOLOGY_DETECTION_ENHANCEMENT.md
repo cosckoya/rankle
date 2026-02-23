@@ -114,7 +114,7 @@ dependencies = [
 
 ## Performance Comparison
 
-### Test Domain: avanis.es
+### Test Domain: example.com
 
 **Before (Traditional Detection):**
 ```
@@ -211,11 +211,11 @@ rankle/
 **Test Script:** `test_enhanced_detection.py`
 
 ```bash
-# Test with default domain (avanis.es)
+# Test with default domain (example.com)
 python test_enhanced_detection.py
 
 # Test with custom domain
-python test_enhanced_detection.py example.com
+python test_enhanced_detection.py yourdomain.com
 
 # Output:
 # - Console display with detected technologies
@@ -224,7 +224,7 @@ python test_enhanced_detection.py example.com
 
 **Test Results:**
 - ✅ All type checks pass (mypy)
-- ✅ 9 technologies detected on avanis.es
+- ✅ Technologies detected successfully
 - ✅ CVE URLs generated
 - ✅ Evidence tracking working
 - ✅ No runtime errors

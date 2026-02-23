@@ -44,7 +44,6 @@ tmp/
 *_enhanced_detection.json
 *_rankle.json
 *_rankle_report.txt
-avanis_*.json
 
 # Database files (not code)
 *.db
@@ -58,7 +57,6 @@ safety-report.json
 
 # Git metadata (not needed)
 .git/
-.gitignore
 
 # Documentation images/media (if any)
 *.png

@@ -62,7 +62,7 @@ This session accomplished major improvements to the global Claude Code skills sy
 
 **Strengths:**
 - ✅ Token optimization: 70-85% savings (50K-100K → 10K-15K tokens)
-- ✅ Brilliant CODEBASE_MAP.md (97% token reduction)
+- ✅ Brilliant README.claude.md (97% token reduction)
 - ✅ Security-conscious permission model
 - ✅ Modern 2026 tooling (uv, ruff, Python 3.11+)
 - ✅ Comprehensive .claudeignore
@@ -166,7 +166,7 @@ Final: 15-checkpoint verification + rollback plan
 - ~10,000-15,000 tokens (code + docs only)
 - **Savings: 70-85%**
 
-**CODEBASE_MAP.md impact:**
+**README.claude.md impact:**
 - 270 lines provide instant codebase understanding
 - Replaces reading 10,000+ lines of code
 - **Token reduction: 97%**
@@ -258,7 +258,7 @@ Final: 15-checkpoint verification + rollback plan
 ```markdown
 ## Architecture Overview
 
-**Quick Reference:** See `.claude/CODEBASE_MAP.md` for instant structure understanding.
+**Quick Reference:** See `.claude/README.claude.md` for instant structure understanding.
 
 **Core Classes:**
 - RankleScanner (`rankle/core/scanner.py:15`) - Main orchestrator
@@ -421,7 +421,7 @@ Very detailed research workflow
 ### MEDIUM Priority: Token Optimization (Optional)
 
 **1. Move Architecture Details**
-- Replace detailed tree with reference to CODEBASE_MAP.md
+- Replace detailed tree with reference to README.claude.md
 - **Savings:** ~200 tokens (20%)
 
 **2. Simplify Research Protocol**

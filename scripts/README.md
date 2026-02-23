@@ -21,11 +21,11 @@ Shows off the new technology detection features including:
 # Activate virtual environment first
 source .venv/bin/activate
 
-# Test with default domain (avanis.es)
+# Test with default domain (example.com)
 python scripts/demo_enhanced_detection.py
 
 # Test with custom domain
-python scripts/demo_enhanced_detection.py example.com
+python scripts/demo_enhanced_detection.py yourdomain.com
 ```
 
 **Output:**

@@ -20,8 +20,7 @@ Your `.claude/` configuration follows all 2026 best practices and is in the **to
 
 **Required Files:**
 - ✅ `.claude/settings.json` - Shared configuration (tracked)
-- ✅ `.claude/README.md` - Configuration documentation
-- ✅ `.claude/CODEBASE_MAP.md` - Quick reference guide
+- ✅ `.claude/README.claude.md` - Consolidated documentation (architecture, configuration, skills)
 - ✅ `.claudeignore` - Token optimization
 - ✅ `.gitignore` - Proper Claude Code section
 
@@ -36,7 +35,7 @@ Your `.claude/` configuration follows all 2026 best practices and is in the **to
 - After .claudeignore: ~10,000-15,000 tokens
 - **Savings: 70-85% reduction**
 
-**CODEBASE_MAP.md Impact:**
+**README.claude.md Impact:**
 - 270 lines provides instant understanding vs. reading 10,000+ lines of code
 - **97% token reduction for codebase navigation**
 
@@ -133,7 +132,7 @@ For GitHub/Docker integration:
 1. **Exemplary token optimization** (70-85% savings)
 2. **Security-conscious permissions** (least privilege)
 3. **Modern 2026 tooling** (uv, ruff)
-4. **Brilliant CODEBASE_MAP.md** (97% token reduction)
+4. **Brilliant README.claude.md** (97% token reduction)
 5. **Complete documentation**
 
 ---

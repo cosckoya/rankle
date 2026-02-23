@@ -53,9 +53,8 @@
 - [LICENSE](../LICENSE) - MIT License
 
 ### Claude Code Configuration
-- [CLAUDE.md](../CLAUDE.md) - Claude Code project instructions and skills
-- [Codebase Map](../.claude/CODEBASE_MAP.md) - Quick reference for code navigation
-- [Claude Settings](../.claude/README.md) - Configuration and token optimization
+- [CLAUDE.md](../CLAUDE.md) - Claude Code quick reference
+- [Complete Claude Documentation](../.claude/README.claude.md) - Consolidated Claude Code documentation (architecture, skills, configuration)
 
 ---
 

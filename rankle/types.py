@@ -1,56 +1,115 @@
-"""
-Type aliases for Rankle project.
+"""Type aliases for Rankle project.
 
 Provides readable type aliases for complex types used throughout the codebase.
-Requires Python 3.12+ for PEP 695 'type' statement, or Python 3.10+ for TypeAlias.
+Requires Python 3.11+ for modern type syntax (dict[str, Any], str | None).
 """
 
-from typing import Any
+from typing import Any, TypeAlias
 
 
-# Python 3.10+ compatible type aliases using TypeAlias
+# ============================================================================
+# Scan Results & Detection
+# ============================================================================
 
-# Results and responses
-ScanResults = dict[str, Any]
-"""Complete scan results dictionary from RankleScanner."""
+ScanResults: TypeAlias = dict[str, Any]
+"""Complete scan results dictionary from RankleScanner including all modules."""
 
-DetectionResults = dict[str, Any]
-"""Technology/CDN/WAF detection results."""
+DetectionResults: TypeAlias = dict[str, Any]
+"""Technology/CDN/WAF detection results with confidence scores."""
 
-DNSRecords = dict[str, list[str]]
-"""DNS records dictionary mapping record type to values."""
+AnalysisResult: TypeAlias = dict[str, Any]
+"""Generic analysis result from any module or detector."""
 
-# Evidence and confidence
-Evidence = list[dict[str, Any]]
-"""List of evidence items with type, detail, and weight."""
+# ============================================================================
+# DNS & Network
+# ============================================================================
 
-# HTTP related
-Headers = dict[str, str]
-"""HTTP headers dictionary."""
+DNSRecords: TypeAlias = dict[str, list[str]]
+"""DNS records dictionary mapping record type (A, MX, NS, etc.) to values."""
 
-Cookies = list[str]
-"""List of cookie names."""
-
-# Network related
-IPAddresses = list[str]
+IPAddresses: TypeAlias = list[str]
 """List of IP addresses as strings."""
 
-# Detection signatures
-Signatures = dict[str, dict[str, Any]]
-"""Detection signatures dictionary."""
+Subdomains: TypeAlias = list[str]
+"""List of discovered subdomains."""
 
-# Configuration
-ConfigDict = dict[str, Any]
+# ============================================================================
+# Evidence & Confidence
+# ============================================================================
+
+Evidence: TypeAlias = list[dict[str, Any]]
+"""List of evidence items with type, detail, and weight for confidence scoring."""
+
+ConfidenceScore: TypeAlias = float
+"""Confidence score as float between 0.0 (low) and 1.0 (high)."""
+
+# ============================================================================
+# HTTP Related
+# ============================================================================
+
+Headers: TypeAlias = dict[str, str]
+"""HTTP headers dictionary."""
+
+Cookies: TypeAlias = dict[str, str]
+"""HTTP cookies dictionary."""
+
+HTTPMethods: TypeAlias = list[str]
+"""Allowed HTTP methods (GET, POST, OPTIONS, etc.)."""
+
+# ============================================================================
+# Technology Detection
+# ============================================================================
+
+TechDetection: TypeAlias = dict[str, dict[str, Any]]
+"""Technology detection result: {tech_name: {confidence, version, category, evidence}}."""
+
+CVEList: TypeAlias = list[dict[str, Any]]
+"""List of CVE entries with metadata."""
+
+# ============================================================================
+# Configuration & Signatures
+# ============================================================================
+
+Signatures: TypeAlias = dict[str, dict[str, Any]]
+"""Detection signatures dictionary (patterns, regex, etc.)."""
+
+ConfigDict: TypeAlias = dict[str, Any]
 """Configuration dictionary."""
 
+# ============================================================================
+# Optional/Nullable Types
+# ============================================================================
+
+OptionalStr: TypeAlias = str | None
+"""Optional string type."""
+
+OptionalInt: TypeAlias = int | None
+"""Optional integer type."""
+
+OptionalDict: TypeAlias = dict[str, Any] | None
+"""Optional dictionary type."""
+
+OptionalList: TypeAlias = list[str] | None
+"""Optional list of strings."""
+
 __all__ = [
-    "ConfigDict",
+    "AnalysisResult",
     "Cookies",
+    "ConfigDict",
+    "ConfidenceScore",
+    "CVEList",
     "DNSRecords",
     "DetectionResults",
     "Evidence",
     "Headers",
+    "HTTPMethods",
     "IPAddresses",
+    "OptionalDict",
+    "OptionalInt",
+    "OptionalList",
+    "OptionalStr",
     "ScanResults",
     "Signatures",
+    "Subdomains",
+    "TechDetection",
 ]

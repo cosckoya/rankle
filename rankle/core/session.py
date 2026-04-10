@@ -49,7 +49,7 @@ class SessionManager:
         user_agent: str | None = None,
         timeout: int = DEFAULT_TIMEOUT,
         retries: int = RETRY_TOTAL,
-    ):
+    ) -> None:
         """
         Initialize session manager.
 
@@ -182,14 +182,14 @@ class SessionManager:
 
         return self.session.request(method, url, **kwargs)
 
-    def close(self):
+    def close(self) -> None:
         """Close the session and release resources."""
         self.session.close()
 
-    def __enter__(self):
+    def __enter__(self) -> "SessionManager":
         """Context manager entry."""
         return self
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type: object, exc_val: object, exc_tb: object) -> None:
         """Context manager exit - cleanup resources."""
         self.close()

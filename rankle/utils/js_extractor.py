@@ -38,7 +38,7 @@ def extract_js_files_from_html(html: str, base_url: str) -> list[str]:
     # Find all script tags with src attribute
     for script in soup.find_all("script", src=True):
         src = script.get("src", "")
-        if src:
+        if src and isinstance(src, str):
             # Convert relative URLs to absolute
             absolute_url = urljoin(base_url, src)
             # Only include .js files or common bundle patterns

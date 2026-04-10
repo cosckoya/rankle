@@ -45,17 +45,20 @@ class RankleScanner:
 
     def __init__(
         self, domain: str, verbose: bool = False, timeout: int = DEFAULT_TIMEOUT
-    ):
-        """
-        Initialize Rankle scanner
+    ) -> None:
+        """Initialize Rankle scanner.
 
         Args:
-            domain: Target domain to scan
-            verbose: Enable verbose output
-            timeout: Default timeout for HTTP requests
+            domain: Target domain to scan (RFC-compliant DNS name).
+            verbose: Enable verbose output logging to console.
+            timeout: Default timeout for HTTP requests in seconds (default: 45).
 
         Raises:
-            ValueError: If domain format is invalid
+            ValueError: If domain format is invalid per DNS naming rules.
+
+        Examples:
+            >>> scanner = RankleScanner("example.com")
+            >>> results = scanner.run_full_scan()
         """
         if not validate_domain(domain):
             raise ValueError(f"Invalid domain format: {domain}")
@@ -177,14 +180,19 @@ class RankleScanner:
         return self._http_fingerprinter
 
     def run_full_scan(self) -> dict[str, Any]:
-        """
-        Run comprehensive reconnaissance scan
+        """Execute comprehensive reconnaissance scan of target domain.
 
-        This method executes all available reconnaissance modules
-        in a logical order, storing results for each step.
+        Orchestrates all 8 reconnaissance modules in logical sequence:
+        DNS → HTTP → SSL → Technology → CDN → WAF → Subdomains → Origin.
 
         Returns:
-            Dictionary containing all scan results
+            Complete scan results dictionary with all module outputs,
+            including domain, timestamp, and all detection findings.
+
+        Examples:
+            >>> scanner = RankleScanner("example.com", verbose=True)
+            >>> results = scanner.run_full_scan()
+            >>> print(results['technologies'])
         """
         # 1. DNS Analysis (foundation for other modules)
         print("\n[1/8] DNS Analysis...")

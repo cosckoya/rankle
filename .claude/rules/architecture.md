@@ -1,9 +1,10 @@
 ---
-description: Architecture reference for Rankle — lazy init, request flow, module categories, integration pattern
+description: Rankle-specific architecture — lazy-init pattern, module flow, integration guide. Overrides global rules where noted.
 paths: rankle/**/*.py, config/**/*.py
 ---
 
-<!-- Loaded lazily when editing Python files in rankle/ or config/ -->
+<!-- Loaded when editing Python files in rankle/ or config/ -->
+<!-- For global rule overrides (Python 3.11+, mypy gradual, flat layout), see ../.claude/OVERRIDES.md -->
 
 ## Architecture: Core Design Pattern
 
@@ -49,3 +50,13 @@ def module_name(self) -> ModuleClass:
 3. Call in `run_full_scan()`
 
 Example signature locations: `config/tech_signatures.json`, `rankle/detectors/technology.py:42-646`
+
+## What NOT to Change
+
+**Do NOT switch to pyright strict** — mypy is configured with gradual strictness. Switching requires 100% type coverage first, which is not ready (currently 65%). See `.claude/OVERRIDES.md`.
+
+**Do NOT migrate to src-layout** — Rankle is a CLI application, not a library. Flat layout (rankle/ at root) is standard per setuptools. See `.claude/OVERRIDES.md`.
+
+**Do NOT add `strict = true`** to mypy until all modules reach 90%+ type coverage. Gradual adoption is intentional.
+
+**Updated:** 2026-04-10

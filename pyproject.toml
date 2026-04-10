@@ -76,7 +76,7 @@ changelog = "https://github.com/javicosvml/rankle/blob/main/CHANGELOG.md"
 rankle = "rankle.cli:main"
 
 [tool.setuptools.packages.find]
-where = ["."]
+where = ["src"]
 include = ["rankle*", "config*"]
 exclude = ["tests*", "docs*", "examples*"]
 
@@ -88,7 +88,7 @@ config = ["*.json"]
 # https://docs.astral.sh/ruff/configuration/
 # =============================================================================
 [tool.ruff]
-target-version = "py311"
+target-version = "py313"
 line-length = 88
 exclude = [
     ".git",
@@ -212,7 +212,7 @@ docstring-code-line-length = "dynamic"
 # PYRIGHT - Static type checking (strict mode, 2026 compliance)
 # =============================================================================
 [tool.pyright]
-include = ["rankle", "config", "tests"]
+include = ["src/rankle", "src/config", "tests"]
 exclude = ["**/__pycache__", ".venv", "venv", "dist", "build"]
 typeCheckingMode = "strict"
 reportUnusedImport = "error"
@@ -252,7 +252,7 @@ addopts = [
     "-q",
     "--strict-markers",
     "--strict-config",
-    "--cov=rankle",
+    "--cov=src/rankle",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
     "--cov-fail-under=70",
@@ -274,7 +274,7 @@ markers = [
 # COVERAGE - Code coverage
 # =============================================================================
 [tool.coverage.run]
-source = ["rankle"]
+source = ["src/rankle"]
 branch = true
 parallel = true
 omit = [

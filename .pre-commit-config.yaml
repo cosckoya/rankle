@@ -99,8 +99,8 @@ repos:
       - id: basedpyright
         name: Type check with Pyright (strict mode)
         args:
-          - rankle/
-          - config/
+          - src/rankle/
+          - src/config/
           - tests/
         exclude: ^(examples|scripts|\.venv|venv)/
         pass_filenames: false
@@ -117,7 +117,7 @@ repos:
           - -c
           - pyproject.toml
           - -r
-          - rankle/
+          - src/rankle/
           - main.py
         additional_dependencies: ["bandit[toml]"]
         pass_filenames: false
@@ -139,7 +139,7 @@ repos:
           - --ignore-semiprivate
           - --ignore-module
           - -v
-          - rankle/
+          - src/rankle/
         pass_filenames: false
 
   # ==========================================================================

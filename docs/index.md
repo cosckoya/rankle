@@ -49,7 +49,7 @@
 - [Development Setup](development.md#development-setup) - Environment configuration
 - [Testing](development.md#testing) - pytest, coverage, pre-commit hooks
 - [Coding Standards](development.md#coding-standards) - Python best practices
-- [Utility Scripts](../scripts/README.md) - Demo and diagnostic tools
+- [Integration Examples](examples/README.md) - Ready-to-use integration examples
 
 ### Additional Resources
 

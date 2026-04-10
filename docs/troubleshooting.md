@@ -113,24 +113,6 @@ The warning about `pkg_resources` being deprecated is expected and can be ignore
 
 ---
 
-### Problem: Permission denied when running scripts
-
-**Error Message:**
-
-```
-bash: ./script.py: Permission denied
-```
-
-**Solution:**
-
-```bash
-# Make script executable
-chmod +x script.py
-
-# Or run with python explicitly
-python script.py
-```
-
 ---
 
 ## Dependency Problems
@@ -144,10 +126,11 @@ python script.py
    Missing packages: python-Wappalyzer, mmh3
 ```
 
-**Diagnosis:** Run dependency verification
+**Diagnosis:** Check if dependencies are installed
 
 ```bash
-python scripts/verify_dependencies.py
+pip list | grep -i wappalyzer
+pip list | grep -i mmh3
 ```
 
 **Solution:** Install missing packages
@@ -656,7 +639,7 @@ curl https://example.com | head -50
 **1. Try enhanced detection:**
 
 ```bash
-python scripts/demo_enhanced_detection.py example.com
+python main.py example.com
 ```
 
 **2. Manual inspection:**
@@ -984,13 +967,7 @@ data: dict[str, list[int]] = {}  # Not Dict[str, List[int]]
 
 **1. Check this troubleshooting guide**
 
-**2. Verify dependencies:**
-
-```bash
-python scripts/verify_dependencies.py
-```
-
-**3. Test with known-good domain:**
+**2. Test with known-good domain:**
 
 ```bash
 # Should always work

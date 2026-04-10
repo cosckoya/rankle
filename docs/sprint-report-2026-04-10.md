@@ -56,7 +56,6 @@ tests/
 ├── test_detectors/
 └── test_utils/
 .coveragerc (20 lines)
-scripts/add_return_types.py (50 lines)
 ```
 
 ### Phase 2: Test Suite Implementation ✅
@@ -191,8 +190,6 @@ All commits follow Conventional Commits format with `Co-Authored-By: Claude` att
 - `tests/test_detectors/test_*.py` (4 files, 350+ lines)
 - `tests/test_utils/test_*.py` (5 files, 400+ lines)
 - `.coveragerc` (20 lines)
-- `scripts/add_return_types.py` (50 lines)
-- 1 test directory init files
 
 ### Updated Files (10)
 - `pyproject.toml` — pytest threshold 50% → 70%

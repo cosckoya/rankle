@@ -51,7 +51,7 @@ rankle/
 │   ├── patterns.py         # Cloud providers, subdomains, ASN patterns
 │   └── tech_signatures.json # Technology detection signatures
 ├── docs/
-│   ├── examples/           # Integration scripts (Nuclei, Nmap, httpx)
+│   ├── examples/           # Integration examples (Nuclei, Nmap, httpx)
 │   ├── getting-started.md  # Installation and usage guide
 │   ├── architecture.md     # This file
 │   └── detection-capabilities.md # Detection methods documentation

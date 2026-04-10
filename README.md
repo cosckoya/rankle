@@ -119,6 +119,7 @@ Full documentation: [docs/getting-started.md](docs/getting-started.md)
 | [Troubleshooting](docs/troubleshooting.md) | Common issues and solutions |
 | [Changelog](docs/changelog.md) | Version history and release notes |
 | [Security Policy](docs/security.md) | Vulnerability reporting, responsible disclosure |
+| [Integration Examples](docs/examples/README.md) | Ready-to-use examples for tool integration |
 
 ---
 

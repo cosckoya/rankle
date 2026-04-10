@@ -1474,8 +1474,8 @@ python main.py example.com
 **Enhanced Detection (v2.0):**
 
 ```python
-# Use the demo script
-python scripts/demo_enhanced_detection.py example.com
+# Run Rankle for enhanced detection
+python main.py example.com
 
 # Output includes:
 # - 3000+ technology signatures checked
@@ -1574,7 +1574,6 @@ print(f"Enhanced: {len(enhanced_results['technologies'])} technologies")
 For complete technical details, see:
 
 - **[Technology Detection Enhancement Guide](TECHNOLOGY_DETECTION_ENHANCEMENT.md)** - Full v2.0 documentation
-- **[Scripts Documentation](../scripts/README.md)** - `demo_enhanced_detection.py` usage
 
 ---
 

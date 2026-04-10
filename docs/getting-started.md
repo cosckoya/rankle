@@ -24,7 +24,7 @@ This guide will help you install Rankle and run your first reconnaissance scan.
 
 **Minimum Requirements:**
 
-- Python 3.11 or higher
+- Python 3.13 or higher
 - Docker (optional, for containerized usage)
 
 **Supported Operating Systems:**

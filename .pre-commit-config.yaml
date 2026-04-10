@@ -25,7 +25,7 @@ repos:
   # UV LOCKFILE - Ensures uv.lock is committed and up to date
   # ==========================================================================
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.1
+    rev: 0.11.6
     hooks:
       - id: uv-lock
         name: Check uv.lock is up to date
@@ -76,7 +76,7 @@ repos:
   # PYTHON CODE FORMATTING - Ruff (replaces Black + isort + flake8)
   # ==========================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.8
+    rev: v0.15.10
     hooks:
       # Linting - runs first to catch issues
       - id: ruff
@@ -94,7 +94,7 @@ repos:
   # TYPE CHECKING - mypy
   # ==========================================================================
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.19.1
+    rev: v1.20.0
     hooks:
       - id: mypy
         name: Type check with mypy

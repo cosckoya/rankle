@@ -98,6 +98,7 @@ exclude = [
     "build",
     "dist",
     "*.egg-info",
+    "scripts",
 ]
 
 [tool.ruff.lint]
@@ -165,8 +166,10 @@ unfixable = []
     "PLR0912", # Too many branches (detection logic)
     "PLR0915", # Too many statements (detection signatures)
     "PERF401", # List comprehension (readability preferred)
+    "PERF402", # List append in loop (intentional for accumulation)
     "PERF403", # Dict comprehension (readability preferred)
     "PLW2901", # Loop variable overwritten (intentional)
+    "PLC0415", # Import in try-except (optional dependencies)
 ]
 "rankle/core/**/*.py" = [
     "PLR0912", # Too many branches (orchestration logic)
@@ -281,7 +284,7 @@ addopts = [
     "--cov=rankle",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
-    "--cov-fail-under=50",
+    "--cov-fail-under=70",
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]

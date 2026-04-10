@@ -11,6 +11,7 @@ Detects web technologies through multiple passive techniques:
 """
 
 import json
+import logging
 import re
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,9 @@ from bs4 import BeautifulSoup
 
 from config.settings import MINIMUM_DETECTION_CONFIDENCE
 from rankle.utils.confidence import calculate_confidence_score
+
+
+logger = logging.getLogger(__name__)
 
 
 # Load signatures from config file
@@ -1045,8 +1049,10 @@ class TechnologyDetector:
                             ],
                         }
                     )
-            except (ImportError, Exception):
-                pass  # Wappalyzer not available or failed
+            except ImportError:
+                logger.debug("Wappalyzer not available, skipping")
+            except Exception as e:
+                logger.debug("Wappalyzer analysis failed: %s", e)
 
         # 2. Favicon hashing
         if base_url:
@@ -1070,8 +1076,8 @@ class TechnologyDetector:
                             ],
                         }
                     )
-            except Exception:
-                pass  # Favicon analysis failed
+            except Exception as e:
+                logger.debug("Favicon analysis failed: %s", e)
 
         # 3. Error page fingerprinting
         if self.domain:
@@ -1081,8 +1087,8 @@ class TechnologyDetector:
                 error_frameworks = fingerprint_error_page(self.domain)
                 for framework in error_frameworks:
                     enhanced_detections.append(framework)
-            except Exception:
-                pass  # Error fingerprinting failed
+            except Exception as e:
+                logger.debug("Error fingerprinting failed: %s", e)
 
         # 4. JavaScript analysis
         if body and base_url:
@@ -1099,8 +1105,8 @@ class TechnologyDetector:
                 if js_results["endpoints"]:
                     results["api_endpoints"] = js_results["endpoints"][:10]
 
-            except Exception:
-                pass  # JS analysis failed
+            except Exception as e:
+                logger.debug("JS analysis failed: %s", e)
 
         # 5. WordPress plugin detection
         if body and headers:
@@ -1110,8 +1116,8 @@ class TechnologyDetector:
                 wp_results = analyze_wordpress(body, dict(headers))
                 if wp_results["is_wordpress"]:
                     results["wordpress"] = wp_results
-            except Exception:
-                pass  # WordPress analysis failed
+            except Exception as e:
+                logger.debug("WordPress analysis failed: %s", e)
 
         # 6. Enhanced version extraction from assets
         if body:
@@ -1121,8 +1127,8 @@ class TechnologyDetector:
                 asset_versions = extract_version_from_assets(body)
                 if asset_versions:
                     results["asset_versions"] = asset_versions
-            except Exception:
-                pass  # Version extraction failed
+            except Exception as e:
+                logger.debug("Version extraction failed: %s", e)
 
         # Merge enhanced detections with existing
         all_technologies = results.get("technologies", []) + enhanced_detections
@@ -1145,14 +1151,12 @@ class TechnologyDetector:
 
             cve_mappings: list[dict[str, Any]] = []
             for tech in results["technologies"][:10]:  # Top 10 only
-                cve_info = map_technology_to_cve_urls(
-                    tech["name"], tech.get("version")
-                )
+                cve_info = map_technology_to_cve_urls(tech["name"], tech.get("version"))
                 cve_mappings.append(cve_info)
 
             results["cve_mappings"] = cve_mappings
-        except Exception:
-            pass  # CVE mapping failed
+        except Exception as e:
+            logger.debug("CVE mapping failed: %s", e)
 
         return results
 

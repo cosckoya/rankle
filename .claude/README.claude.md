@@ -46,6 +46,7 @@
 ### Ethical Use
 
 **CRITICAL:** All methods are passive reconnaissance. For authorized testing only.
+
 - ONLY passive reconnaissance techniques (public DNS/SSL/CT logs)
 - NO active attacks or unauthorized access attempts
 - Origin discovery uses only publicly accessible information
@@ -60,6 +61,7 @@ This project uses Claude Code's global skill system (17 global skills). All skil
 ### Task Orchestration
 
 **For complex or multi-domain tasks:**
+
 - `/task-router` ⭐ - Intelligent task orchestrator
   - Analyzes tasks, routes to appropriate skill(s)
   - Creates execution plans, coordinates multi-skill workflows
@@ -72,21 +74,25 @@ This project uses Claude Code's global skill system (17 global skills). All skil
 ### Most Relevant Skills for Rankle
 
 **Development:**
+
 - `/python-architect` - Python 3.11+ standards, type hints, Ruff formatting
 - `/test-automator` - Pytest tests, pre-commit hooks, CI/CD pipelines
 - `/docker-specialist` - Container optimization and security
 
 **Security:**
+
 - `/security-scanner-expert` - Security reconnaissance tool development, detection logic
 - `/recon-researcher` - Research latest OSINT/reconnaissance techniques
 - `/pattern-updater` - Manage detection signatures (config/patterns.py, tech_signatures.json)
 - `/security-auditor` - OWASP Top 10 review, bandit scans, input validation
 
 **Integration & Validation:**
+
 - `/api-integrator` - Integration scripts for Nuclei, Nmap, httpx
 - `/config-validator` - Validate pyproject.toml, settings.py, patterns.py
 
 **Documentation:**
+
 - `/changelog-maintainer` - Maintain CHANGELOG.md (Keep a Changelog format)
 - `/cheatsheet-generator` - Create command reference sheets
 
@@ -173,6 +179,7 @@ rankle/
 ### Key Classes and Locations
 
 #### Core Orchestration
+
 - **RankleScanner** (`rankle/core/scanner.py:15`)
   - Lines: 795
   - Purpose: Main orchestrator, lazy module initialization
@@ -184,6 +191,7 @@ rankle/
   - Key Methods: `get()`, `head()`, `options()`
 
 #### Detection Engines
+
 - **TechnologyDetector** (`rankle/detectors/technology.py:647`)
   - Lines: 1179 total (class starts at 647)
   - Purpose: Multi-technique technology detection
@@ -207,6 +215,7 @@ rankle/
 - **OriginDiscovery** (`rankle/detectors/origin.py`) - 447 lines, find origin IPs behind CDN/WAF
 
 #### Utility Modules (NEW in v2.0)
+
 - **Favicon Hashing** (`rankle/utils/favicon_hash.py`) - mmh3 hash, 25+ known favicon hashes
 - **Error Fingerprinting** (`rankle/utils/error_fingerprint.py`) - Django, Laravel, Rails, Flask, FastAPI
 - **JS Extractor** (`rankle/utils/js_extractor.py`) - LinkFinder-style, React, Vue, Angular, Next.js
@@ -229,6 +238,7 @@ rankle/
 ### Code Patterns
 
 **Lazy Initialization (Scanner):**
+
 ```python
 @property
 def module_name(self) -> ModuleClass:
@@ -238,6 +248,7 @@ def module_name(self) -> ModuleClass:
 ```
 
 **Detection Results Structure:**
+
 ```python
 {
     "detected": bool,
@@ -254,6 +265,7 @@ def module_name(self) -> ModuleClass:
 ```
 
 **Confidence Scoring:**
+
 - 0.9-1.0: High confidence (explicit signature match)
 - 0.6-0.8: Medium confidence (multiple weak signals)
 - 0.3-0.5: Low confidence (single weak signal)
@@ -298,6 +310,7 @@ def module_name(self) -> ModuleClass:
 ### Adding New Detection Modules
 
 **3-Step Integration:**
+
 1. Create module with `analyze()` method returning `dict[str, Any]`
 2. Add lazy property to `RankleScanner` class (`rankle/core/scanner.py`)
 3. Integrate in `run_full_scan()` method
@@ -344,6 +357,7 @@ def module_name(self) -> ModuleClass:
 ### Research Sources
 
 Use WebFetch/WebSearch for:
+
 - PortSwigger Web Security Blog, OWASP Testing Guide
 - Bug bounty methodology searches ("passive reconnaissance 2026")
 - Security tool documentation (Amass, Subfinder, httpx, nuclei)
@@ -370,14 +384,18 @@ Use WebFetch/WebSearch for:
 This directory (`.claude/`) contains Claude Code configuration files following 2026 best practices.
 
 #### `settings.json` (Tracked in Git)
+
 Shared team configuration:
+
 - Project metadata
 - Permissions for common development tasks
 - Context optimization strategies
 - Development tooling preferences
 
 #### `settings.local.json` (NOT Tracked)
+
 Local overrides for individual developers:
+
 - Personal API keys
 - Local paths
 - Machine-specific permissions
@@ -406,21 +424,25 @@ Settings are merged with local overrides taking precedence.
 ### Best Practices (2026)
 
 **Version Control:**
+
 - ✅ Track `settings.json` (shared config)
 - ❌ Don't track `settings.local.json` (personal config)
 - ❌ Don't track `cache/` or `logs/` directories
 
 **Permissions:**
+
 - Allow development tools (python, pip, git, ruff, mypy)
 - Allow research sources (portswigger.net, owasp.org, github.com)
 - Restrict dangerous operations (unless explicitly needed)
 
 **Context Management:**
+
 - Use `.claudeignore` to reduce noise
 - Specify primary documentation files
 - Identify critical code directories
 
 **Token Budget:**
+
 - Conservative mode for large codebases
 - Aggressive mode for small focused work
 - Balance between context and cost
@@ -430,6 +452,7 @@ Settings are merged with local overrides taking precedence.
 Claude Code automatically reads configuration from this directory.
 
 To override settings locally:
+
 ```bash
 cp .claude/settings.json .claude/settings.local.json
 # Edit settings.local.json with your overrides
@@ -490,6 +513,7 @@ python scripts/verify_dependencies.py
 ## Docker & CI/CD
 
 **Docker:**
+
 - Alpine base for minimal attack surface (~370MB image)
 - Non-root user (UID 1000) for container security
 - Volume mount at `/output` for results persistence
@@ -497,6 +521,7 @@ python scripts/verify_dependencies.py
 - OCI-compliant labels
 
 **CI/CD:**
+
 - GitHub Actions for Docker build/publish
 - Pre-commit hooks (run locally and in CI)
 - Type checking (mypy)

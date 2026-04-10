@@ -1,23 +1,35 @@
 # Pre-commit hooks for Rankle project
-# Python 3.12+ compatible - 2025 Best Practices
+# Python 3.11+ compatible - 2026 Best Practices
 #
 # Setup:
-#   pip install pre-commit
-#   pre-commit install
-#   pre-commit install --hook-type commit-msg  # Optional: commit message checks
+#   uv sync --extra dev
+#   uv run pre-commit install
+#   uv run pre-commit install --hook-type commit-msg
 #
 # Usage:
-#   pre-commit run --all-files    # Run on all files
-#   pre-commit autoupdate         # Update hook versions
+#   uv run pre-commit run --all-files    # Run on all files
+#   uv run pre-commit autoupdate         # Update hook versions
 #
 # Skip hooks temporarily:
 #   SKIP=mypy git commit -m "message"
-#   git commit --no-verify -m "message"  # Skip all hooks
 
 default_language_version:
-  python: python3
+  python: python3.11
+
+default_install_hook_types:
+  - pre-commit
+  - commit-msg
 
 repos:
+  # ==========================================================================
+  # UV LOCKFILE - Ensures uv.lock is committed and up to date
+  # ==========================================================================
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.1
+    hooks:
+      - id: uv-lock
+        name: Check uv.lock is up to date
+
   # ==========================================================================
   # GENERAL FILE CHECKS
   # ==========================================================================
@@ -33,7 +45,7 @@ repos:
 
       # Syntax validation
       - id: check-yaml
-        args: [--unsafe]  # Allow custom tags
+        args: [--unsafe]  # Required for YAML with custom tags (e.g. GitHub Actions)
       - id: check-json
       - id: check-toml
       - id: check-xml
@@ -46,7 +58,6 @@ repos:
         name: Check for debugger imports
       - id: name-tests-test
         args: [--pytest-test-first]
-        name: Ensure test files are named correctly
 
       # Git & security
       - id: check-merge-conflict
@@ -65,7 +76,7 @@ repos:
   # PYTHON CODE FORMATTING - Ruff (replaces Black + isort + flake8)
   # ==========================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.14.6
+    rev: v0.15.8
     hooks:
       # Linting - runs first to catch issues
       - id: ruff
@@ -83,22 +94,25 @@ repos:
   # TYPE CHECKING - mypy
   # ==========================================================================
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.18.2
+    rev: v1.19.1
     hooks:
       - id: mypy
         name: Type check with mypy
         args:
           - --config-file=pyproject.toml
+          - rankle/
+          - main.py
         additional_dependencies:
           - types-requests>=2.31.0
           - types-beautifulsoup4>=4.12.0
-        exclude: ^(tests|examples)/
+        exclude: ^(tests|examples|scripts)/
+        pass_filenames: false
 
   # ==========================================================================
   # SECURITY SCANNING - Bandit
   # ==========================================================================
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.2
+    rev: 1.9.4
     hooks:
       - id: bandit
         name: Security scan with Bandit
@@ -109,20 +123,7 @@ repos:
           - rankle/
           - main.py
         additional_dependencies: ["bandit[toml]"]
-
-  # ==========================================================================
-  # DEPENDENCY SECURITY - pip-audit
-  # Note: pip-audit requires pinned versions. Run manually with:
-  #   pip-audit -r requirements.txt
-  # Or skip in pre-commit (it's also in CI skip list)
-  # ==========================================================================
-  # - repo: https://github.com/pypa/pip-audit
-  #   rev: v2.9.0
-  #   hooks:
-  #     - id: pip-audit
-  #       name: Audit dependencies for vulnerabilities
-  #       args:
-  #         - --requirement=requirements.txt
+        pass_filenames: false
 
   # ==========================================================================
   # DOCUMENTATION - docstring coverage
@@ -140,15 +141,15 @@ repos:
           - --ignore-private
           - --ignore-semiprivate
           - --ignore-module
-          - -vv
+          - -v
           - rankle/
         pass_filenames: false
 
   # ==========================================================================
-  # COMMIT MESSAGE FORMAT (optional - install with --hook-type commit-msg)
+  # COMMIT MESSAGE FORMAT (installed via default_install_hook_types)
   # ==========================================================================
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.10.0
+    rev: v4.13.9
     hooks:
       - id: commitizen
         name: Check commit message format
@@ -158,7 +159,7 @@ repos:
   # YAML LINTING
   # ==========================================================================
   - repo: https://github.com/adrienverge/yamllint
-    rev: v1.37.1
+    rev: v1.38.0
     hooks:
       - id: yamllint
         name: Lint YAML files
@@ -170,14 +171,14 @@ repos:
   # MARKDOWN LINTING
   # ==========================================================================
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.46.0
+    rev: v0.48.0
     hooks:
       - id: markdownlint-fix
         name: Fix Markdown issues
         args:
           - --disable
           - MD013  # Line length
-          - MD024  # Duplicate headings (needed for CHANGELOG format)
+          - MD024  # Duplicate headings (CHANGELOG format)
           - MD033  # Inline HTML
           - MD036  # Emphasis as heading
           - MD040  # Fenced code language
@@ -213,5 +214,5 @@ ci:
   autoupdate_branch: ''
   autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: weekly
-  skip: [pip-audit]  # Skip in CI (slow)
+  skip: []
   submodules: false

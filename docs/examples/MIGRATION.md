@@ -16,6 +16,7 @@ Moved integration examples from `examples/` to `docs/examples/` to eliminate cod
 ### 1. Directory Restructure
 
 **Before:**
+
 ```
 rankle/
 ├── examples/
@@ -30,6 +31,7 @@ rankle/
 ```
 
 **After:**
+
 ```
 rankle/
 └── docs/
@@ -49,6 +51,7 @@ rankle/
 - ❌ `examples/` directory - Removed entirely
 
 **Reason for deletion:** The Python example taught incorrect API usage:
+
 ```python
 from rankle import Rankle  # ❌ Wrong - Should be RankleScanner
 rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
@@ -67,25 +70,30 @@ rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
 ### 4. Documentation Updates
 
 **docs/architecture.md:**
+
 - Updated directory structure to show `docs/examples/`
 - Added documentation file references
 
 **docs/detection-capabilities.md:**
+
 - Replaced 3 embedded shell scripts (~60 lines each) with links to actual files
 - Eliminated code duplication (DRY principle)
 - Added workflow descriptions and usage instructions
 
 **docs/getting-started.md:**
+
 - Added reference to `docs/examples/README.md` in "Next Steps" section
 
 ### 5. Configuration Updates
 
 **pyproject.toml:**
+
 - Removed Ruff linting rules for `examples/**/*.py` (no longer needed)
 - Removed mypy override for `examples.*` module
 - Kept exclusion patterns (harmless, won't match anything)
 
 **mypy.ini:**
+
 - Removed `^examples/` from exclude pattern
 - Removed `[mypy-examples.*]` override section
 
@@ -96,12 +104,14 @@ rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
 ### ✅ **Eliminated Code Duplication (DRY Principle)**
 
 **Before:**
+
 - Shell scripts existed in `examples/`
 - Identical scripts embedded in `docs/detection-capabilities.md`
 - **Problem:** Changes required updates in 2 places
 - **Risk:** Documentation divergence (already happening - scripts used `--output both`, docs showed `--output json`)
 
 **After:**
+
 - Single source of truth: `docs/examples/*.sh`
 - Documentation references files instead of duplicating content
 - **Benefit:** Changes propagate automatically
@@ -109,22 +119,26 @@ rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
 ### ✅ **Removed Broken Examples**
 
 **Before:**
+
 - `enhanced_detection_example.py` taught incorrect API usage
 - Would fail immediately if users tried to run it
 - **Problem:** Misleading users about v2.0 API
 
 **After:**
+
 - Only working, tested scripts remain
 - All examples use correct v2.0 CLI interface
 
 ### ✅ **Improved Discoverability**
 
 **Before:**
+
 - Scripts in `examples/` directory
 - Minimal documentation
 - Users had to read scripts to understand usage
 
 **After:**
+
 - Comprehensive `README.md` with:
   - Installation instructions
   - Usage examples
@@ -135,10 +149,12 @@ rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
 ### ✅ **Better Organization**
 
 **Before:**
+
 - Examples separate from documentation
 - Unclear relationship between scripts and docs
 
 **After:**
+
 - Examples integrated with documentation
 - Clear navigation path: docs → examples
 - Logical grouping of related content
@@ -148,12 +164,14 @@ rankle.detect_technologies_enhanced()  # ❌ Method doesn't exist
 ## Verification
 
 ### Type Checking
+
 ```bash
 $ mypy rankle/ --config-file=pyproject.toml
 Success: no issues found in 24 source files
 ```
 
 ### Scripts Location
+
 ```bash
 $ ls -lah docs/examples/
 -rwxrwxr-x 1 cosckoya cosckoya 1.9K full_recon_chain.sh
@@ -163,6 +181,7 @@ $ ls -lah docs/examples/
 ```
 
 ### Old Directory Removed
+
 ```bash
 $ test -d examples/ && echo "EXISTS" || echo "DELETED"
 DELETED
@@ -220,6 +239,7 @@ DELETED
 If Python API examples are needed in the future:
 
 1. **Use correct v2.0 API:**
+
 ```python
 from rankle import RankleScanner
 
@@ -228,12 +248,12 @@ results = scanner.run_full_scan()
 print(f"Found {len(results['subdomains'])} subdomains")
 ```
 
-2. **Add proper documentation:**
+1. **Add proper documentation:**
    - Explain each API method
    - Show expected output
    - Include error handling
 
-3. **Test before committing:**
+2. **Test before committing:**
    - Verify examples work with current API
    - Run mypy on examples
    - Test with multiple Python versions
@@ -241,6 +261,7 @@ print(f"Found {len(results['subdomains'])} subdomains")
 ### Script Enhancements
 
 Consider adding:
+
 - Exit status codes for CI integration
 - JSON output mode for parsing
 - Configurable rate limiting

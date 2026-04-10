@@ -7,7 +7,7 @@ framework routes, and technology signatures from JavaScript files.
 
 import re
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
@@ -27,7 +27,9 @@ def extract_js_files_from_html(html: str, base_url: str) -> list[str]:
         List of absolute JavaScript file URLs
 
     Example:
-        >>> extract_js_files_from_html('<script src="/app.js"></script>', 'https://example.com')
+        >>> extract_js_files_from_html(
+        ...     '<script src="/app.js"></script>', "https://example.com"
+        ... )
         ['https://example.com/app.js']
     """
     soup = BeautifulSoup(html, "html.parser")
@@ -94,7 +96,7 @@ def extract_endpoints_from_js(js_content: str) -> list[str]:
         e for e in endpoints if any(pattern in e.lower() for pattern in api_patterns)
     ]
 
-    return sorted(list(set(api_endpoints)))[:50]  # Limit to 50 endpoints
+    return sorted(set(api_endpoints))[:50]  # Limit to 50 endpoints
 
 
 def detect_frameworks_from_js(js_content: str) -> list[dict[str, Any]]:
@@ -231,7 +233,7 @@ def analyze_javascript(
         Dictionary containing endpoints and detected frameworks
 
     Example:
-        >>> analyze_javascript('https://example.com', html_content)
+        >>> analyze_javascript("https://example.com", html_content)
         {
             'endpoints': ['/api/users', '/api/posts'],
             'frameworks': [{'name': 'React', 'confidence': 0.9}],
@@ -275,7 +277,7 @@ def analyze_javascript(
             unique_frameworks.append(fw)
 
     return {
-        "endpoints": sorted(list(all_endpoints))[:30],  # Top 30 endpoints
+        "endpoints": sorted(all_endpoints)[:30],  # Top 30 endpoints
         "frameworks": unique_frameworks,
         "analyzed_files": analyzed_count,
         "total_files_found": len(js_files),

@@ -11,30 +11,35 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 ### **Core Documentation**
 
 #### [index.md](index.md)
+
 **Purpose:** Main documentation hub with navigation to all resources
 **Content:** Overview, quick links, ethical use guidelines
 **Audience:** All users
 **Status:** ✅ Up-to-date (2026-01-20)
 
 #### [getting-started.md](getting-started.md)
+
 **Purpose:** Installation, usage, and first scan
 **Content:** Requirements, installation methods, command-line options, Docker usage
 **Audience:** New users
 **Status:** ✅ Core content current
 
 #### [architecture.md](architecture.md)
+
 **Purpose:** Technical design and API reference
 **Content:** Modular structure, key classes, configuration, adding modules
 **Audience:** Developers, contributors
 **Status:** ✅ Covers v2.0 architecture
 
 #### [detection-capabilities.md](detection-capabilities.md)
+
 **Purpose:** Feature documentation and integration examples
 **Content:** CMS/CDN/WAF detection, technology fingerprinting, integration with Nuclei/Nmap
 **Audience:** Security researchers, power users
 **Status:** ⚠️ May need v2.0 updates (check enhanced detection coverage)
 
 #### [development.md](development.md)
+
 **Purpose:** Contributing guide and development setup
 **Content:** Environment setup, testing, pre-commit hooks, coding standards
 **Audience:** Contributors, developers
@@ -45,8 +50,10 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 ### **Advanced Documentation**
 
 #### [TECHNOLOGY_DETECTION_ENHANCEMENT.md](TECHNOLOGY_DETECTION_ENHANCEMENT.md)
+
 **Purpose:** Complete v2.0 enhancement documentation
 **Content:**
+
 - 7 new detection modules (favicon hashing, error fingerprinting, JS extraction, WordPress, CVE mapping)
 - Before/after comparisons
 - API usage examples
@@ -57,14 +64,17 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 **Created:** 2026-01-20
 
 #### [MYPY_GUIDE.md](MYPY_GUIDE.md)
+
 **Purpose:** Type checking configuration and best practices
 **Content:** mypy setup, common errors, Python 3.11+ type hints
 **Audience:** Developers
 **Status:** ✅ Current with modern Python typing
 
 #### [troubleshooting.md](troubleshooting.md)
+
 **Purpose:** Solutions to common issues and error messages
 **Content:**
+
 - Installation problems
 - Dependency issues
 - Network/connection errors
@@ -80,8 +90,10 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 **Created:** 2026-01-20
 
 #### [performance-tuning.md](performance-tuning.md)
+
 **Purpose:** Optimize Rankle for speed and efficiency
 **Content:**
+
 - Timeout configuration strategies
 - Rate limiting tuning
 - DNS optimization
@@ -95,8 +107,10 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 **Created:** 2026-01-20
 
 #### [api-usage-examples.md](api-usage-examples.md)
+
 **Purpose:** Use Rankle as a Python library in your projects
 **Content:**
+
 - Installation as library
 - Module-by-module examples
 - Complete integration examples (security audit, inventory, monitoring)
@@ -109,8 +123,10 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 **Created:** 2026-01-20
 
 #### [claude-code-2026-compliance.md](claude-code-2026-compliance.md)
+
 **Purpose:** Claude Code configuration compliance review
 **Content:**
+
 - 2026 compliance checklist (File structure, Token optimization, Permissions, Tooling)
 - Token savings analysis (70-85% reduction)
 - Permission model security review
@@ -120,8 +136,10 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 **Created:** 2026-01-20
 
 #### [session-summary-2026-01-20.md](session-summary-2026-01-20.md)
+
 **Purpose:** Comprehensive session summary for task orchestrator and Claude Code setup
 **Content:**
+
 - Task orchestrator system creation (production workflows)
 - Skills audit results (17 global skills, grade A-)
 - Claude Code compliance review (grade A+)
@@ -137,12 +155,14 @@ This directory contains comprehensive documentation for the Rankle web infrastru
 ### **Examples and Migration**
 
 #### [examples/README.md](examples/README.md)
+
 **Purpose:** Usage examples and code samples
 **Content:** Practical demonstrations, integration patterns
 **Audience:** Developers integrating Rankle
 **Status:** ✅ Active examples
 
 #### [examples/MIGRATION.md](examples/MIGRATION.md)
+
 **Purpose:** Migration guide between versions
 **Content:** Breaking changes, upgrade paths, API changes
 **Audience:** Existing users upgrading
@@ -183,6 +203,7 @@ Documentation for development and diagnostic scripts:
 ## 📊 Documentation Coverage Analysis
 
 ### **Well-Covered Areas:**
+
 - ✅ Installation and quick start
 - ✅ Architecture and design patterns
 - ✅ Development setup and contributing
@@ -191,6 +212,7 @@ Documentation for development and diagnostic scripts:
 - ✅ Claude Code integration
 
 ### **Recent Expansions (2026-01-20):**
+
 - ✅ Updated `detection-capabilities.md` with comprehensive v2.0 section (464 lines added)
 - ✅ Created `troubleshooting.md` - Complete troubleshooting guide (850+ lines)
 - ✅ Created `performance-tuning.md` - Optimization strategies (550+ lines)
@@ -203,12 +225,14 @@ Documentation for development and diagnostic scripts:
 All documentation in this repository follows these standards:
 
 ### **Markdown Style:**
+
 - GitHub-flavored Markdown (GFM)
 - Code blocks with language identifiers
 - Headers use ATX style (`#`, `##`, etc.)
 - Lists use consistent markers (- for unordered, 1. for ordered)
 
 ### **Content Standards:**
+
 - **Accuracy:** All examples tested and verified
 - **Currency:** Dates and versions kept current
 - **Completeness:** Covers all user personas (new users, developers, researchers)
@@ -216,6 +240,7 @@ All documentation in this repository follows these standards:
 - **Examples:** Practical, runnable code samples
 
 ### **Update Frequency:**
+
 - Major releases: All docs reviewed
 - Minor releases: Affected docs updated
 - Patches: CHANGELOG.md updated minimum
@@ -227,11 +252,11 @@ All documentation in this repository follows these standards:
 
 Documentation may reference:
 
-- **Official Python Docs:** https://docs.python.org/3/
-- **OWASP Testing Guide:** https://owasp.org/www-project-web-security-testing-guide/
-- **PortSwigger Research:** https://portswigger.net/research
-- **ProjectDiscovery Tools:** https://projectdiscovery.io/
-- **Anthropic Claude Code:** https://docs.anthropic.com/claude-code
+- **Official Python Docs:** <https://docs.python.org/3/>
+- **OWASP Testing Guide:** <https://owasp.org/www-project-web-security-testing-guide/>
+- **PortSwigger Research:** <https://portswigger.net/research>
+- **ProjectDiscovery Tools:** <https://projectdiscovery.io/>
+- **Anthropic Claude Code:** <https://docs.anthropic.com/claude-code>
 
 All external links checked periodically for validity.
 
@@ -250,6 +275,7 @@ When contributing documentation:
 7. **Date your work** - Add "Last Updated: YYYY-MM-DD" to major docs
 
 ### **Documentation PRs Should Include:**
+
 - The new/modified documentation
 - Updated navigation in `index.md`
 - Updated entry in this README
@@ -279,12 +305,14 @@ When contributing documentation:
 ## 📈 Documentation Metrics
 
 **Total Documentation:**
+
 - **Lines:** 5,472+ across 15 files
 - **Files:** 15 markdown files
 - **Directories:** 3 (docs/, .claude/, scripts/)
 - **Last Major Update:** 2026-01-20 (v2.0 Enhanced)
 
 **Coverage by Category:**
+
 - User Guides: 30%
 - Technical References: 40%
 - Development Guides: 20%

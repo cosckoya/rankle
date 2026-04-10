@@ -420,6 +420,7 @@ Runs on every push and pull request to `main`:
 ```
 
 **Triggers:**
+
 - Push to `main` branch
 - Pull requests to `main`
 
@@ -436,6 +437,7 @@ Runs on version tags:
 ```
 
 **Triggers:**
+
 - Tags matching `v*.*.*` (e.g., `v1.2.0`)
 
 **Purpose:** Publish production Docker images.
@@ -851,6 +853,7 @@ cdn_indicators = {
 ```
 
 **Headers to check:**
+
 - Custom CDN headers (X-CDN-*, X-Cache-*)
 - Server headers
 - Via headers
@@ -872,6 +875,7 @@ waf_indicators = {
 ```
 
 **Common WAF indicators:**
+
 - Protection headers
 - Challenge cookies
 - Bot detection scripts

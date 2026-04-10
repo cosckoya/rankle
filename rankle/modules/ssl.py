@@ -129,7 +129,7 @@ class SSLAnalyzer:
                 if cert_binary:
                     return self._parse_binary_cert(cert_binary)
 
-        except (ssl.SSLError, socket.error, TimeoutError, OSError):
+        except (ssl.SSLError, TimeoutError, OSError):
             # SSL errors, connection issues, or timeout during alternative retrieval
             pass
 

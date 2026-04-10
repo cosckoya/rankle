@@ -5,10 +5,12 @@ This directory contains utility and demonstration scripts for the Rankle project
 ## Available Scripts
 
 ### `demo_enhanced_detection.py`
+
 **Purpose:** Demonstration of enhanced technology detection capabilities (v2.0)
 
 **Description:**
 Shows off the new technology detection features including:
+
 - Wappalyzer integration (3000+ signatures)
 - Favicon hashing (mmh3)
 - Error page fingerprinting
@@ -17,6 +19,7 @@ Shows off the new technology detection features including:
 - CVE vulnerability mapping
 
 **Usage:**
+
 ```bash
 # Activate virtual environment first
 source .venv/bin/activate
@@ -29,22 +32,26 @@ python scripts/demo_enhanced_detection.py yourdomain.com
 ```
 
 **Output:**
+
 - Console: Pretty-printed detection results
 - File: `{domain}_enhanced_detection.json` (detailed JSON results)
 
 ---
 
 ### `verify_dependencies.py`
+
 **Purpose:** Dependency verification and diagnostic tool
 
 **Description:**
 Checks that all required dependencies are installed and importable. Useful for:
+
 - Post-installation verification
 - Troubleshooting import errors
 - CI/CD environment validation
 - Development environment setup
 
 **Usage:**
+
 ```bash
 # Activate virtual environment first
 source .venv/bin/activate
@@ -54,12 +61,14 @@ python scripts/verify_dependencies.py
 ```
 
 **Output:**
+
 - ✅ Core dependencies: 5 packages (required)
 - 📦 Optional dependencies: 2 packages (WHOIS features)
 - 🔧 Dev dependencies: 4+ packages (testing, linting)
 - Exit code 0 if all core dependencies OK, 1 otherwise
 
 **Categories Checked:**
+
 - **Core:** requests, dnspython, beautifulsoup4, python-Wappalyzer, mmh3
 - **Optional:** python-whois, ipwhois
 - **Dev:** ruff, mypy, pytest, bandit
@@ -71,6 +80,7 @@ python scripts/verify_dependencies.py
 ### Adding New Scripts
 
 Scripts in this directory should:
+
 1. **Be executable** - `chmod +x script.py`
 2. **Include shebang** - `#!/usr/bin/env python3`
 3. **Have docstrings** - Module and function documentation
@@ -113,15 +123,19 @@ if __name__ == "__main__":
 ## Script Categories
 
 ### Demonstration Scripts
+
 - `demo_enhanced_detection.py` - Show v2.0 detection features
 
 ### Diagnostic Scripts
+
 - `verify_dependencies.py` - Dependency verification
 
 ### (Future) Build Scripts
+
 - TBD: Build automation, release packaging
 
 ### (Future) Benchmark Scripts
+
 - TBD: Performance benchmarking, comparison tests
 
 ---

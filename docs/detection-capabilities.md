@@ -38,6 +38,7 @@ Rankle detects **16+ Content Management Systems** using multiple passive techniq
 Rankle includes **15+ detection patterns** specifically for Drupal:
 
 #### Core Patterns
+
 ```
 /core/misc/drupal.js          # Drupal 8+ core JavaScript
 /misc/drupal.js               # Drupal 7 core JavaScript
@@ -47,6 +48,7 @@ Rankle includes **15+ detection patterns** specifically for Drupal:
 ```
 
 #### HTML Attributes
+
 ```html
 data-drupal-*                 # Drupal data attributes
 views-                        # Views module classes
@@ -56,6 +58,7 @@ region-                       # Region classes
 ```
 
 #### API Endpoints
+
 ```
 /user/login                   # Login form
 /admin                        # Admin interface
@@ -65,6 +68,7 @@ region-                       # Region classes
 ```
 
 #### robots.txt Analysis
+
 ```
 # Drupal-specific entries in robots.txt:
 /admin/
@@ -75,6 +79,7 @@ region-                       # Region classes
 ```
 
 #### Meta Tags
+
 ```html
 <meta name="Generator" content="Drupal 8" />
 <meta name="Generator" content="Drupal 9" />
@@ -82,6 +87,7 @@ region-                       # Region classes
 ```
 
 **Confidence Scoring**:
+
 - **High (90-100%)**: Multiple patterns + meta generator + cookies
 - **Medium (70-89%)**: 2-3 patterns + HTML attributes
 - **Low (50-69%)**: Single pattern match
@@ -89,6 +95,7 @@ region-                       # Region classes
 ### Other CMS Platforms
 
 #### WordPress
+
 ```
 Patterns:
   - /wp-content/              # Content directory
@@ -109,6 +116,7 @@ Version Detection:
 ```
 
 #### Joomla
+
 ```
 Patterns:
   - /administrator/           # Admin interface
@@ -126,6 +134,7 @@ JavaScript:
 ```
 
 #### Magento
+
 ```
 Patterns:
   - /skin/frontend/           # Frontend skins
@@ -141,6 +150,7 @@ Headers:
 ```
 
 #### Shopify
+
 ```
 Patterns:
   - cdn.shopify.com           # CDN resources
@@ -156,6 +166,7 @@ Headers:
 ```
 
 #### TYPO3
+
 ```
 Patterns:
   - /typo3/                   # Backend directory
@@ -168,6 +179,7 @@ Meta:
 ```
 
 #### Concrete5
+
 ```
 Patterns:
   - /concrete/                # Core directory
@@ -177,6 +189,7 @@ Patterns:
 ```
 
 #### Ghost
+
 ```
 Patterns:
   - ghost-                    # CSS/JavaScript prefix
@@ -190,6 +203,7 @@ Meta:
 ```
 
 #### Wix, Squarespace, Webflow (Hosted Platforms)
+
 ```
 Wix:
   - static.wixstatic.com
@@ -246,6 +260,7 @@ Rankle detects **14+ cloud providers** using multiple methods.
 ### Supported Cloud Providers
 
 #### AWS (Amazon Web Services)
+
 ```
 ASN: AS16509, AS14618, AS8987
 IP Ranges: 3.0.0.0/8, 13.0.0.0/8, 18.0.0.0/8, 52.0.0.0/8, 54.0.0.0/8
@@ -258,6 +273,7 @@ Example: ec2-54-123-45-67.compute-1.amazonaws.com
 ```
 
 #### Microsoft Azure
+
 ```
 ASN: AS8075, AS8068
 IP Ranges: 13.64.0.0/11, 20.0.0.0/8, 40.64.0.0/10, 52.96.0.0/12
@@ -271,6 +287,7 @@ Example: myapp.eastus.cloudapp.azure.com
 ```
 
 #### Google Cloud Platform (GCP)
+
 ```
 ASN: AS15169, AS19527, AS396982
 IP Ranges: 34.64.0.0/10, 35.184.0.0/13, 35.192.0.0/11, 104.154.0.0/15
@@ -283,6 +300,7 @@ Example: 123.45.67.89.bc.googleusercontent.com
 ```
 
 #### DigitalOcean
+
 ```
 ASN: AS14061
 IP Ranges: 104.131.0.0/16, 134.122.0.0/15, 137.184.0.0/14, 159.65.0.0/16
@@ -293,6 +311,7 @@ Example: droplet-123.digitalocean.com
 ```
 
 #### OVH
+
 ```
 ASN: AS16276
 IP Ranges: 5.39.0.0/17, 5.135.0.0/16, 51.38.0.0/15, 54.36.0.0/14
@@ -305,6 +324,7 @@ Example: vps-123456.vps.ovh.net
 ```
 
 #### Hetzner
+
 ```
 ASN: AS24940
 IP Ranges: 5.9.0.0/16, 78.46.0.0/15, 88.198.0.0/16, 95.216.0.0/15
@@ -316,6 +336,7 @@ Example: static.123-45-67-89.clients.your-server.de
 ```
 
 #### Linode (Akamai)
+
 ```
 ASN: AS63949
 IP Ranges: 45.33.0.0/17, 139.144.0.0/15, 172.104.0.0/15
@@ -327,6 +348,7 @@ Example: li123-45.members.linode.com
 ```
 
 #### Vultr
+
 ```
 ASN: AS20473
 IP Ranges: 45.32.0.0/15, 45.76.0.0/15, 108.61.0.0/16, 149.28.0.0/16
@@ -336,6 +358,7 @@ rDNS Patterns:
 ```
 
 #### Cloudflare (Workers/Pages)
+
 ```
 ASN: AS13335
 IP Ranges: 104.16.0.0/13, 104.24.0.0/14, 172.64.0.0/13
@@ -345,6 +368,7 @@ rDNS Patterns:
 ```
 
 #### Akamai
+
 ```
 ASN: AS20940, AS16625
 IP Ranges: 23.0.0.0/12, 104.64.0.0/10, 184.24.0.0/13
@@ -356,10 +380,10 @@ rDNS Patterns:
 
 ### Additional Providers
 
-11. **Alibaba Cloud** - AS45102, AS37963
-12. **Oracle Cloud** - AS31898, AS792
-13. **IBM Cloud/Softlayer** - AS36351
-14. **Scaleway** - AS12876
+1. **Alibaba Cloud** - AS45102, AS37963
+2. **Oracle Cloud** - AS31898, AS792
+3. **IBM Cloud/Softlayer** - AS36351
+4. **Scaleway** - AS12876
 
 ---
 
@@ -379,6 +403,7 @@ Rankle detects **20+ CDN providers** using multi-factor analysis.
 ### CDN Signatures
 
 #### Akamai
+
 ```
 Headers:
   - Server-Timing: ak_p, akamai
@@ -401,6 +426,7 @@ IP Ranges: 23.32.0.0/11, 104.64.0.0/10, 184.24.0.0/13
 ```
 
 #### Cloudflare
+
 ```
 Headers:
   - CF-Ray: (unique request ID)
@@ -420,6 +446,7 @@ IP Ranges: 104.16.0.0/13, 172.64.0.0/13, 162.158.0.0/15
 ```
 
 #### Fastly
+
 ```
 Headers:
   - X-Served-By: cache-*
@@ -438,6 +465,7 @@ IP Ranges: 151.101.0.0/16, 199.232.0.0/16
 ```
 
 #### AWS CloudFront
+
 ```
 Headers:
   - X-Amz-Cf-Id: (CloudFront ID)
@@ -453,6 +481,7 @@ ASN: AS16509 (AWS)
 ```
 
 #### Azure CDN
+
 ```
 Headers:
   - X-Azure-Ref: (reference ID)
@@ -469,6 +498,7 @@ ASN: AS8075 (Azure)
 ```
 
 #### Google Cloud CDN
+
 ```
 Headers:
   - X-Goog-*: (Google headers)
@@ -484,6 +514,7 @@ ASN: AS15169, AS396982
 ```
 
 #### Imperva/Incapsula
+
 ```
 Headers:
   - X-Iinfo: (Imperva info)
@@ -503,6 +534,7 @@ IP Ranges: 45.64.64.0/22, 199.83.128.0/21
 ```
 
 #### KeyCDN
+
 ```
 Headers:
   - Server: keycdn
@@ -514,6 +546,7 @@ CNAME Patterns:
 ```
 
 #### BunnyCDN
+
 ```
 Headers:
   - Server: BunnyCDN
@@ -526,6 +559,7 @@ CNAME Patterns:
 ```
 
 #### Netlify
+
 ```
 Headers:
   - Server: Netlify
@@ -540,6 +574,7 @@ Nameservers:
 ```
 
 #### Vercel
+
 ```
 Headers:
   - Server: Vercel
@@ -592,6 +627,7 @@ Rankle detects **20+ Web Application Firewalls** using passive analysis.
 ### WAF Signatures
 
 #### Cloudflare WAF
+
 ```
 Headers:
   - CF-Ray: (request ID)
@@ -611,6 +647,7 @@ Body Patterns:
 ```
 
 #### AWS WAF
+
 ```
 Headers:
   - X-Amzn-WAF-*
@@ -626,6 +663,7 @@ Body Patterns:
 ```
 
 #### Akamai Kona
+
 ```
 Headers:
   - Server: AkamaiGHost
@@ -644,6 +682,7 @@ Body Patterns:
 ```
 
 #### Imperva/Incapsula
+
 ```
 Headers:
   - X-Iinfo
@@ -662,6 +701,7 @@ Body Patterns:
 ```
 
 #### Sucuri CloudProxy
+
 ```
 Headers:
   - X-Sucuri-ID
@@ -677,6 +717,7 @@ Body Patterns:
 ```
 
 #### ModSecurity
+
 ```
 Headers:
   - Server: ModSecurity, NOYB
@@ -689,6 +730,7 @@ Body Patterns:
 ```
 
 #### F5 BIG-IP ASM
+
 ```
 Headers:
   - X-WA-Info
@@ -707,6 +749,7 @@ Body Patterns:
 ```
 
 #### Fortinet FortiWeb
+
 ```
 Headers:
   - Server: FortiWeb
@@ -721,6 +764,7 @@ Body Patterns:
 ```
 
 #### PerimeterX
+
 ```
 Cookies:
   - _px, _pxvid, _pxhd
@@ -732,6 +776,7 @@ Body Patterns:
 ```
 
 #### DataDome
+
 ```
 Headers:
   - X-DataDome
@@ -746,6 +791,7 @@ Body Patterns:
 ```
 
 #### Wordfence (WordPress)
+
 ```
 Cookies:
   - wfwaf-authcookie
@@ -794,6 +840,7 @@ Rankle detects **15+ JavaScript libraries and frameworks**.
 ### Popular Libraries
 
 #### jQuery
+
 ```
 Patterns:
   - jquery.js, jquery.min.js
@@ -805,6 +852,7 @@ Version: jquery-([0-9.]+).min.js
 ```
 
 #### Bootstrap
+
 ```
 Patterns:
   - bootstrap.css, bootstrap.min.css
@@ -816,6 +864,7 @@ Version: bootstrap@([0-9.]+)
 ```
 
 #### React
+
 ```
 Patterns:
   - react.js, react.min.js
@@ -827,6 +876,7 @@ Attributes: data-reactroot, data-reactid
 ```
 
 #### Vue.js
+
 ```
 Patterns:
   - vue.js, vue.min.js
@@ -837,6 +887,7 @@ Attributes: v-if, v-for, v-bind, v-model
 ```
 
 #### Angular
+
 ```
 Patterns:
   - angular.js, angular.min.js
@@ -847,6 +898,7 @@ Attributes: ng-*, [ng*, *ngIf, *ngFor
 ```
 
 #### D3.js
+
 ```
 Patterns:
   - d3.js, d3.min.js
@@ -885,6 +937,7 @@ Rankle detects **50+ web technologies** across multiple categories.
 ### Technology Categories
 
 #### Web Frameworks
+
 - Django (Python)
 - Laravel (PHP)
 - Ruby on Rails
@@ -899,6 +952,7 @@ Rankle detects **50+ web technologies** across multiple categories.
 - Gatsby
 
 #### CSS Frameworks
+
 - Tailwind CSS
 - Bootstrap
 - Foundation
@@ -909,6 +963,7 @@ Rankle detects **50+ web technologies** across multiple categories.
 - Ant Design
 
 #### E-commerce Platforms
+
 - WooCommerce
 - PrestaShop
 - Magento
@@ -916,6 +971,7 @@ Rankle detects **50+ web technologies** across multiple categories.
 - OpenCart
 
 #### Analytics & Tracking
+
 - Google Analytics
 - Google Tag Manager
 - Hotjar
@@ -923,25 +979,30 @@ Rankle detects **50+ web technologies** across multiple categories.
 - Mixpanel
 
 #### Customer Support
+
 - Intercom
 - Zendesk
 - Drift
 - Crisp
 
 #### Marketing Tools
+
 - Mailchimp
 - HubSpot
 
 #### Security & Bot Detection
+
 - reCAPTCHA
 - hCaptcha
 - Cloudflare Turnstile
 
 #### Caching Solutions
+
 - Varnish
 - Redis
 
 #### Web Servers
+
 - Nginx
 - Apache
 - IIS
@@ -949,17 +1010,20 @@ Rankle detects **50+ web technologies** across multiple categories.
 - OpenResty
 
 #### Proxies & Load Balancers
+
 - Envoy
 - Traefik
 - HAProxy
 - Varnish
 
 #### Error Tracking & APM
+
 - Sentry
 - New Relic
 - Datadog
 
 #### Payment Gateways
+
 - Stripe
 - PayPal
 - Braintree
@@ -980,6 +1044,7 @@ Multiple evidence types increase confidence with diminishing returns.
 ```
 
 **Example Output**:
+
 ```json
 {
   "detected": true,
@@ -1027,6 +1092,7 @@ Rankle v2.0 introduces enhanced technology detection capabilities, expanding fro
 ### What's New in v2.0?
 
 **Detection Expansion:**
+
 - **3000+ Technology Signatures** via Wappalyzer database integration
 - **Favicon Hashing** (mmh3) for infrastructure fingerprinting
 - **Error Page Analysis** for framework identification
@@ -1036,6 +1102,7 @@ Rankle v2.0 introduces enhanced technology detection capabilities, expanding fro
 - **CVE Vulnerability Mapping** with search URLs
 
 **Performance:**
+
 - Traditional detection: ~2-3 seconds
 - Enhanced detection: ~5-8 seconds (2-3x slower but 10x more comprehensive)
 
@@ -1046,6 +1113,7 @@ Rankle v2.0 introduces enhanced technology detection capabilities, expanding fro
 The Wappalyzer database provides signatures for 3000+ technologies across categories:
 
 **Technology Categories:**
+
 - Web frameworks (Django, Laravel, Rails, Flask, FastAPI, Spring Boot)
 - JavaScript frameworks (React, Vue, Angular, Next.js, Nuxt.js, Svelte)
 - CMS platforms (WordPress, Drupal, Joomla, Shopify, Magento)
@@ -1059,6 +1127,7 @@ The Wappalyzer database provides signatures for 3000+ technologies across catego
 - And 2000+ more...
 
 **Usage Example:**
+
 ```python
 from rankle.detectors.technology import TechnologyDetector
 
@@ -1077,6 +1146,7 @@ for tech in results['technologies']:
 ```
 
 **Detection Methods:**
+
 - HTML pattern matching (meta tags, scripts, comments)
 - HTTP header analysis (X-Powered-By, Server, custom headers)
 - Cookie patterns (framework-specific session cookies)
@@ -1084,6 +1154,7 @@ for tech in results['technologies']:
 - DOM analysis (specific CSS classes, data attributes)
 
 **Output Format:**
+
 ```json
 {
   "name": "Django",
@@ -1105,12 +1176,14 @@ for tech in results['technologies']:
 Calculates MurmurHash3 (mmh3) hash of favicon.ico to fingerprint infrastructure.
 
 **Why Favicon Hashing?**
+
 - Survives CDN/proxy obfuscation
 - Unique per technology/platform
 - Passive and undetectable
 - Works even when other methods fail
 
 **Known Favicon Hashes:**
+
 ```python
 KNOWN_FAVICONS = {
     "116323821": "Atlassian Jira",
@@ -1127,6 +1200,7 @@ KNOWN_FAVICONS = {
 ```
 
 **Usage:**
+
 ```python
 from rankle.utils.favicon_hash import analyze_favicon
 
@@ -1139,6 +1213,7 @@ else:
 ```
 
 **Example Output:**
+
 ```
 Hash: 116323821
 Match: Atlassian Jira
@@ -1153,6 +1228,7 @@ Evidence: Exact favicon hash match
 Analyzes 404 and error pages to identify web frameworks by their error page signatures.
 
 **Supported Frameworks:**
+
 - Django (DisallowedHost, CSRF verification failed)
 - Laravel (Whoops! error page, Ignition traces)
 - Spring Boot (Whitelabel Error Page)
@@ -1165,6 +1241,7 @@ Analyzes 404 and error pages to identify web frameworks by their error page sign
 - Symfony (Symfony Exception, profiler)
 
 **Detection Method:**
+
 ```python
 from rankle.utils.error_fingerprint import fingerprint_error_page
 
@@ -1177,6 +1254,7 @@ for framework in results:
 ```
 
 **Example Django Detection:**
+
 ```
 Framework: Django
 Confidence: 95%
@@ -1196,12 +1274,14 @@ Patterns Matched:
 Extracts and analyzes JavaScript files using LinkFinder-style patterns.
 
 **Capabilities:**
+
 1. **Extract JS file URLs** from HTML
 2. **Discover API endpoints** using regex patterns
 3. **Detect frameworks** from JS code patterns
 4. **Extract asset versions** from filenames
 
 **API Endpoint Extraction:**
+
 ```python
 from rankle.utils.js_extractor import analyze_javascript
 
@@ -1213,6 +1293,7 @@ for endpoint in results['endpoints']:
 ```
 
 **Regex Patterns Used:**
+
 ```python
 patterns = [
     r'["\']((https?:)?//[^"\']+)["\']',              # Full URLs
@@ -1223,6 +1304,7 @@ patterns = [
 ```
 
 **Framework Detection from JS:**
+
 - **React:** `React.createElement`, `ReactDOM.render`
 - **Vue.js:** `Vue.config`, `new Vue(`
 - **Angular:** `ng-`, `angular.module`
@@ -1231,6 +1313,7 @@ patterns = [
 - **jQuery:** `jQuery`, `$(`
 
 **Example Output:**
+
 ```json
 {
   "js_files": 3,
@@ -1253,12 +1336,14 @@ patterns = [
 Passive WordPress plugin and theme enumeration via HTML parsing.
 
 **Detection Method:**
+
 - Parse HTML for `/wp-content/plugins/{slug}/` paths
 - Parse HTML for `/wp-content/themes/{slug}/` paths
 - Map slugs to friendly names using 60+ plugin database
 - Map slugs to friendly names using 20+ theme database
 
 **Known Plugins:**
+
 ```python
 KNOWN_PLUGINS = {
     "contact-form-7": "Contact Form 7",
@@ -1272,6 +1357,7 @@ KNOWN_PLUGINS = {
 ```
 
 **Usage:**
+
 ```python
 from rankle.utils.wordpress_plugins import analyze_wordpress
 
@@ -1288,6 +1374,7 @@ if results['is_wordpress']:
 ```
 
 **Example Output:**
+
 ```
 WordPress: Yes
 Version: 6.4.2
@@ -1307,6 +1394,7 @@ Active Theme: Astra
 Extracts version numbers from asset filenames using regex patterns.
 
 **Patterns:**
+
 ```python
 # Common versioning patterns:
 jquery-3.6.0.min.js       → jQuery 3.6.0
@@ -1316,6 +1404,7 @@ vue-2.7.14.js             → Vue.js 2.7.14
 ```
 
 **Usage:**
+
 ```python
 from rankle.utils.js_extractor import extract_version_from_assets
 
@@ -1332,18 +1421,21 @@ for tech, version in versions.items():
 Generates CPE identifiers and CVE search URLs for detected technologies.
 
 **CPE 2.3 Format:**
+
 ```
 cpe:2.3:a:vendor:product:version:*:*:*:*:*:*:*
 ```
 
 **Generated Search URLs:**
-- **NVD (NIST):** https://nvd.nist.gov/vuln/search/results?query=...
-- **CVE MITRE:** https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=...
-- **CVEDetails:** https://www.cvedetails.com/google-search-results.php?q=...
-- **Vulners:** https://vulners.com/search?query=...
-- **Exploit-DB:** https://www.exploit-db.com/search?q=...
+
+- **NVD (NIST):** <https://nvd.nist.gov/vuln/search/results?query=>...
+- **CVE MITRE:** <https://cve.mitre.org/cgi-bin/cvekey.cgi?keyword=>...
+- **CVEDetails:** <https://www.cvedetails.com/google-search-results.php?q=>...
+- **Vulners:** <https://vulners.com/search?query=>...
+- **Exploit-DB:** <https://www.exploit-db.com/search?q=>...
 
 **Usage:**
+
 ```python
 from rankle.utils.cve_mapper import map_technology_to_cve_urls
 
@@ -1357,6 +1449,7 @@ for source, url in cve_info['cve_search_urls'].items():
 ```
 
 **Example Output:**
+
 ```
 Technology: Django 4.2
 CPE: cpe:2.3:a:djangoproject:django:4.2:*:*:*:*:*:*:*
@@ -1373,11 +1466,13 @@ Recommendation: Review CVE databases for known vulnerabilities in Django 4.2
 ### Using Enhanced Detection
 
 **Standard Detection (Traditional):**
+
 ```bash
 python main.py example.com
 ```
 
 **Enhanced Detection (v2.0):**
+
 ```python
 # Use the demo script
 python scripts/demo_enhanced_detection.py example.com
@@ -1392,6 +1487,7 @@ python scripts/demo_enhanced_detection.py example.com
 ```
 
 **API Usage:**
+
 ```python
 from rankle.detectors.technology import TechnologyDetector
 
@@ -1476,6 +1572,7 @@ print(f"Enhanced: {len(enhanced_results['technologies'])} technologies")
 ### Documentation
 
 For complete technical details, see:
+
 - **[Technology Detection Enhancement Guide](TECHNOLOGY_DETECTION_ENHANCEMENT.md)** - Full v2.0 documentation
 - **[Scripts Documentation](../scripts/README.md)** - `demo_enhanced_detection.py` usage
 
@@ -1495,6 +1592,7 @@ For complete technical details, see:
 ### Discovery Methods
 
 #### 1. Subdomain Analysis
+
 ```
 Check non-CDN subdomains:
   - origin.example.com
@@ -1516,6 +1614,7 @@ Rationale:
 ```
 
 #### 2. MX Record Analysis
+
 ```
 Mail servers often reveal origin network:
 
@@ -1530,6 +1629,7 @@ Why it works:
 ```
 
 #### 3. SPF/TXT Record Parsing
+
 ```
 SPF records authorize sending IPs:
 
@@ -1545,6 +1645,7 @@ Why it works:
 ```
 
 #### 4. SSL Certificate Subject Alternative Names (SANs)
+
 ```
 TLS certificates list all valid domains:
 
@@ -1559,6 +1660,7 @@ Why it works:
 ```
 
 #### 5. Certificate Transparency Log Mining
+
 ```
 Query CT logs (crt.sh) for subdomains:
 
@@ -1574,6 +1676,7 @@ Why it works:
 ```
 
 #### 6. Common Pattern Discovery
+
 ```
 Test predictable origin domains:
   - origin-www.example.com
@@ -1679,6 +1782,7 @@ Security Implications:
 ```
 
 **Example Output**:
+
 ```
 Allowed HTTP Methods: OPTIONS, HEAD, GET, POST, PUT, DELETE, PATCH
 ⚠️  PUT and DELETE methods enabled (potential security risk)
@@ -1704,6 +1808,7 @@ Parsing:
 ```
 
 **Security Implications**:
+
 - Version disclosure enables CVE research
 - Outdated versions indicate security risk
 - Server fingerprinting for exploit targeting
@@ -1755,6 +1860,7 @@ Status Interpretation:
 ```
 
 **Example Output**:
+
 ```
 Discovered API Endpoints (4):
   • /api/v1 [200] - application/json
@@ -1808,6 +1914,7 @@ Cloud/Container:
 ```
 
 **Detection Method**:
+
 ```python
 1. Send HEAD request (faster than GET)
 2. Check status code == 200
@@ -1818,6 +1925,7 @@ Cloud/Container:
 ```
 
 **Example Output**:
+
 ```
 Exposed Sensitive Files (3):
   ⚠️  /.git/config [200] - text/plain (74 bytes)
@@ -1867,6 +1975,7 @@ Security Attributes:
 ```
 
 **Example Output**:
+
 ```
 Cookie Analysis (5 cookies):
   • PHPSESSID
@@ -2074,12 +2183,14 @@ cat scan.json | jq -r '.subdomains[]' | \
 **See:** [`docs/examples/nuclei_pipeline.sh`](examples/nuclei_pipeline.sh)
 
 This ready-to-use script:
+
 1. Runs Rankle scan and exports JSON
 2. Extracts and deduplicates subdomains
 3. Validates live hosts with httpx
 4. Scans for high/critical vulnerabilities with Nuclei
 
 **Usage:**
+
 ```bash
 chmod +x docs/examples/nuclei_pipeline.sh
 ./docs/examples/nuclei_pipeline.sh example.com
@@ -2125,12 +2236,14 @@ nmap $FIRST_IP -sV -O --script=banner -oA detailed_scan
 **See:** [`docs/examples/nmap_pipeline.sh`](examples/nmap_pipeline.sh)
 
 This ready-to-use script:
+
 1. Runs Rankle scan and exports JSON
 2. Extracts all IPv4 addresses from DNS results
 3. Performs service detection on common ports (80, 443, 8080, 8443, 22, 21, 3306, 5432)
 4. Runs full port scan on first discovered IP
 
 **Usage:**
+
 ```bash
 chmod +x docs/examples/nmap_pipeline.sh
 ./docs/examples/nmap_pipeline.sh example.com
@@ -2262,6 +2375,7 @@ Complete automated reconnaissance workflow combining multiple tools.
 This comprehensive script combines all tools into a single automated workflow:
 
 **Workflow:**
+
 ```
 [1/5] Rankle reconnaissance
    └─ DNS, subdomains, technologies, CDN/WAF detection
@@ -2280,12 +2394,14 @@ This comprehensive script combines all tools into a single automated workflow:
 ```
 
 **Usage:**
+
 ```bash
 chmod +x docs/examples/full_recon_chain.sh
 ./docs/examples/full_recon_chain.sh example.com
 ```
 
 **Output:** Creates a timestamped workspace directory with:
+
 - Rankle JSON and text reports
 - Subdomain list (deduplicated)
 - Live host verification results
@@ -2664,6 +2780,7 @@ jq -r '.dns.A[]' scan.json | nmap -iL - -sV
 **License**: MIT License
 
 **Disclaimer**: This tool is for **authorized security testing only**. Users must:
+
 - Obtain proper authorization before scanning
 - Comply with all applicable laws and regulations
 - Use responsibly and ethically

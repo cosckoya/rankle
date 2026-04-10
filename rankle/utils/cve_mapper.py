@@ -29,7 +29,7 @@ def generate_cpe(vendor: str, product: str, version: str | None = None) -> str:
     """
     vendor_normalized = vendor.lower().replace(" ", "_")
     product_normalized = product.lower().replace(" ", "_")
-    version_part = version if version else "*"
+    version_part = version or "*"
 
     return f"cpe:2.3:a:{vendor_normalized}:{product_normalized}:{version_part}:*:*:*:*:*:*:*"
 
@@ -228,7 +228,9 @@ def assess_technology_risk(
         "version": version,
         "severity": severity,
         "concerns": all_concerns,
-        "action": "Review CVE databases and update to latest version" if all_concerns else "Monitor for new vulnerabilities",
+        "action": "Review CVE databases and update to latest version"
+        if all_concerns
+        else "Monitor for new vulnerabilities",
         "cve_urls": map_technology_to_cve_urls(tech_name, version)["cve_search_urls"],
     }
 
@@ -249,7 +251,7 @@ def _assess_version_risk(tech_name: str, version: str) -> list[str]:
     # WordPress version checks
     if tech_name.lower() == "wordpress":
         try:
-            major, minor, patch = map(int, version.split(".")[:3])
+            major, minor, _patch = map(int, version.split(".")[:3])
             if major < 6:
                 concerns.append(f"WordPress {version} is outdated (current: 6.4+)")
             if major == 5 and minor < 9:

@@ -42,24 +42,28 @@ mypy rankle/ --show-error-context
 ### **2. What Mypy Catches Immediately:**
 
 ✅ **None-related crashes:**
+
 ```python
 x: str | None = get_value()
 print(x.upper())  # ❌ Mypy error: might be None
 ```
 
 ✅ **Type mismatches:**
+
 ```python
 def process(count: int) -> None: pass
 process("5")  # ❌ Mypy error: expected int, got str
 ```
 
 ✅ **Return type issues:**
+
 ```python
 def get_score() -> int:
     return None  # ❌ Mypy error: expected int, got None
 ```
 
 ✅ **Dictionary key typos:**
+
 ```python
 config = {"timeout": 30}
 x = config["timout"]  # ❌ Would crash at runtime
@@ -280,11 +284,13 @@ Add to GitHub Actions:
 ## 📈 Gradual Adoption Roadmap
 
 ### **Week 1: Baseline**
+
 - ✅ Run `mypy rankle/` to see current state
 - ✅ Fix any critical errors
 - ✅ Add mypy to pre-commit hooks
 
 ### **Week 2-3: Core Modules**
+
 ```bash
 # Enable strict checking on core modules
 mypy rankle/core/ --disallow-untyped-defs
@@ -292,12 +298,14 @@ mypy rankle/core/ --disallow-untyped-defs
 ```
 
 ### **Week 4-5: Utils**
+
 ```bash
 # Enable strict checking on utils
 mypy rankle/utils/ --disallow-untyped-defs
 ```
 
 ### **Week 6-8: Detectors & Modules**
+
 ```bash
 # Enable strict checking on remaining modules
 mypy rankle/detectors/ --disallow-untyped-defs
@@ -305,6 +313,7 @@ mypy rankle/modules/ --disallow-untyped-defs
 ```
 
 ### **Week 9+: Strict Mode**
+
 ```toml
 [tool.mypy]
 strict = true  # 🚀 Maximum safety!
@@ -346,11 +355,13 @@ pip install types-requests types-beautifulsoup4
 
 1. **Start small:** Enable strictness one module at a time
 2. **Use `reveal_type()`:** Debug mypy's inference
+
    ```python
    from typing import reveal_type
    x = get_value()
    reveal_type(x)  # Mypy will print the inferred type
    ```
+
 3. **Check CI logs:** Mypy output is more useful than runtime errors
 4. **Use `cast()` sparingly:** Only when you know better than mypy
 5. **Read error codes:** `mypy --show-error-codes` helps understand issues
@@ -359,10 +370,10 @@ pip install types-requests types-beautifulsoup4
 
 ## 📚 Resources
 
-- **Mypy Docs:** https://mypy.readthedocs.io/
-- **Mypy Cheat Sheet:** https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html
-- **Type Hints PEP:** https://peps.python.org/pep-0484/
-- **Gradual Typing:** https://mypy.readthedocs.io/en/stable/existing_code.html
+- **Mypy Docs:** <https://mypy.readthedocs.io/>
+- **Mypy Cheat Sheet:** <https://mypy.readthedocs.io/en/stable/cheat_sheet_py3.html>
+- **Type Hints PEP:** <https://peps.python.org/pep-0484/>
+- **Gradual Typing:** <https://mypy.readthedocs.io/en/stable/existing_code.html>
 
 ---
 

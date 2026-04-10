@@ -17,30 +17,35 @@ Comprehensive overhaul of Rankle's technology detection system implementing 2026
 ### 1. New Utility Modules Created
 
 **rankle/utils/favicon_hash.py** (25KB)
+
 - MurmurHash3 (mmh3) favicon hashing
 - Database of 25+ known favicon hashes
 - Maps hashes to technologies (WordPress, Jenkins, Jira, etc.)
 - Survives CDN/proxy obfuscation
 
 **rankle/utils/error_fingerprint.py** (10KB)
+
 - Error page fingerprinting for 10+ frameworks
 - Stack trace analysis
 - 404 page pattern detection
 - Identifies Django, Laravel, Spring Boot, Rails, etc.
 
 **rankle/utils/js_extractor.py** (15KB)
+
 - JavaScript endpoint extraction (LinkFinder approach)
 - Framework detection from JS code (React, Vue, Angular, Next.js, etc.)
 - Asset version extraction
 - API endpoint discovery
 
 **rankle/utils/wordpress_plugins.py** (12KB)
+
 - WordPress plugin detection (passive)
 - WordPress theme detection
 - 60+ known plugin mappings
 - 20+ known theme mappings
 
 **rankle/utils/cve_mapper.py** (10KB)
+
 - CPE 2.3 identifier generation
 - CVE search URL generation (NVD, MITRE, CVEDetails)
 - Technology risk assessment
@@ -50,8 +55,8 @@ Comprehensive overhaul of Rankle's technology detection system implementing 2026
 
 Added modern JavaScript frameworks to `rankle/detectors/technology.py`:
 
-- **Next.js** - React SSR framework (patterns: /_next/static/, __NEXT_DATA__)
-- **Nuxt.js** - Vue SSR framework (patterns: /_nuxt/, __NUXT__)
+- **Next.js** - React SSR framework (patterns: /_next/static/, **NEXT_DATA**)
+- **Nuxt.js** - Vue SSR framework (patterns: /_nuxt/, **NUXT**)
 - **Astro** - Static site generator (patterns: data-astro-cid-, /_astro/)
 - **SvelteKit** - Svelte framework (patterns: __sveltekit, data-sveltekit-)
 - **Remix** - React framework (patterns: /__remix, remix-route)
@@ -72,6 +77,7 @@ Added modern JavaScript frameworks to `rankle/detectors/technology.py`:
 ### 4. Dependencies Added
 
 Updated `pyproject.toml`:
+
 ```toml
 dependencies = [
     "requests>=2.31.0",
@@ -87,12 +93,14 @@ dependencies = [
 ## Detection Improvements
 
 ### Before (v1.0)
+
 - **Signatures:** ~50 technologies
 - **Methods:** Headers, cookies, HTML patterns, meta tags
 - **Confidence:** Basic scoring
 - **Output:** Technology name + confidence
 
 ### After (v2.0 Enhanced)
+
 - **Signatures:** 3000+ technologies (via Wappalyzer)
 - **Methods:**
   - Headers, cookies, HTML patterns, meta tags
@@ -117,6 +125,7 @@ dependencies = [
 ### Test Domain: example.com
 
 **Before (Traditional Detection):**
+
 ```
 Technologies Detected: 6
 - Tailwind CSS (50%)
@@ -128,6 +137,7 @@ Technologies Detected: 6
 ```
 
 **After (Enhanced Detection):**
+
 ```
 Technologies Detected: 9
 - Angular (90%)           # NEW: From Wappalyzer
@@ -155,6 +165,7 @@ Additional Features:
 ## API Usage
 
 ### Traditional Detection
+
 ```python
 from rankle.detectors.technology import TechnologyDetector
 
@@ -167,6 +178,7 @@ results = detector.detect(
 ```
 
 ### Enhanced Detection
+
 ```python
 from rankle.detectors.technology import TechnologyDetector
 
@@ -223,6 +235,7 @@ python test_enhanced_detection.py yourdomain.com
 ```
 
 **Test Results:**
+
 - ✅ All type checks pass (mypy)
 - ✅ Technologies detected successfully
 - ✅ CVE URLs generated
@@ -234,12 +247,14 @@ python test_enhanced_detection.py yourdomain.com
 ## Code Quality
 
 **Type Checking:**
+
 ```bash
 $ mypy rankle/ --config-file=pyproject.toml
 Success: no issues found in 29 source files
 ```
 
 **Python Standards:**
+
 - ✅ Python 3.11+ syntax (built-in generics, union types)
 - ✅ Google-style docstrings
 - ✅ Type hints on all public functions
@@ -251,6 +266,7 @@ Success: no issues found in 29 source files
 ## Security Considerations
 
 **Passive Reconnaissance Only:**
+
 - ✅ Favicon hashing - Passive (downloads public icon)
 - ✅ Error page analysis - Passive (triggers 404, no exploitation)
 - ✅ JavaScript analysis - Passive (reads public JS files)
@@ -258,6 +274,7 @@ Success: no issues found in 29 source files
 - ✅ Wappalyzer - Passive (pattern matching)
 
 **CVE Mapping:**
+
 - Provides search URLs, does not auto-exploit
 - Educates user about potential vulnerabilities
 - Recommends version updates
@@ -267,6 +284,7 @@ Success: no issues found in 29 source files
 ## Performance Metrics
 
 **Enhanced Detection Overhead:**
+
 - Traditional detection: ~2-3 seconds
 - Enhanced detection: ~5-8 seconds
 - Additional time breakdown:
@@ -282,6 +300,7 @@ Success: no issues found in 29 source files
 ## Future Enhancements
 
 **Phase 2 Improvements (Optional):**
+
 1. **TLS Fingerprinting** - JARM/JA3 hashing
 2. **Response Body Hashing** - Infrastructure correlation
 3. **HTTP Method Detection** - OPTIONS, WebDAV probing
@@ -293,10 +312,12 @@ Success: no issues found in 29 source files
 ## Documentation Updates
 
 **New Files:**
+
 - `docs/TECHNOLOGY_DETECTION_ENHANCEMENT.md` (this file)
 - `test_enhanced_detection.py` - Test/demo script
 
 **Updated Files:**
+
 - `pyproject.toml` - Added new dependencies
 - `rankle/utils/__init__.py` - Export new modules
 - `rankle/detectors/technology.py` - Enhanced detection methods
@@ -306,6 +327,7 @@ Success: no issues found in 29 source files
 ## Migration Guide
 
 **Existing Code:**
+
 ```python
 # Old code still works (backwards compatible)
 detector = TechnologyDetector("example.com")
@@ -313,6 +335,7 @@ results = detector.detect(headers, cookies, body)
 ```
 
 **New Enhanced Code:**
+
 ```python
 # New enhanced detection (opt-in)
 detector = TechnologyDetector("example.com")
@@ -332,6 +355,7 @@ results = detector.detect_enhanced(
 
 **Implementation:** Python Architect + Recon Researcher
 **Research:** Based on 2026 best practices from:
+
 - ProjectDiscovery (httpx, nuclei)
 - Wappalyzer database
 - OWASP Web Security Testing Guide
@@ -342,15 +366,17 @@ results = detector.detect_enhanced(
 ## References
 
 **Tools Studied:**
-- httpx - https://github.com/projectdiscovery/httpx
-- Nuclei - https://github.com/projectdiscovery/nuclei
-- Wappalyzer - https://github.com/enthec/webtech
-- WhatWeb - https://github.com/urbanadventurer/WhatWeb
-- LinkFinder - https://github.com/GerbenJavado/LinkFinder
+
+- httpx - <https://github.com/projectdiscovery/httpx>
+- Nuclei - <https://github.com/projectdiscovery/nuclei>
+- Wappalyzer - <https://github.com/enthec/webtech>
+- WhatWeb - <https://github.com/urbanadventurer/WhatWeb>
+- LinkFinder - <https://github.com/GerbenJavado/LinkFinder>
 
 **Documentation:**
-- OWASP Testing Guide - https://owasp.org/www-project-web-security-testing-guide/
-- PortSwigger Research - https://portswigger.net/research
+
+- OWASP Testing Guide - <https://owasp.org/www-project-web-security-testing-guide/>
+- PortSwigger Research - <https://portswigger.net/research>
 
 ---
 

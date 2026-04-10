@@ -66,11 +66,13 @@ rankle/
 ### 1. Modular Architecture
 
 Each module has a single, well-defined responsibility:
+
 - `dns.py` - DNS queries only
 - `ssl.py` - TLS certificate analysis only
 - `scanner.py` - Orchestration only
 
 **Benefits:**
+
 - Easy to test individual components
 - Simple to add new features
 - Clear code organization
@@ -93,6 +95,7 @@ class RankleScanner:
 ```
 
 **Benefits:**
+
 - Faster startup time
 - Reduced memory usage
 - Only pay for what you use
@@ -100,11 +103,13 @@ class RankleScanner:
 ### 3. Centralized Configuration
 
 All configuration in `config/` directory:
+
 - `settings.py` - Timeouts, User-Agent, DNS servers
 - `patterns.py` - Cloud providers, ASN patterns
 - `tech_signatures.json` - CMS/framework signatures
 
 **Benefits:**
+
 - Single source of truth
 - Easy to maintain and update
 - Clear separation of code and data
@@ -144,6 +149,7 @@ def query(self) -> Optional[str]:     # ❌
 Main orchestrator class that coordinates all reconnaissance modules.
 
 **Key Features:**
+
 - Context manager support (`with` statement)
 - Lazy initialization of modules
 - Centralized result aggregation
@@ -168,6 +174,7 @@ finally:
 ```
 
 **Key Methods:**
+
 - `run_full_scan() -> dict[str, Any]` - Execute all modules
 - `close()` - Cleanup resources
 
@@ -178,6 +185,7 @@ finally:
 HTTP session manager with automatic retry logic and connection pooling.
 
 **Features:**
+
 - Automatic retry with exponential backoff (429, 500, 502, 503, 504)
 - Connection pooling (10 connections, 20 max pool size)
 - Realistic browser headers
@@ -197,6 +205,7 @@ with SessionManager(timeout=45, retries=3) as session:
 ```
 
 **Retry Strategy:**
+
 - Max retries: 3 (configurable)
 - Backoff factor: 0.5s (exponential)
 - Retry on: 429, 500, 502, 503, 504
@@ -213,6 +222,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** DNS enumeration using dnspython
 
 **Queries:**
+
 - A (IPv4 addresses)
 - AAAA (IPv6 addresses)
 - MX (Mail servers)
@@ -222,6 +232,7 @@ with SessionManager(timeout=45, retries=3) as session:
 - CNAME (Canonical names)
 
 **Custom Resolver:**
+
 - Configurable nameservers (default: 8.8.8.8, 1.1.1.1)
 - 10-second timeout per query
 - NXDOMAIN and NoAnswer handling
@@ -233,6 +244,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** TLS/SSL certificate analysis
 
 **Extracts:**
+
 - Subject (CN, O, OU)
 - Issuer information
 - Validity dates
@@ -249,6 +261,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Data Source:** crt.sh (public CT log database)
 
 **Method:**
+
 1. Query crt.sh API for domain certificates
 2. Extract SANs from certificates
 3. Deduplicate and filter results
@@ -261,6 +274,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** Domain registration information
 
 **Features:**
+
 - Primary: python-whois library
 - Fallback: Raw socket queries (port 43)
 - Handles multiple WHOIS server responses
@@ -272,6 +286,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** IP geolocation and cloud provider detection
 
 **Detects:**
+
 - Country, city
 - ISP/Organization
 - ASN (Autonomous System Number)
@@ -285,6 +300,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** HTTP fingerprinting with concurrent scanning
 
 **Features:**
+
 - 8 fingerprinting techniques
 - ThreadPoolExecutor for parallel requests
 - Server version extraction
@@ -299,6 +315,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** HTTP security headers audit
 
 **Checks:**
+
 - X-Frame-Options
 - Content-Security-Policy
 - Strict-Transport-Security
@@ -318,12 +335,14 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** CMS, frameworks, and library detection
 
 **Features:**
+
 - Signature-based matching
 - Confidence scoring (0-100%)
 - Version detection
 - 30+ technologies supported
 
 **Detection Methods:**
+
 1. HTML pattern matching
 2. JavaScript library detection
 3. Meta tags analysis
@@ -337,6 +356,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** CDN provider detection
 
 **Providers:** 20+ including:
+
 - TransparentEdge
 - Cloudflare
 - Akamai
@@ -347,6 +367,7 @@ with SessionManager(timeout=45, retries=3) as session:
 - And more...
 
 **Detection Methods:**
+
 - HTTP headers (X-Cache, Server, Via)
 - CNAME records
 - Server response patterns
@@ -358,6 +379,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** Web Application Firewall detection
 
 **Solutions:** 15+ including:
+
 - Cloudflare WAF
 - Imperva/Incapsula
 - PerimeterX
@@ -369,6 +391,7 @@ with SessionManager(timeout=45, retries=3) as session:
 - And more...
 
 **Detection Methods:**
+
 - Challenge pages
 - Cookies (_px, visid_incap, etc.)
 - HTTP headers
@@ -381,6 +404,7 @@ with SessionManager(timeout=45, retries=3) as session:
 **Purpose:** Origin infrastructure discovery behind CDN/WAF
 
 **Methods:**
+
 1. Subdomain analysis (origin.*, direct.*, admin.*)
 2. MX records (mail servers reveal origin network)
 3. SPF/TXT records (authorized IP ranges)
@@ -388,6 +412,7 @@ with SessionManager(timeout=45, retries=3) as session:
 5. Common patterns (api.*, backend.*, etc.)
 
 **Output:**
+
 - Origin IP addresses
 - Direct-access domains
 - Cloud provider identification

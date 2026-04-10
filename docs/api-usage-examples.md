@@ -106,6 +106,7 @@ if results['exists']:
 ```
 
 **Output Structure:**
+
 ```python
 {
     'exists': True,
@@ -149,6 +150,7 @@ for tech in results['technologies']:
 ```
 
 **Enhanced Detection (v2.0):**
+
 ```python
 # Use enhanced detection
 enhanced_results = detector.detect_enhanced(
@@ -700,6 +702,7 @@ if __name__ == '__main__':
 ```
 
 **Usage:**
+
 ```bash
 curl -X POST http://localhost:5000/scan \
   -H "Content-Type: application/json" \
@@ -828,4 +831,4 @@ def process_results(results: dict[str, Any]) -> None:
 **Last Updated:** 2026-01-20
 **Maintained By:** Rankle Development Team
 
-**Questions?** Open an issue on GitHub: https://github.com/javicosvml/rankle/issues
+**Questions?** Open an issue on GitHub: <https://github.com/javicosvml/rankle/issues>

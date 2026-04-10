@@ -7,6 +7,7 @@ Requires Python 3.12+ for PEP 695 'type' statement, or Python 3.10+ for TypeAlia
 
 from typing import Any
 
+
 # Python 3.10+ compatible type aliases using TypeAlias
 
 # Results and responses
@@ -43,13 +44,13 @@ ConfigDict = dict[str, Any]
 """Configuration dictionary."""
 
 __all__ = [
-    "ScanResults",
-    "DetectionResults",
+    "ConfigDict",
+    "Cookies",
     "DNSRecords",
+    "DetectionResults",
     "Evidence",
     "Headers",
-    "Cookies",
     "IPAddresses",
+    "ScanResults",
     "Signatures",
-    "ConfigDict",
 ]

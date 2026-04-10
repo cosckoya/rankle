@@ -23,10 +23,12 @@ This guide will help you install Rankle and run your first reconnaissance scan.
 ## Requirements
 
 **Minimum Requirements:**
+
 - Python 3.11 or higher
 - Docker (optional, for containerized usage)
 
 **Supported Operating Systems:**
+
 - Linux (Ubuntu, Debian, Fedora, etc.)
 - macOS
 - Windows (via WSL2 or native Python)
@@ -79,6 +81,7 @@ docker build -t rankle .
 ```
 
 **Docker Security Features:**
+
 - **Non-root User:** Runs as dedicated `rankle` user (UID 1000)
 - **Healthcheck:** Built-in health monitoring
 - **OCI Metadata:** Complete OCI-compliant image annotations
@@ -189,6 +192,7 @@ Examples:
 **File Location:** `output/<domain>_rankle.json`
 
 **Use Cases:**
+
 - Automated processing with `jq`
 - Integration with security tools (Nuclei, Nmap, Metasploit)
 - Database storage (PostgreSQL JSONB, Elasticsearch)
@@ -218,6 +222,7 @@ cat scan.json | jq -r '.subdomains[]' | nuclei -l -
 **File Location:** `output/<domain>_report.txt`
 
 **Characteristics:**
+
 - Compact, technical format
 - Section-based layout
 - grep/awk friendly
@@ -336,6 +341,7 @@ After installing and running your first scan:
 **Problem:** `ModuleNotFoundError: No module named 'requests'`
 
 **Solution:**
+
 ```bash
 pip install -r requirements.txt
 ```
@@ -345,9 +351,11 @@ pip install -r requirements.txt
 **Problem:** "DNS query failed" or "No answer"
 
 **Solution:**
+
 - Check your internet connection
 - Try with a different domain
 - Configure custom DNS servers in `config/settings.py`:
+
   ```python
   DNS_NAMESERVERS = ["8.8.8.8", "1.1.1.1"]
   ```
@@ -357,6 +365,7 @@ pip install -r requirements.txt
 **Problem:** "Permission denied" when mounting volumes
 
 **Solution:**
+
 ```bash
 # Linux: Ensure output directory exists and has correct permissions
 mkdir -p output
@@ -371,10 +380,13 @@ docker run --rm -u $(id -u):$(id -g) -v $(pwd)/output:/output rankle example.com
 **Problem:** "Request timeout" or slow scans
 
 **Solution:**
+
 - Increase timeout in `config/settings.py`:
+
   ```python
   DEFAULT_TIMEOUT = 60  # Increase from 45
   ```
+
 - Use verbose mode to see which operations are slow: `python main.py example.com -v`
 
 ---

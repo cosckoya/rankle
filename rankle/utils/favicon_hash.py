@@ -14,7 +14,9 @@ import requests
 from config.settings import DEFAULT_TIMEOUT
 
 
-def calculate_favicon_hash(favicon_url: str, timeout: int = DEFAULT_TIMEOUT) -> str | None:
+def calculate_favicon_hash(
+    favicon_url: str, timeout: int = DEFAULT_TIMEOUT
+) -> str | None:
     """
     Calculate mmh3 hash of favicon for fingerprinting.
 
@@ -105,7 +107,9 @@ def get_technology_from_favicon_hash(favicon_hash: str) -> dict[str, Any] | None
     return None
 
 
-def analyze_favicon(base_url: str, timeout: int = DEFAULT_TIMEOUT) -> dict[str, Any] | None:
+def analyze_favicon(
+    base_url: str, timeout: int = DEFAULT_TIMEOUT
+) -> dict[str, Any] | None:
     """
     Complete favicon analysis: hash calculation and technology matching.
 

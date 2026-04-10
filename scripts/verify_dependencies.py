@@ -9,7 +9,9 @@ import sys
 from typing import Any
 
 
-def check_dependency(package_name: str, import_name: str | None = None) -> dict[str, Any]:
+def check_dependency(
+    package_name: str, import_name: str | None = None
+) -> dict[str, Any]:
     """
     Check if a dependency is installed and importable.
 
@@ -131,11 +133,12 @@ def main() -> None:
             from rankle import RankleScanner
             from rankle.utils import (
                 analyze_favicon,
-                fingerprint_error_page,
                 analyze_javascript,
                 analyze_wordpress,
+                fingerprint_error_page,
                 map_technology_to_cve_urls,
             )
+
             print("   ✅ All Rankle modules import successfully")
         except ImportError as e:
             print(f"   ❌ Rankle module import failed: {e}")
@@ -150,7 +153,7 @@ def main() -> None:
         missing = [r["package"] for r in core_results if not r["importable"]]
         if missing:
             print(f"\n   Missing packages: {', '.join(missing)}")
-            print(f"\n   Install missing:")
+            print("\n   Install missing:")
             print(f"   pip install {' '.join(missing)}")
 
         sys.exit(1)

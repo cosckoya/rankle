@@ -23,7 +23,9 @@ def detect_wordpress_plugins(html: str) -> list[dict[str, Any]]:
         List of detected plugins with slugs and confidence
 
     Example:
-        >>> html = '<script src="/wp-content/plugins/contact-form-7/script.js"></script>'
+        >>> html = (
+        ...     '<script src="/wp-content/plugins/contact-form-7/script.js"></script>'
+        ... )
         >>> detect_wordpress_plugins(html)
         [{'name': 'contact-form-7', 'type': 'wordpress-plugin', 'confidence': 0.8}]
     """
@@ -233,15 +235,19 @@ def is_wordpress_site(html: str, headers: dict[str, str]) -> bool:
         True
     """
     # Check meta generator tag
-    if re.search(r'<meta[^>]*name=["\']generator["\'][^>]*content=["\']WordPress', html, re.IGNORECASE):
+    if re.search(
+        r'<meta[^>]*name=["\']generator["\'][^>]*content=["\']WordPress',
+        html,
+        re.IGNORECASE,
+    ):
         return True
 
     # Check wp-content paths
-    if re.search(r'/wp-content/', html, re.IGNORECASE):
+    if re.search(r"/wp-content/", html, re.IGNORECASE):
         return True
 
     # Check wp-includes paths
-    if re.search(r'/wp-includes/', html, re.IGNORECASE):
+    if re.search(r"/wp-includes/", html, re.IGNORECASE):
         return True
 
     # Check X-Powered-By header
@@ -250,10 +256,7 @@ def is_wordpress_site(html: str, headers: dict[str, str]) -> bool:
         return True
 
     # Check for wp-json REST API
-    if "/wp-json/" in html:
-        return True
-
-    return False
+    return "/wp-json/" in html
 
 
 def analyze_wordpress(html: str, headers: dict[str, str]) -> dict[str, Any]:

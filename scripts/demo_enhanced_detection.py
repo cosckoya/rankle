@@ -12,8 +12,10 @@ Demonstrates new features:
 """
 
 import json
-from rankle.detectors.technology import TechnologyDetector
+
 import requests
+
+from rankle.detectors.technology import TechnologyDetector
 
 
 def test_enhanced_detection(domain: str) -> None:
@@ -41,7 +43,7 @@ def test_enhanced_detection(domain: str) -> None:
         body = response.text
 
         # Run enhanced detection
-        print(f"\n[2/3] Running enhanced technology detection...")
+        print("\n[2/3] Running enhanced technology detection...")
         detector = TechnologyDetector(domain)
 
         results = detector.detect_enhanced(
@@ -52,7 +54,7 @@ def test_enhanced_detection(domain: str) -> None:
         )
 
         # Display results
-        print(f"\n[3/3] Results:")
+        print("\n[3/3] Results:")
         print("=" * 80)
 
         if results.get("detected"):
@@ -82,8 +84,8 @@ def test_enhanced_detection(domain: str) -> None:
                 if isinstance(evidence, list) and len(evidence) > 0:
                     for ev in evidence[:2]:  # First 2 pieces of evidence
                         if isinstance(ev, dict):
-                            ev_type = ev.get('type', 'unknown')
-                            ev_detail = ev.get('detail', 'detected')
+                            ev_type = ev.get("type", "unknown")
+                            ev_detail = ev.get("detail", "detected")
                             if isinstance(ev_detail, str):
                                 print(f"       → {ev_type}: {ev_detail[:60]}")
 
@@ -112,13 +114,13 @@ def test_enhanced_detection(domain: str) -> None:
             if "asset_versions" in results:
                 versions = results["asset_versions"]
                 if versions:
-                    print(f"\n📦 Version Detection from Assets:")
+                    print("\n📦 Version Detection from Assets:")
                     for tech, version in versions.items():
                         print(f"   - {tech}: {version}")
 
             # CVE mappings
             if "cve_mappings" in results:
-                print(f"\n🔐 CVE Search URLs (Top 5 Technologies):")
+                print("\n🔐 CVE Search URLs (Top 5 Technologies):")
                 for cve_info in results["cve_mappings"][:5]:
                     tech_name = cve_info["technology"]
                     version = cve_info.get("version")
@@ -146,6 +148,7 @@ def test_enhanced_detection(domain: str) -> None:
     except Exception as e:
         print(f"❌ Error during detection: {e}")
         import traceback
+
         traceback.print_exc()
 
 

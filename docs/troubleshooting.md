@@ -28,6 +28,7 @@
 ### Problem: `pip install` fails with "externally-managed-environment"
 
 **Error Message:**
+
 ```
 error: externally-managed-environment
 × This environment is externally managed
@@ -36,6 +37,7 @@ error: externally-managed-environment
 **Cause:** Python 3.11+ on Debian/Ubuntu uses externally managed environments
 
 **Solution 1 (Recommended):** Use virtual environment
+
 ```bash
 # Create virtual environment
 python3 -m venv .venv
@@ -48,6 +50,7 @@ pip install -r requirements.txt
 ```
 
 **Solution 2:** Use UV (modern package manager)
+
 ```bash
 # Install UV
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -63,6 +66,7 @@ uv pip install -r requirements.txt
 ### Problem: `ModuleNotFoundError: No module named 'Wappalyzer'`
 
 **Error Message:**
+
 ```
 ModuleNotFoundError: No module named 'Wappalyzer'
 ```
@@ -70,6 +74,7 @@ ModuleNotFoundError: No module named 'Wappalyzer'
 **Cause:** python-Wappalyzer package not installed or missing dependency
 
 **Solution:**
+
 ```bash
 # Activate virtual environment first
 source .venv/bin/activate
@@ -88,6 +93,7 @@ python -c "import Wappalyzer; print('OK')"
 ### Problem: `ModuleNotFoundError: No module named 'pkg_resources'`
 
 **Error Message:**
+
 ```
 File ".../Wappalyzer.py", line 5, in <module>
     import pkg_resources
@@ -97,6 +103,7 @@ ModuleNotFoundError: No module named 'pkg_resources'
 **Cause:** Missing setuptools package (required by python-Wappalyzer)
 
 **Solution:**
+
 ```bash
 pip install setuptools
 ```
@@ -109,11 +116,13 @@ The warning about `pkg_resources` being deprecated is expected and can be ignore
 ### Problem: Permission denied when running scripts
 
 **Error Message:**
+
 ```
 bash: ./script.py: Permission denied
 ```
 
 **Solution:**
+
 ```bash
 # Make script executable
 chmod +x script.py
@@ -129,17 +138,20 @@ python script.py
 ### Problem: "Some core dependencies are missing"
 
 **Error Message:**
+
 ```
 ❌ Some core dependencies are missing!
    Missing packages: python-Wappalyzer, mmh3
 ```
 
 **Diagnosis:** Run dependency verification
+
 ```bash
 python scripts/verify_dependencies.py
 ```
 
 **Solution:** Install missing packages
+
 ```bash
 source .venv/bin/activate
 pip install python-Wappalyzer mmh3 setuptools
@@ -150,6 +162,7 @@ pip install python-Wappalyzer mmh3 setuptools
 ### Problem: ImportError for rankle modules
 
 **Error Message:**
+
 ```
 ImportError: cannot import name 'RankleScanner' from 'rankle'
 ```
@@ -157,6 +170,7 @@ ImportError: cannot import name 'RankleScanner' from 'rankle'
 **Cause:** Rankle not installed in development mode
 
 **Solution:**
+
 ```bash
 # Install in development mode
 pip install -e .
@@ -170,11 +184,13 @@ pip install -e ".[dev]"
 ### Problem: Version conflicts between dependencies
 
 **Error Message:**
+
 ```
 ERROR: pip's dependency resolver does not currently take into account all the packages that are installed.
 ```
 
 **Solution:** Clean install
+
 ```bash
 # Deactivate and remove old venv
 deactivate
@@ -196,17 +212,20 @@ pip install -r requirements.txt
 ### Problem: Connection refused or connection timeout
 
 **Error Message:**
+
 ```
 requests.exceptions.ConnectionError: ('Connection aborted.', ConnectionRefusedError(111, 'Connection refused'))
 ```
 
 **Possible Causes:**
+
 1. Target domain is down
 2. Firewall blocking outbound connections
 3. Network connectivity issues
 4. Target blocking your IP
 
 **Diagnosis:**
+
 ```bash
 # Test basic connectivity
 ping example.com
@@ -224,18 +243,21 @@ nslookup example.com
 **Solutions:**
 
 **1. Increase timeout:**
+
 ```python
 # In config/settings.py
 DEFAULT_TIMEOUT = 30  # Increase from default 15
 ```
 
 **2. Add retry logic:**
+
 ```bash
 # Rankle already has retry logic built-in
 # But you can adjust retries in session.py
 ```
 
 **3. Check firewall:**
+
 ```bash
 # Linux: Check iptables
 sudo iptables -L
@@ -249,6 +271,7 @@ sudo ufw allow out 443/tcp
 ### Problem: SSL verification failed
 
 **Error Message:**
+
 ```
 requests.exceptions.SSLError: HTTPSConnectionPool(host='example.com', port=443):
 Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(...)))
@@ -257,12 +280,14 @@ Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(..
 **Cause:** Invalid/expired SSL certificate on target
 
 **Solution 1:** This is expected behavior for security
+
 ```bash
 # Rankle correctly reports this as:
 # "SSL Grade: F - Certificate verification failed"
 ```
 
 **Solution 2:** If you need to scan anyway (dev/testing)
+
 ```python
 # Edit config/settings.py
 VERIFY_SSL = False  # Use with caution!
@@ -275,6 +300,7 @@ VERIFY_SSL = False  # Use with caution!
 ### Problem: "Name or service not known"
 
 **Error Message:**
+
 ```
 socket.gaierror: [Errno -2] Name or service not known
 ```
@@ -284,12 +310,14 @@ socket.gaierror: [Errno -2] Name or service not known
 **Solutions:**
 
 **1. Check domain spelling:**
+
 ```bash
 # Make sure domain is correct
 python main.py example.com  # Not "exmaple.com"
 ```
 
 **2. Try different DNS server:**
+
 ```python
 # Edit config/settings.py
 DNS_SERVERS = [
@@ -300,6 +328,7 @@ DNS_SERVERS = [
 ```
 
 **3. Check system DNS:**
+
 ```bash
 # Test DNS resolution
 nslookup example.com
@@ -315,16 +344,19 @@ cat /etc/resolv.conf
 ### Problem: No DNS records found
 
 **Error Message:**
+
 ```
 [!] No A records found for example.com
 ```
 
 **Possible Causes:**
+
 1. Domain doesn't exist
 2. DNS server timeout
 3. Domain has no A records (only AAAA, CNAME, etc.)
 
 **Diagnosis:**
+
 ```bash
 # Check all record types
 dig example.com ANY
@@ -336,6 +368,7 @@ dig example.com CNAME
 ```
 
 **Solution:** Domain may be valid but have unusual DNS setup
+
 ```bash
 # Try scanning with IP directly
 python main.py 93.184.216.34
@@ -348,6 +381,7 @@ python main.py 93.184.216.34
 ### Problem: DNS timeout
 
 **Error Message:**
+
 ```
 dns.exception.Timeout: The DNS query timed out
 ```
@@ -355,6 +389,7 @@ dns.exception.Timeout: The DNS query timed out
 **Solutions:**
 
 **1. Increase DNS timeout:**
+
 ```python
 # In rankle/modules/dns.py
 resolver.timeout = 10  # Increase from default
@@ -362,12 +397,14 @@ resolver.lifetime = 30  # Increase from default
 ```
 
 **2. Use reliable DNS servers:**
+
 ```python
 # config/settings.py
 DNS_SERVERS = ["1.1.1.1", "8.8.8.8"]  # Fast, reliable
 ```
 
 **3. Check network:**
+
 ```bash
 # Test DNS connectivity
 dig @1.1.1.1 example.com
@@ -381,17 +418,20 @@ dig @8.8.8.8 example.com
 ### Problem: Certificate verification error
 
 **Error Message:**
+
 ```
 [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed
 ```
 
 **Expected Behavior:** Rankle reports this correctly
+
 ```
 SSL Grade: F
 Issue: Certificate verification failed
 ```
 
 **If you need details:**
+
 ```bash
 # Use openssl to inspect
 openssl s_client -connect example.com:443 -servername example.com
@@ -405,6 +445,7 @@ echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -noo
 ### Problem: Unable to extract certificate info
 
 **Error Message:**
+
 ```
 [!] SSL analysis failed: [SSL] record layer failure
 ```
@@ -412,6 +453,7 @@ echo | openssl s_client -connect example.com:443 2>/dev/null | openssl x509 -noo
 **Cause:** SSL/TLS connection issues
 
 **Diagnosis:**
+
 ```bash
 # Test SSL/TLS versions
 nmap --script ssl-enum-ciphers -p 443 example.com
@@ -421,6 +463,7 @@ openssl s_client -showcerts -connect example.com:443
 ```
 
 **Solution:** Target may have strict TLS requirements
+
 ```python
 # Rankle uses requests library defaults (TLS 1.2+)
 # This is generally sufficient for modern sites
@@ -433,6 +476,7 @@ openssl s_client -showcerts -connect example.com:443
 ### Problem: HTTP 429 (Too Many Requests)
 
 **Error Message:**
+
 ```
 HTTP 429: Too Many Requests
 ```
@@ -442,24 +486,28 @@ HTTP 429: Too Many Requests
 **Solutions:**
 
 **1. Increase delay between requests:**
+
 ```python
 # config/settings.py
 RATE_LIMIT_DELAY = 2.0  # Seconds between requests (increase from 1.0)
 ```
 
 **2. Use slower scan mode:**
+
 ```bash
 # If implemented, use --slow flag
 python main.py example.com --slow
 ```
 
 **3. Scan fewer subdomains:**
+
 ```python
 # Reduce subdomain wordlist size
 # Or skip subdomain enumeration
 ```
 
 **4. Wait and retry:**
+
 ```bash
 # Rate limits often reset after time period
 sleep 3600  # Wait 1 hour
@@ -471,11 +519,13 @@ python main.py example.com
 ### Problem: HTTP 403 (Forbidden)
 
 **Error Message:**
+
 ```
 HTTP 403: Forbidden
 ```
 
 **Possible Causes:**
+
 1. WAF blocking your IP
 2. Geographic restrictions
 3. User-Agent filtering
@@ -484,18 +534,21 @@ HTTP 403: Forbidden
 **Solutions:**
 
 **1. Check User-Agent:**
+
 ```python
 # config/settings.py - Ensure realistic User-Agent
 DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 ```
 
 **2. Try from different network:**
+
 ```bash
 # Use VPN or different IP
 # Mobile hotspot, cloud VM, etc.
 ```
 
 **3. Respect blocks:**
+
 ```
 If consistently blocked, the target may not want scanning.
 Consider reaching out for authorization.
@@ -506,6 +559,7 @@ Consider reaching out for authorization.
 ### Problem: Cloudflare challenge page
 
 **Error Message:**
+
 ```
 Detected: Cloudflare (100%)
 But page shows: "Checking your browser before accessing..."
@@ -514,6 +568,7 @@ But page shows: "Checking your browser before accessing..."
 **Cause:** Cloudflare JavaScript challenge or CAPTCHA
 
 **Solution:** Rankle focuses on passive reconnaissance
+
 ```
 Cloudflare challenges cannot be bypassed with passive tools.
 This is working as intended - Rankle detects Cloudflare correctly.
@@ -528,6 +583,7 @@ For authorized testing, contact site owner for API access or WAF whitelist.
 ### Problem: Request timeout
 
 **Error Message:**
+
 ```
 requests.exceptions.Timeout: HTTPSConnectionPool(host='example.com', port=443):
 Read timed out. (read timeout=15)
@@ -536,18 +592,21 @@ Read timed out. (read timeout=15)
 **Solutions:**
 
 **1. Increase global timeout:**
+
 ```python
 # config/settings.py
 DEFAULT_TIMEOUT = 30  # Increase from 15 seconds
 ```
 
 **2. Check target responsiveness:**
+
 ```bash
 # Measure response time
 time curl -I https://example.com
 ```
 
 **3. Network issues:**
+
 ```bash
 # Check latency
 ping example.com
@@ -557,6 +616,7 @@ traceroute example.com
 ```
 
 **4. Scan during off-peak hours:**
+
 ```
 Target may be slow during high traffic periods.
 Try scanning at night or weekends.
@@ -569,11 +629,13 @@ Try scanning at night or weekends.
 ### Problem: No technologies detected
 
 **Error Message:**
+
 ```
 Technologies Detected: 0
 ```
 
 **Diagnosis:**
+
 ```bash
 # Check if site is accessible
 curl -I https://example.com
@@ -583,6 +645,7 @@ curl https://example.com | head -50
 ```
 
 **Possible Causes:**
+
 1. Site uses uncommon technologies
 2. Heavily minified/obfuscated code
 3. SPA (Single Page Application) with late-loading content
@@ -591,11 +654,13 @@ curl https://example.com | head -50
 **Solutions:**
 
 **1. Try enhanced detection:**
+
 ```bash
 python scripts/demo_enhanced_detection.py example.com
 ```
 
 **2. Manual inspection:**
+
 ```bash
 # Save full HTML
 curl https://example.com > page.html
@@ -605,6 +670,7 @@ grep -i "generator\|powered\|built" page.html
 ```
 
 **3. Check headers:**
+
 ```bash
 curl -I https://example.com | grep -i "x-\|server"
 ```
@@ -618,6 +684,7 @@ curl -I https://example.com | grep -i "x-\|server"
 **Cause:** False positive from pattern matching
 
 **Diagnosis:**
+
 ```bash
 # Check confidence score
 # Low confidence (< 50%) = likely false positive
@@ -626,6 +693,7 @@ curl -I https://example.com | grep -i "x-\|server"
 **Solutions:**
 
 **1. Check evidence:**
+
 ```json
 // Look at detection evidence
 {
@@ -636,6 +704,7 @@ curl -I https://example.com | grep -i "x-\|server"
 ```
 
 **2. Report false positive:**
+
 ```
 If consistently wrong, report issue with:
 - Target domain
@@ -649,6 +718,7 @@ If consistently wrong, report issue with:
 ### Problem: Version not detected
 
 **Message:**
+
 ```
 Django detected (80%) - Version: Unknown
 ```
@@ -656,12 +726,14 @@ Django detected (80%) - Version: Unknown
 **Cause:** Version string not exposed in headers/HTML
 
 **This is normal:**
+
 ```
 Many production sites intentionally hide version info for security.
 Rankle can only detect versions when explicitly exposed.
 ```
 
 **Try:**
+
 - Enhanced detection (may find versions in asset filenames)
 - Error page fingerprinting (debug pages sometimes show versions)
 - Favicon hashing (some versions have unique favicons)
@@ -673,11 +745,13 @@ Rankle can only detect versions when explicitly exposed.
 ### Problem: JSON output malformed
 
 **Error Message:**
+
 ```
 json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 ```
 
 **Solution:**
+
 ```bash
 # Ensure using --output json flag
 python main.py example.com --output json > results.json
@@ -691,11 +765,13 @@ python -m json.tool results.json
 ### Problem: Unicode/emoji display issues
 
 **Error Message:**
+
 ```
 UnicodeEncodeError: 'ascii' codec can't encode character
 ```
 
 **Solution:**
+
 ```bash
 # Set UTF-8 encoding
 export PYTHONIOENCODING=utf-8
@@ -709,6 +785,7 @@ python main.py example.com | iconv -f utf-8
 ### Problem: Output too verbose
 
 **Solution:**
+
 ```bash
 # Reduce verbosity (if --verbose flag used)
 python main.py example.com  # Without --verbose
@@ -726,6 +803,7 @@ python main.py example.com > scan.txt 2>&1
 **Symptoms:** Scan takes > 5 minutes
 
 **Diagnosis:**
+
 ```bash
 # Time the scan
 time python main.py example.com
@@ -734,6 +812,7 @@ time python main.py example.com
 **Common Causes & Solutions:**
 
 **1. Network latency:**
+
 ```bash
 # Check ping
 ping example.com
@@ -742,18 +821,21 @@ ping example.com
 ```
 
 **2. Many subdomains:**
+
 ```
 Subdomain enumeration can be slow.
 Certificate Transparency logs may have thousands of entries.
 ```
 
 **Solution:**
+
 ```python
 # Limit subdomain results in future version
 # Or skip subdomain enumeration
 ```
 
 **3. Timeout settings too high:**
+
 ```python
 # config/settings.py
 DEFAULT_TIMEOUT = 15  # Don't set too high (e.g., 60)
@@ -770,17 +852,20 @@ DEFAULT_TIMEOUT = 15  # Don't set too high (e.g., 60)
 **Solutions:**
 
 **1. Limit subdomain scanning:**
+
 ```python
 # Reduce Certificate Transparency results
 ```
 
 **2. Clear results between scans:**
+
 ```bash
 # Don't accumulate scan results in memory
 # Save to file after each scan
 ```
 
 **3. Use Docker with memory limits:**
+
 ```bash
 docker run --memory="512m" rankle example.com
 ```
@@ -792,6 +877,7 @@ docker run --memory="512m" rankle example.com
 ### Problem: Docker build fails
 
 **Error Message:**
+
 ```
 ERROR [stage 1/2] failed to solve: dockerfile parse error
 ```
@@ -799,12 +885,14 @@ ERROR [stage 1/2] failed to solve: dockerfile parse error
 **Solutions:**
 
 **1. Check Docker version:**
+
 ```bash
 docker --version
 # Require Docker 20.10+
 ```
 
 **2. Clean build:**
+
 ```bash
 docker system prune -a
 docker build --no-cache -t rankle .
@@ -815,11 +903,13 @@ docker build --no-cache -t rankle .
 ### Problem: Container can't resolve DNS
 
 **Error Message:**
+
 ```
 socket.gaierror: [Errno -2] Name or service not known
 ```
 
 **Solution:**
+
 ```bash
 # Use host network
 docker run --network host rankle example.com
@@ -833,11 +923,13 @@ docker run --dns 1.1.1.1 rankle example.com
 ### Problem: Permission issues with output volume
 
 **Error Message:**
+
 ```
 PermissionError: [Errno 13] Permission denied: '/output/results.json'
 ```
 
 **Solution:**
+
 ```bash
 # Fix permissions on host
 chmod 777 ./output
@@ -853,6 +945,7 @@ docker run --user $(id -u):$(id -g) -v ./output:/output rankle example.com
 ### Problem: mypy reports type errors
 
 **Error Message:**
+
 ```
 error: Incompatible types in assignment (expression has type "str | None", variable has type "str")
 ```
@@ -862,6 +955,7 @@ error: Incompatible types in assignment (expression has type "str | None", varia
 **Quick fixes:**
 
 **1. Use type guards:**
+
 ```python
 if result is not None:
     # Now mypy knows result is str, not str | None
@@ -869,12 +963,14 @@ if result is not None:
 ```
 
 **2. Add type annotations:**
+
 ```python
 def analyze(domain: str) -> dict[str, Any]:  # Not Dict[str, Any]
     ...
 ```
 
 **3. Update imports:**
+
 ```python
 # Python 3.9+ - No typing imports needed for built-ins
 data: dict[str, list[int]] = {}  # Not Dict[str, List[int]]
@@ -889,11 +985,13 @@ data: dict[str, list[int]] = {}  # Not Dict[str, List[int]]
 **1. Check this troubleshooting guide**
 
 **2. Verify dependencies:**
+
 ```bash
 python scripts/verify_dependencies.py
 ```
 
 **3. Test with known-good domain:**
+
 ```bash
 # Should always work
 python main.py example.com
@@ -901,6 +999,7 @@ python main.py google.com
 ```
 
 **4. Check for updates:**
+
 ```bash
 git pull
 pip install --upgrade -r requirements.txt
@@ -909,6 +1008,7 @@ pip install --upgrade -r requirements.txt
 ### Reporting Issues
 
 **Include in bug reports:**
+
 1. Rankle version (`git log -1 --oneline`)
 2. Python version (`python --version`)
 3. Operating system
@@ -917,9 +1017,10 @@ pip install --upgrade -r requirements.txt
 6. Steps to reproduce
 7. Expected vs actual behavior
 
-**GitHub Issues:** https://github.com/javicosvml/rankle/issues
+**GitHub Issues:** <https://github.com/javicosvml/rankle/issues>
 
 **Format:**
+
 ```markdown
 **Environment:**
 - Rankle version: 2.0.0
@@ -931,7 +1032,9 @@ pip install --upgrade -r requirements.txt
 
 **Error:**
 ```
+
 [Full error message here]
+
 ```
 
 **Expected:** Should detect technologies
@@ -942,8 +1045,8 @@ pip install --upgrade -r requirements.txt
 
 ### Community Support
 
-- **GitHub Discussions:** https://github.com/javicosvml/rankle/discussions
-- **Documentation:** https://github.com/javicosvml/rankle/tree/main/docs
+- **GitHub Discussions:** <https://github.com/javicosvml/rankle/discussions>
+- **Documentation:** <https://github.com/javicosvml/rankle/tree/main/docs>
 - **Examples:** See `docs/examples/` directory
 
 ### Emergency Workarounds
@@ -951,6 +1054,7 @@ pip install --upgrade -r requirements.txt
 **If Rankle completely broken:**
 
 **1. Use individual tools:**
+
 ```bash
 # DNS enumeration
 dig example.com ANY
@@ -963,12 +1067,14 @@ subfinder -d example.com
 ```
 
 **2. Use Docker (isolated environment):**
+
 ```bash
 docker pull javicosvml/rankle:latest
 docker run --rm rankle example.com
 ```
 
 **3. Fresh installation:**
+
 ```bash
 # Nuclear option: start over
 cd ..
@@ -1025,11 +1131,12 @@ print(f"User-Agent: {DEFAULT_USER_AGENT}")
 
 If this guide doesn't solve your problem:
 
-1. **Search existing issues:** https://github.com/javicosvml/rankle/issues
-2. **Ask in discussions:** https://github.com/javicosvml/rankle/discussions
-3. **Open new issue:** https://github.com/javicosvml/rankle/issues/new
+1. **Search existing issues:** <https://github.com/javicosvml/rankle/issues>
+2. **Ask in discussions:** <https://github.com/javicosvml/rankle/discussions>
+3. **Open new issue:** <https://github.com/javicosvml/rankle/issues/new>
 
 **Always include:**
+
 - Rankle version
 - Python version
 - Operating system

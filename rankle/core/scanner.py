@@ -8,7 +8,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from config.settings import (
-    CDN_DETECTION_THRESHOLD,
     DEFAULT_TIMEOUT,
     MAX_BODY_SIZE,
     MAX_DISPLAY_ORIGINS,
@@ -644,9 +643,9 @@ class RankleScanner:
         if total > 0:
             print(f"\n🌐 SUBDOMAINS ({total} found, {live} live)")
             print("─" * 40)
-            live_subs = [
-                s for s in subs.get("subdomains", []) if s.get("is_live")
-            ][:MAX_DISPLAY_SUBDOMAINS]
+            live_subs = [s for s in subs.get("subdomains", []) if s.get("is_live")][
+                :MAX_DISPLAY_SUBDOMAINS
+            ]
             for s in live_subs:
                 ips = s.get("ips", [])
                 ip_str = f" → {ips[0]}" if ips else ""

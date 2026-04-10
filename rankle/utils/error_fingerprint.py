@@ -162,9 +162,6 @@ def fingerprint_error_page(
             matched_patterns = [p for p in patterns if p.lower() in response_text]
 
             if matched_patterns:
-                # Extract error detail (first 100 chars of error message)
-                detail_text = original_text[:100].replace("\n", " ").strip()
-
                 detected.append(
                     {
                         "name": framework,
@@ -181,31 +178,36 @@ def fingerprint_error_page(
             soup = BeautifulSoup(original_text, "html.parser")
 
             # Check for specific HTML elements that indicate frameworks
-            if soup.find("div", {"class": "exception_title"}):
-                if not any(d["name"] == "Laravel" for d in detected):
+            if soup.find("div", {"class": "exception_title"}) and not any(
+                d["name"] == "Laravel" for d in detected
+            ):
+                detected.append(
+                    {
+                        "name": "Laravel",
+                        "confidence": 0.8,
+                        "category": "Web Framework",
+                        "evidence": "error_page_html",
+                        "detail": "Laravel exception page structure",
+                    }
+                )
+
+            summary_div = soup.find("div", {"id": "summary"})
+            if summary_div:
+                title = soup.find("h1")
+                if (
+                    title
+                    and "django" in title.text.lower()
+                    and not any(d["name"] == "Django" for d in detected)
+                ):
                     detected.append(
                         {
-                            "name": "Laravel",
-                            "confidence": 0.8,
+                            "name": "Django",
+                            "confidence": 0.85,
                             "category": "Web Framework",
                             "evidence": "error_page_html",
-                            "detail": "Laravel exception page structure",
+                            "detail": "Django debug page structure",
                         }
                     )
-
-            if soup.find("div", {"id": "summary"}):
-                title = soup.find("h1")
-                if title and "django" in title.text.lower():
-                    if not any(d["name"] == "Django" for d in detected):
-                        detected.append(
-                            {
-                                "name": "Django",
-                                "confidence": 0.85,
-                                "category": "Web Framework",
-                                "evidence": "error_page_html",
-                                "detail": "Django debug page structure",
-                            }
-                        )
 
         except (AttributeError, TypeError):
             pass  # HTML parsing failed, continue with text-based detection

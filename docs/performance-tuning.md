@@ -25,11 +25,13 @@
 ### Default Performance Characteristics
 
 **Single Domain Scan:**
+
 - **Traditional Detection:** 15-25 seconds
 - **Enhanced Detection (v2.0):** 30-45 seconds
 - **With Subdomain Enum:** 45-120 seconds (depends on subdomain count)
 
 **Breakdown by Module:**
+
 | Module | Time | Optimization Potential |
 |--------|------|----------------------|
 | DNS Analysis | 2-3s | Low (network bound) |
@@ -45,6 +47,7 @@
 ### Performance Tuning Philosophy
 
 **Trade-offs:**
+
 1. **Speed vs. Completeness** - Faster scans may miss some detections
 2. **Timeout vs. Reliability** - Shorter timeouts may fail on slow targets
 3. **Concurrency vs. Rate Limiting** - More parallel requests = higher chance of blocking
@@ -65,6 +68,7 @@ DEFAULT_TIMEOUT = 15  # seconds
 ### Timeout Tuning Strategies
 
 **Fast Scanning (Aggressive):**
+
 ```python
 # Optimized for speed, may miss slow targets
 DEFAULT_TIMEOUT = 10
@@ -76,6 +80,7 @@ DEFAULT_TIMEOUT = 10
 ```
 
 **Balanced (Default):**
+
 ```python
 # Good balance between speed and reliability
 DEFAULT_TIMEOUT = 15
@@ -87,6 +92,7 @@ DEFAULT_TIMEOUT = 15
 ```
 
 **Thorough Scanning (Conservative):**
+
 ```python
 # Prioritizes completeness over speed
 DEFAULT_TIMEOUT = 30
@@ -118,6 +124,7 @@ class SessionManager:
 ### Purpose
 
 **Why Rate Limit:**
+
 - Avoid triggering WAF/IDS
 - Respect target resources
 - Prevent IP blocking
@@ -135,6 +142,7 @@ RATE_LIMIT_DELAY = 1.0
 ### Tuning Strategies
 
 **Fast Scanning (Use with caution):**
+
 ```python
 RATE_LIMIT_DELAY = 0.5  # Half second between requests
 
@@ -145,6 +153,7 @@ RATE_LIMIT_DELAY = 0.5  # Half second between requests
 ```
 
 **Standard Scanning:**
+
 ```python
 RATE_LIMIT_DELAY = 1.0  # 1 second (default)
 
@@ -152,6 +161,7 @@ RATE_LIMIT_DELAY = 1.0  # 1 second (default)
 ```
 
 **Polite Scanning:**
+
 ```python
 RATE_LIMIT_DELAY = 2.0  # 2 seconds
 
@@ -162,6 +172,7 @@ RATE_LIMIT_DELAY = 2.0  # 2 seconds
 ```
 
 **Stealth Scanning:**
+
 ```python
 RATE_LIMIT_DELAY = 5.0  # 5 seconds
 
@@ -192,6 +203,7 @@ Rankle uses sequential scanning (one request at a time) for safety.
 ### Why Not Concurrent by Default?
 
 **Reasons:**
+
 1. **Rate limiting** - Harder to control with concurrency
 2. **Target courtesy** - Avoid overwhelming servers
 3. **Blocking risk** - Parallel requests = more suspicious
@@ -200,6 +212,7 @@ Rankle uses sequential scanning (one request at a time) for safety.
 ### Future Concurrent Scanning
 
 **Planned for v2.1:**
+
 ```python
 # --concurrent flag (future)
 python main.py example.com --concurrent 5
@@ -209,6 +222,7 @@ python main.py example.com --concurrent 5
 ```
 
 **Safe Concurrency:**
+
 - Parallel module execution (DNS while fetching HTTP)
 - NOT parallel requests to same domain
 - Respects rate limiting between all requests
@@ -234,6 +248,7 @@ DNS_SERVERS = [
 ### Fastest DNS Servers (2026)
 
 **Performance Ranking:**
+
 1. **Cloudflare (1.1.1.1)** - ~14ms average
 2. **Google (8.8.8.8)** - ~20ms average
 3. **Quad9 (9.9.9.9)** - ~25ms average
@@ -244,6 +259,7 @@ DNS_SERVERS = [
 ### DNS Caching
 
 **Local DNS Cache:**
+
 ```bash
 # Install systemd-resolved (Ubuntu/Debian)
 sudo apt install systemd-resolved
@@ -262,6 +278,7 @@ Future feature - cache DNS responses during scan session
 ### Memory Usage Profile
 
 **Typical Memory Usage:**
+
 - **Basic Scan:** 50-150 MB
 - **With Subdomains:** 200-500 MB (depends on subdomain count)
 - **Enhanced Detection:** 150-300 MB (Wappalyzer database)
@@ -269,6 +286,7 @@ Future feature - cache DNS responses during scan session
 ### Optimization Strategies
 
 **1. Limit Subdomain Results:**
+
 ```python
 # In rankle/modules/subdomains.py
 # Future: Add MAX_SUBDOMAINS configuration
@@ -276,6 +294,7 @@ MAX_SUBDOMAINS = 100  # Stop after 100 subdomains found
 ```
 
 **2. Stream Large Responses:**
+
 ```python
 # For very large HTML pages (future optimization)
 response = session.get(url, stream=True)
@@ -283,6 +302,7 @@ response = session.get(url, stream=True)
 ```
 
 **3. Clear Results Between Batch Scans:**
+
 ```python
 # When scanning multiple domains
 for domain in domains:
@@ -313,11 +333,13 @@ docker stats
 **Rankle uses requests.Session()** - Automatic connection pooling
 
 **Benefits:**
+
 - Reuses TCP connections
 - Faster subsequent requests (no handshake)
 - Lower latency
 
 **Configuration:**
+
 ```python
 # In rankle/core/session.py
 # Adjust pool size for future concurrent scanning
@@ -331,6 +353,7 @@ adapter = HTTPAdapter(
 ### Retry Logic
 
 **Current Implementation:**
+
 ```python
 # Exponential backoff retry
 retries = Retry(
@@ -341,6 +364,7 @@ retries = Retry(
 ```
 
 **Tuning for Speed:**
+
 ```python
 # Aggressive (faster but less reliable)
 retries = Retry(
@@ -350,6 +374,7 @@ retries = Retry(
 ```
 
 **Tuning for Reliability:**
+
 ```python
 # Conservative (slower but more complete)
 retries = Retry(
@@ -361,6 +386,7 @@ retries = Retry(
 ### Network Latency
 
 **Test Latency:**
+
 ```bash
 # Ping target
 ping example.com
@@ -370,6 +396,7 @@ ping example.com
 ```
 
 **Solutions for High Latency:**
+
 ```python
 # Adjust timeout based on latency
 DEFAULT_TIMEOUT = base_latency * 3
@@ -384,12 +411,14 @@ DEFAULT_TIMEOUT = base_latency * 3
 ### Traditional vs. Enhanced Detection
 
 **Traditional Detection (Fast):**
+
 - **Time:** 15-25 seconds
 - **Technologies:** 50-100
 - **Methods:** Headers, cookies, HTML patterns
 - **Use When:** Speed is priority, basic detection sufficient
 
 **Enhanced Detection v2.0 (Thorough):**
+
 - **Time:** 30-45 seconds
 - **Technologies:** 3000+
 - **Methods:** + Wappalyzer, favicon, error pages, JS analysis
@@ -434,6 +463,7 @@ if any_js_framework_detected:
 ### Scanning Multiple Domains
 
 **Sequential (Current):**
+
 ```bash
 # Scan multiple domains one by one
 for domain in $(cat domains.txt); do
@@ -446,6 +476,7 @@ done
 ### Parallel Batch Scanning
 
 **Using GNU Parallel:**
+
 ```bash
 # Install
 sudo apt install parallel
@@ -458,6 +489,7 @@ cat domains.txt | parallel -j 5 'python main.py {} -o json > {}.json'
 ```
 
 **Using Bash Background Jobs:**
+
 ```bash
 # Scan up to 5 at a time
 while read domain; do
@@ -475,15 +507,18 @@ wait  # Wait for all remaining jobs
 ### Considerations for Batch Scanning
 
 **Rate Limiting:**
+
 - Each scan makes ~10-20 requests
 - 5 parallel scans = 50-100 requests across different domains
 - Generally safe (different targets)
 
 **Resource Usage:**
+
 - 5 parallel scans = ~1GB RAM total
 - Monitor with `htop` or `docker stats`
 
 **Network:**
+
 - May saturate connection on slow networks
 - Consider reducing concurrency on mobile/slow connections
 
@@ -494,6 +529,7 @@ wait  # Wait for all remaining jobs
 ### Built-in Timing
 
 **Rankle shows timing per module:**
+
 ```
 [1/8] DNS Analysis... (2.3s)
 [2/8] Fetching HTTP Response... (1.5s)
@@ -504,6 +540,7 @@ wait  # Wait for all remaining jobs
 ### Detailed Profiling
 
 **Using Python cProfile:**
+
 ```bash
 # Profile a scan
 python -m cProfile -s cumtime main.py example.com
@@ -512,6 +549,7 @@ python -m cProfile -s cumtime main.py example.com
 ```
 
 **Using time:**
+
 ```bash
 # Simple timing
 time python main.py example.com
@@ -525,6 +563,7 @@ time python main.py example.com
 ### Benchmarking Script
 
 **Create benchmark.sh:**
+
 ```bash
 #!/bin/bash
 # Benchmark Rankle performance
@@ -549,12 +588,14 @@ awk -F',' 'NR>1 {sum+=$2; count++} END {print "Average:", sum/count, "seconds"}'
 ### Bottleneck Identification
 
 **Common Bottlenecks:**
+
 1. **Subdomain Enumeration** (30-90s) - Largest time sink
 2. **Enhanced Detection** (+15-25s) - Wappalyzer + all v2.0 modules
 3. **DNS Queries** (2-5s) - Network latency
 4. **HTTP Requests** (1-3s per request) - Target response time
 
 **Optimization Priority:**
+
 1. Skip subdomain enum if not needed
 2. Use traditional detection if sufficient
 3. Optimize DNS (use fast servers, caching)
@@ -567,6 +608,7 @@ awk -F',' 'NR>1 {sum+=$2; count++} END {print "Average:", sum/count, "seconds"}'
 ### Real-time Monitoring
 
 **During Scan:**
+
 ```bash
 # Monitor CPU/memory
 htop
@@ -581,6 +623,7 @@ watch -n 1 'ps aux | grep python'
 ### Logging Performance Metrics
 
 **Add to scanner.py:**
+
 ```python
 import time
 
@@ -595,7 +638,8 @@ print(f"[DEBUG] {module_name} took {end_time - start_time:.2f}s")
 
 ## Performance Best Practices Summary
 
-### For Speed:
+### For Speed
+
 ✅ Use traditional detection (skip enhanced)
 ✅ Reduce timeout to 10-12 seconds
 ✅ Use Cloudflare DNS (1.1.1.1)
@@ -603,21 +647,24 @@ print(f"[DEBUG] {module_name} took {end_time - start_time:.2f}s")
 ✅ Use batch scanning with parallel for multiple domains
 ✅ Reduce rate limit delay to 0.5s (if target allows)
 
-### For Completeness:
+### For Completeness
+
 ✅ Use enhanced detection v2.0
 ✅ Increase timeout to 20-30 seconds
 ✅ Use conservative rate limit (2-5s delay)
 ✅ Enable all subdomain sources
 ✅ Scan during target's off-peak hours
 
-### For Reliability:
+### For Reliability
+
 ✅ Use default timeouts (15s)
 ✅ Conservative retry logic (5 attempts)
 ✅ Rate limit at 1-2s
 ✅ Monitor for 429/403 responses
 ✅ Use realistic User-Agent
 
-### Resource Constraints:
+### Resource Constraints
+
 ✅ Limit subdomain results
 ✅ Use Docker with memory limits
 ✅ Clear results between batch scans
@@ -654,6 +701,7 @@ RATE_LIMIT_DELAY = 5.0
 **Maintained By:** Rankle Development Team
 
 **See Also:**
+
 - [Troubleshooting Guide](troubleshooting.md) - Common issues and solutions
 - [Detection Capabilities](detection-capabilities.md) - Feature documentation
 - [Development Guide](development.md) - Contributing and development setup

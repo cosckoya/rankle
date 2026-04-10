@@ -42,25 +42,30 @@ docker run --rm rankle example.com
 **Complete documentation is now available in the [`docs/`](docs/) directory:**
 
 ### Getting Started
+
 - **[Installation & Quick Start](docs/getting-started.md)** - Install Rankle and run your first scan
 - **[Usage Guide](docs/getting-started.md#usage)** - Command-line options and output formats
 
 ### Technical Documentation
+
 - **[Architecture](docs/architecture.md)** - Modular design, key classes, and patterns
 - **[Detection Capabilities](docs/detection-capabilities.md)** - CMS, CDN, WAF, cloud providers
 - **[API Reference](docs/architecture.md#api-reference)** - Core classes and modules
 
 ### Development
+
 - **[Contributing Guide](docs/development.md)** - How to contribute to Rankle
 - **[Development Setup](docs/development.md#development-setup)** - Environment configuration
 - **[Testing](docs/development.md#testing)** - pytest, coverage, pre-commit hooks
 - **[Utility Scripts](scripts/README.md)** - Demo and diagnostic scripts
 
 ### Claude Code Skills
+
 - **[Skills Overview](docs/skills/index.md)** - Custom Claude Code skills for development
 - **[Workflows](docs/skills/workflows.md)** - Common development patterns
 
 ### Additional Resources
+
 - **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
 - **[SECURITY.md](SECURITY.md)** - Security policy and vulnerability reporting
 
@@ -209,6 +214,7 @@ rankle/
 ```
 
 **Key Features:**
+
 - ✅ Modular architecture with lazy initialization
 - ✅ Centralized configuration in `config/`
 - ✅ Automatic retry logic with exponential backoff
@@ -237,6 +243,7 @@ Contributions are welcome! Please see [Contributing Guide](docs/development.md) 
 ### Areas for Contribution
 
 **High Priority:**
+
 - Additional CMS fingerprints (Django, Laravel, Rails)
 - More CDN providers (regional CDNs)
 - Enhanced WAF detection patterns
@@ -249,17 +256,20 @@ Contributions are welcome! Please see [Contributing Guide](docs/development.md) 
 ## 🛡️ Security & Best Practices
 
 **Authorized Use Only:**
+
 - ✅ Authorized penetration testing
 - ✅ Bug bounty programs (with permission)
 - ✅ Security research (on your own systems)
 - ✅ Educational purposes
 
 **Prohibited Use:**
+
 - ❌ Unauthorized access attempts
 - ❌ Malicious reconnaissance
 - ❌ Illegal activities
 
 **Security Features:**
+
 - No shell injection (never uses `shell=True`)
 - Input validation with regex
 - Timeout controls
@@ -279,6 +289,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 This tool is provided for **educational and authorized security testing purposes only**.
 
 Users must:
+
 - Obtain proper authorization before scanning any target
 - Comply with all applicable laws and regulations
 - Use the tool responsibly and ethically
@@ -307,7 +318,7 @@ The authors and contributors are not responsible for any misuse or damage caused
 
 ## 🔗 Links
 
-- **Repository:** https://github.com/javicosvml/rankle
+- **Repository:** <https://github.com/javicosvml/rankle>
 - **Documentation:** [docs/](docs/)
 - **Changelog:** [CHANGELOG.md](CHANGELOG.md)
 

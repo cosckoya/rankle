@@ -677,7 +677,7 @@ class TechnologyDetector:
             >>> detector = TechnologyDetector("wordpress.com")
             >>> results = detector.detect(
             ...     headers={"Server": "Apache/2.4"},
-            ...     body="<meta name='generator' content='WordPress 6.4' />"
+            ...     body="<meta name='generator' content='WordPress 6.4' />",
             ... )
         """
         self.domain = domain

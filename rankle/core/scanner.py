@@ -192,7 +192,7 @@ class RankleScanner:
         Examples:
             >>> scanner = RankleScanner("example.com", verbose=True)
             >>> results = scanner.run_full_scan()
-            >>> print(results['technologies'])
+            >>> print(results["technologies"])
         """
         # 1. DNS Analysis (foundation for other modules)
         print("\n[1/8] DNS Analysis...")

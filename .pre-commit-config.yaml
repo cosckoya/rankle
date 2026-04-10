@@ -14,7 +14,7 @@
 #   SKIP=mypy git commit -m "message"
 
 default_language_version:
-  python: python3.11
+  python: python3.13
 
 default_install_hook_types:
   - pre-commit
@@ -91,21 +91,18 @@ repos:
         name: Ruff formatter
 
   # ==========================================================================
-  # TYPE CHECKING - mypy
+  # TYPE CHECKING - Pyright (strict mode)
   # ==========================================================================
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.20.0
+  - repo: https://github.com/detachhead/basedpyright
+    rev: v1.18.39
     hooks:
-      - id: mypy
-        name: Type check with mypy
+      - id: basedpyright
+        name: Type check with Pyright (strict mode)
         args:
-          - --config-file=pyproject.toml
           - rankle/
-          - main.py
-        additional_dependencies:
-          - types-requests>=2.31.0
-          - types-beautifulsoup4>=4.12.0
-        exclude: ^(tests|examples|scripts)/
+          - config/
+          - tests/
+        exclude: ^(examples|scripts|\.venv|venv)/
         pass_filenames: false
 
   # ==========================================================================

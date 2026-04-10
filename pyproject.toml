@@ -209,56 +209,27 @@ docstring-code-format = true
 docstring-code-line-length = "dynamic"
 
 # =============================================================================
-# MYPY - Static type checking (2026 Best Practices)
+# PYRIGHT - Static type checking (strict mode, 2026 compliance)
 # =============================================================================
-[tool.mypy]
-python_version = "3.11"
-
-# QUICK WINS - Enabled for immediate benefit ✅
-warn_return_any = true              # Catch accidental Any returns
-warn_unused_configs = true          # Clean config
-warn_redundant_casts = true         # Remove unnecessary casts
-warn_unused_ignores = true          # Clean up old type: ignore
-warn_no_return = true               # Catch missing returns
-warn_unreachable = true             # Dead code detection
-check_untyped_defs = true           # Check even untyped functions
-no_implicit_optional = true         # x: str = None is an error
-strict_equality = true              # Prevent == None bugs
-
-# Gradual adoption
-disallow_untyped_defs = false       # TODO: Enable per-module when ready
-
-# Display
-show_error_codes = true
-show_column_numbers = true
-show_error_context = true
-pretty = true
-color_output = true
-
-# Third-party libraries
-ignore_missing_imports = true
-
-# Exclude patterns
-exclude = ["tests/", "examples/", "venv/", ".venv/", "build/", "dist/"]
-
-# =============================================================================
-# Per-Module Configuration (Gradual strictness)
-# =============================================================================
-
-[[tool.mypy.overrides]]
-module = "tests.*"
-disallow_untyped_defs = false
-ignore_errors = true
-
-# Core modules - Highest priority for strictness
-[[tool.mypy.overrides]]
-module = "rankle.core.*"
-warn_return_any = true
-
-# Utils - Second priority
-[[tool.mypy.overrides]]
-module = "rankle.utils.*"
-warn_return_any = true
+[tool.pyright]
+include = ["rankle", "config", "tests"]
+exclude = ["**/__pycache__", ".venv", "venv", "dist", "build"]
+typeCheckingMode = "strict"
+reportUnusedImport = "error"
+reportUnusedVariable = "error"
+reportPrivateUsage = "error"
+reportMissingTypeStubs = "warning"
+reportGeneralTypeIssues = "error"
+reportOptionalMemberAccess = "error"
+reportOptionalSubscript = "error"
+reportOptionalOperand = "error"
+reportOptionalIterable = "error"
+reportOptionalContextManager = "error"
+reportOptionalCall = "error"
+reportOptionalArgumentType = "error"
+reportOptionalAssignment = "error"
+reportTypedDictNotRequiredAccess = "warning"
+pythonVersion = "3.13"
 
 # =============================================================================
 # BANDIT - Security scanning
@@ -353,5 +324,6 @@ color = true
 
 [dependency-groups]
 dev = [
+    "basedpyright>=1.39.0",
     "types-requests>=2.33.0.20260408",
 ]

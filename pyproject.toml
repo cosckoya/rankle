@@ -255,7 +255,7 @@ addopts = [
     "--cov=src/rankle",
     "--cov-report=term-missing",
     "--cov-report=html:htmlcov",
-    "--cov-fail-under=70",
+    "--cov-fail-under=85",
 ]
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
@@ -288,7 +288,7 @@ omit = [
 precision = 2
 show_missing = true
 skip_covered = false
-fail_under = 50
+fail_under = 85
 exclude_lines = [
     "pragma: no cover",
     "def __repr__",

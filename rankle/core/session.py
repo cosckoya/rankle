@@ -9,6 +9,7 @@ Features:
 """
 
 import sys
+from typing import Self
 
 
 try:
@@ -186,7 +187,7 @@ class SessionManager:
         """Close the session and release resources."""
         self.session.close()
 
-    def __enter__(self) -> "SessionManager":
+    def __enter__(self) -> Self:
         """Context manager entry."""
         return self
 

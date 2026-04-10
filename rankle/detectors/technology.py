@@ -649,19 +649,36 @@ ADDITIONAL_SIGNATURES: dict[str, dict[str, Any]] = {
 
 
 class TechnologyDetector:
-    """
-    Detects web technologies using multiple passive techniques.
+    """Detects web technologies using passive analysis techniques.
 
-    Combines HTML analysis, header inspection, cookie analysis,
-    and pattern matching to identify technologies with confidence scores.
+    Integrates Wappalyzer (3000+ signatures), favicon hashing (mmh3),
+    and custom pattern matching to identify CMS, frameworks, libraries,
+    and servers with confidence scores (0-100%).
+
+    Supported categories:
+    - CMS: WordPress, Drupal, Joomla, Magento, Ghost, etc.
+    - Frameworks: Django, Rails, Laravel, .NET, Spring, etc.
+    - JavaScript: React, Vue, Angular, jQuery, Bootstrap, etc.
+    - Servers: Apache, nginx, IIS, etc.
+    - Languages: PHP, Python, Java, C#, etc.
+
+    Attributes:
+        domain: Target domain being analyzed.
+        signatures: Combined technology detection signatures and patterns.
     """
 
-    def __init__(self, domain: str):
-        """
-        Initialize technology detector.
+    def __init__(self, domain: str) -> None:
+        """Initialize technology detector.
 
         Args:
-            domain: Target domain to analyze
+            domain: Target domain to analyze.
+
+        Example:
+            >>> detector = TechnologyDetector("wordpress.com")
+            >>> results = detector.detect(
+            ...     headers={"Server": "Apache/2.4"},
+            ...     body="<meta name='generator' content='WordPress 6.4' />"
+            ... )
         """
         self.domain = domain
         # Merge signatures from JSON and additional
@@ -673,16 +690,28 @@ class TechnologyDetector:
         cookies: list[str] | None = None,
         body: str | None = None,
     ) -> dict[str, Any]:
-        """
-        Perform comprehensive technology detection.
+        """Perform comprehensive technology detection on HTTP response data.
+
+        Analyzes multiple sources (headers, cookies, HTML body) using pattern
+        matching and signature-based detection to identify technologies with
+        confidence scoring (0-100%).
 
         Args:
-            headers: HTTP response headers
-            cookies: List of cookie names
-            body: HTML response body
+            headers: HTTP response headers dict (e.g., {"Server": "Apache/2.4"}).
+            cookies: List of cookie names from Set-Cookie headers.
+            body: HTML response body as string.
 
         Returns:
-            Dictionary with detection results
+            Dict mapping technology names to detection data:
+            {
+                "WordPress": {
+                    "confidence": 0.95,
+                    "version": "6.4.1",
+                    "category": "CMS",
+                    "evidence": ["meta generator tag", "wp-content directory"]
+                },
+                ...
+            }
         """
         results: dict[str, Any] = {
             "detected": False,

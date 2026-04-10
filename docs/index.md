@@ -53,8 +53,8 @@
 
 ### Additional Resources
 
-- [CHANGELOG.md](../CHANGELOG.md) - Version history and release notes
-- [SECURITY.md](../SECURITY.md) - Security policy and vulnerability reporting
+- [Changelog](changelog.md) - Version history and release notes
+- [Security Policy](security.md) - Security policy and vulnerability reporting
 - [LICENSE](../LICENSE) - MIT License
 
 ### Claude Code Configuration
@@ -109,7 +109,7 @@
 
 - **Issues:** [GitHub Issues](https://github.com/javicosvml/rankle/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/javicosvml/rankle/discussions)
-- **Security:** See [SECURITY.md](../SECURITY.md)
+- **Security:** See [Security Policy](security.md)
 
 ---
 

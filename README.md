@@ -1,30 +1,23 @@
-![Rankle](img/rankle.png)
+# Rankle
 
-# 🃏 Rankle - Web Infrastructure Reconnaissance Tool
+Passive web infrastructure reconnaissance tool — no API keys required.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
-[![GitHub Actions](https://github.com/javicosvml/rankle/workflows/Docker%20Build%20Test/badge.svg)](https://github.com/javicosvml/rankle/actions)
-
-Named after **Rankle, Master of Pranks** from Magic: The Gathering - a legendary faerie who excels at uncovering secrets.
-
-A comprehensive web infrastructure analyzer using 100% Open Source Python libraries with **no API keys required**.
-
-> **Features**: Modular architecture with **centralized configuration**, **retry logic**, and **concurrent scanning**!
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ```bash
-# Install dependencies
-pip install -r requirements.txt
+# Install with uv (recommended)
+uv sync
 
-# Run scan
+# Run a scan
 python main.py example.com
 
-# Save results
+# Save as JSON
 python main.py example.com -o json
 ```
 
@@ -37,300 +30,105 @@ docker run --rm rankle example.com
 
 ---
 
-## 📚 Documentation
+## Key Features
 
-**Complete documentation is now available in the [`docs/`](docs/) directory:**
-
-### Getting Started
-
-- **[Installation & Quick Start](docs/getting-started.md)** - Install Rankle and run your first scan
-- **[Usage Guide](docs/getting-started.md#usage)** - Command-line options and output formats
-
-### Technical Documentation
-
-- **[Architecture](docs/architecture.md)** - Modular design, key classes, and patterns
-- **[Detection Capabilities](docs/detection-capabilities.md)** - CMS, CDN, WAF, cloud providers
-- **[API Reference](docs/architecture.md#api-reference)** - Core classes and modules
-
-### Development
-
-- **[Contributing Guide](docs/development.md)** - How to contribute to Rankle
-- **[Development Setup](docs/development.md#development-setup)** - Environment configuration
-- **[Testing](docs/development.md#testing)** - pytest, coverage, pre-commit hooks
-- **[Utility Scripts](scripts/README.md)** - Demo and diagnostic scripts
-
-### Claude Code Skills
-
-- **[Skills Overview](docs/skills/index.md)** - Custom Claude Code skills for development
-- **[Workflows](docs/skills/workflows.md)** - Common development patterns
-
-### Additional Resources
-
-- **[CHANGELOG.md](CHANGELOG.md)** - Version history and release notes
-- **[SECURITY.md](SECURITY.md)** - Security policy and vulnerability reporting
+- **Technology detection** — CMS, frameworks, libraries with confidence scores (0-100%) and version extraction
+- **Infrastructure mapping** — CDN (20+ providers), WAF (15+ solutions), cloud provider (14+ vendors) fingerprinting
+- **Origin discovery** — 5 passive techniques to find real infrastructure behind CDN/WAF layers
+- **DNS enumeration** — A, AAAA, MX, NS, TXT, SOA, CNAME records with subdomain discovery via Certificate Transparency
+- **HTTP fingerprinting** — API endpoint discovery, exposed files, security header audit, allowed method detection
 
 ---
 
-## 🎯 Key Features
+## Tech Stack
 
-- **Enhanced Technology Detection** - Confidence scoring (0-100%), version detection, 30+ technologies
-- **CMS Detection** - 16+ systems including enhanced Drupal detection (15+ patterns)
-- **Cloud Provider Detection** - 14+ providers with ASN matching and confidence scoring
-- **CDN Detection** - 20+ providers including TransparentEdge, Cloudflare, Akamai
-- **WAF Detection** - 15+ solutions including Imperva, Sucuri, ModSecurity
-- **Origin Discovery** - Find real infrastructure behind WAF/CDN (5 passive techniques)
-- **Advanced Fingerprinting** - 8 techniques: HTTP methods, API discovery, exposed files
-- **DNS Enumeration** - Complete analysis (A, AAAA, MX, NS, TXT, SOA, CNAME)
-- **Subdomain Discovery** - Via Certificate Transparency logs (crt.sh)
-- **JavaScript Libraries** - Detect 15+ libraries: jQuery, React, Vue, Angular
+| Component | Technology | Version |
+|-----------|-----------|---------|
+| Language | Python | 3.11+ |
+| HTTP client | requests + urllib3 | 2.x |
+| DNS | dnspython | 2.x |
+| HTML parsing | BeautifulSoup4 | 4.x |
+| Favicon hashing | mmh3 | 4.x |
+| Linting | ruff | 0.x |
+| Type checking | mypy | 1.x |
+| Testing | pytest + pytest-cov | 8.x |
+| Package manager | uv | 0.x |
 
 ---
 
-## 📦 Installation
+## Project Structure
 
-### Requirements
-
-- Python 3.11 or higher
-- Docker (optional)
-
-### Python Installation
-
-```bash
-# Required dependencies
-pip install requests dnspython beautifulsoup4
-
-# Or install all at once
-pip install -r requirements.txt
-
-# For development
-pip install -e ".[dev]"
-pre-commit install
+```
+rankle/
+├── main.py                   # Entry point
+├── config/
+│   ├── settings.py           # Timeouts, DNS servers, rate limits
+│   ├── patterns.py           # CDN/WAF/cloud ASN patterns
+│   └── tech_signatures.json  # 3000+ detection signatures
+├── rankle/
+│   ├── core/
+│   │   ├── scanner.py        # RankleScanner orchestrator (lazy-init)
+│   │   └── session.py        # HTTP session with retry + pooling
+│   ├── modules/              # dns, ssl, whois, subdomains, http_fingerprint
+│   ├── detectors/            # technology, cdn, waf, origin
+│   ├── utils/                # validators, confidence, rate_limiter, cve_mapper
+│   └── reports/              # JSON and text report generators
+├── tests/                    # pytest test suite
+└── docs/                     # Full documentation
 ```
 
-### Docker Installation
-
-```bash
-git clone https://github.com/javicosvml/rankle.git
-cd rankle
-docker build -t rankle .
-```
-
-**See [Installation Guide](docs/getting-started.md) for detailed instructions.**
-
 ---
 
-## 💻 Usage
+## Usage
 
 ```bash
-# Basic scan (terminal output only)
+# Scan with all modules
 python main.py example.com
 
-# Save as JSON (for automation)
+# Save JSON (machine-readable, suitable for automation)
 python main.py example.com -o json
 
-# Save as text report (human-readable)
+# Save text report (human-readable)
 python main.py example.com -o text
 
-# Save both formats
+# Save both formats simultaneously
 python main.py example.com -o both
 
-# Verbose output
+# Verbose output with debug information
 python main.py example.com -v
-```
 
-### Docker Usage
-
-```bash
-# Basic scan
-docker run --rm rankle example.com
-
-# Save output
+# Docker with persistent output volume
 docker run --rm -v $(pwd)/output:/output rankle example.com -o json
 ```
 
-**See [Usage Guide](docs/getting-started.md#usage) for more examples.**
+**Output files** are saved to `output/` with timestamp: `output/example.com_20260410_143022.json`
 
 ---
 
-## 🔍 Detection Capabilities
+## Documentation
 
-Rankle can detect and analyze:
-
-- **16+ CMS** - WordPress, Drupal, Joomla, Magento, Shopify, and more
-- **20+ CDN Providers** - TransparentEdge, Cloudflare, Akamai, Fastly, AWS CloudFront
-- **15+ WAF Solutions** - Imperva, Sucuri, ModSecurity, PerimeterX, DataDome
-- **14+ Cloud Providers** - AWS, Azure, GCP, DigitalOcean, OVH, Hetzner
-- **15+ JavaScript Libraries** - jQuery, Bootstrap, React, Vue, Angular
-- **API Endpoints** - 15+ common paths including GraphQL, Swagger, health checks
-- **Exposed Files** - Version control, backups, config files, development files
-- **Security Headers** - X-Frame-Options, CSP, HSTS, and more
-
-**See [Detection Capabilities](docs/detection-capabilities.md) for complete details.**
+| Document | Description |
+|----------|-------------|
+| [Getting Started](docs/getting-started.md) | Installation, requirements, first scan |
+| [Architecture](docs/architecture.md) | Module design, lazy-init pattern, request flow |
+| [Detection Capabilities](docs/detection-capabilities.md) | Full list of detected technologies, CDNs, WAFs |
+| [API Usage Examples](docs/api-usage-examples.md) | Programmatic usage, type hints |
+| [Development Guide](docs/development.md) | Contributing, testing, pre-commit hooks |
+| [Performance Tuning](docs/performance-tuning.md) | Timeouts, rate limiting, concurrency |
+| [Troubleshooting](docs/troubleshooting.md) | Common issues and solutions |
+| [Changelog](docs/changelog.md) | Version history and release notes |
+| [Security Policy](docs/security.md) | Vulnerability reporting, responsible disclosure |
 
 ---
 
-## 🔗 Integration Examples
+## Contributing & License
 
-### Nuclei
+See [docs/development.md](docs/development.md) for contribution guidelines, code style, and testing requirements.
 
 ```bash
-# Direct subdomain pipe
-python main.py example.com -o json | jq -r '.subdomains[]' | nuclei -l -
+pre-commit install          # Install git hooks
+ruff check . --fix          # Lint and auto-fix
+pytest --cov=rankle         # Run tests with coverage
 ```
 
-### Nmap
-
-```bash
-# Scan discovered IPs
-cat scan.json | jq -r '.dns.A[]' | nmap -iL - -sV
-```
-
-### httpx
-
-```bash
-# Verify live hosts
-cat scan.json | jq -r '.subdomains[]' | httpx -silent | nuclei -l -
-```
-
-**See [Integration Examples](docs/detection-capabilities.md#integration-examples) for complete pipelines.**
-
----
-
-## 🏗️ Architecture
-
-Rankle follows **Python 3.11+ best practices** with modern packaging:
-
-```text
-rankle/
-├── pyproject.toml          # Modern Python packaging (PEP 621)
-├── main.py                 # Entry point
-├── rankle/                 # Main package
-│   ├── core/              # Scanner & session management
-│   ├── modules/           # Reconnaissance modules (DNS, SSL, etc.)
-│   ├── detectors/         # Technology detectors (CMS, CDN, WAF)
-│   └── utils/             # Utilities and helpers
-├── config/                 # Configuration & patterns
-└── tests/                  # Unit tests (pytest)
-```
-
-**Key Features:**
-
-- ✅ Modular architecture with lazy initialization
-- ✅ Centralized configuration in `config/`
-- ✅ Automatic retry logic with exponential backoff
-- ✅ Concurrent scanning with ThreadPoolExecutor
-- ✅ Connection pooling for HTTP sessions
-- ✅ Full type hints (Python 3.11+)
-
-**See [Architecture Documentation](docs/architecture.md) for details.**
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please see [Contributing Guide](docs/development.md) for detailed guidelines.
-
-### Quick Contribution Guide
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes
-4. Test: `python main.py example.com`
-5. Commit: `git commit -m "Add: Amazing feature"`
-6. Push: `git push origin feature/amazing-feature`
-7. Open a Pull Request
-
-### Areas for Contribution
-
-**High Priority:**
-
-- Additional CMS fingerprints (Django, Laravel, Rails)
-- More CDN providers (regional CDNs)
-- Enhanced WAF detection patterns
-- Version detection improvements
-
-**See [Development Guide](docs/development.md) for complete details.**
-
----
-
-## 🛡️ Security & Best Practices
-
-**Authorized Use Only:**
-
-- ✅ Authorized penetration testing
-- ✅ Bug bounty programs (with permission)
-- ✅ Security research (on your own systems)
-- ✅ Educational purposes
-
-**Prohibited Use:**
-
-- ❌ Unauthorized access attempts
-- ❌ Malicious reconnaissance
-- ❌ Illegal activities
-
-**Security Features:**
-
-- No shell injection (never uses `shell=True`)
-- Input validation with regex
-- Timeout controls
-- Graceful error handling
-- Realistic User-Agent headers
-
-**See [SECURITY.md](SECURITY.md) for responsible use guidelines.**
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-### Disclaimer
-
-This tool is provided for **educational and authorized security testing purposes only**.
-
-Users must:
-
-- Obtain proper authorization before scanning any target
-- Comply with all applicable laws and regulations
-- Use the tool responsibly and ethically
-
-The authors and contributors are not responsible for any misuse or damage caused by this software.
-
----
-
-## 🙏 Acknowledgments
-
-- Named after **Rankle, Master of Pranks** from Magic: The Gathering
-- Built with 100% Open Source libraries
-- No API keys required
-- Community-driven development
-
----
-
-## 📞 Support & Contact
-
-- **Documentation:** [docs/](docs/)
-- **Issues:** [GitHub Issues](https://github.com/javicosvml/rankle/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/javicosvml/rankle/discussions)
-- **Security:** [SECURITY.md](SECURITY.md)
-
----
-
-## 🔗 Links
-
-- **Repository:** <https://github.com/javicosvml/rankle>
-- **Documentation:** [docs/](docs/)
-- **Changelog:** [CHANGELOG.md](CHANGELOG.md)
-
----
-
-<div align="center">
-
-**🃏 Rankle: Master of Pranks knows all your secrets**
-
-Made with ❤️ by the security community
-
-[![GitHub stars](https://img.shields.io/github/stars/javicosvml/rankle?style=social)](https://github.com/javicosvml/rankle/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/javicosvml/rankle?style=social)](https://github.com/javicosvml/rankle/network/members)
-
-</div>
+Licensed under the [MIT License](LICENSE).

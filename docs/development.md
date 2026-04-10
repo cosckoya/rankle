@@ -1127,8 +1127,8 @@ pre-commit run --all-files
 
 - [README.md](../README.md) - Project overview and usage
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
-- [CHANGELOG.md](../CHANGELOG.md) - Version history
-- [SECURITY.md](../SECURITY.md) - Security policy
+- [Changelog](changelog.md) - Version history
+- [Security Policy](security.md) - Security policy
 - [CLAUDE.md](../CLAUDE.md) - AI assistant instructions
 
 ### External Resources

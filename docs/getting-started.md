@@ -330,7 +330,7 @@ After installing and running your first scan:
 
 4. **Security Best Practices**
    - Always obtain proper authorization before scanning
-   - Review [SECURITY.md](../SECURITY.md) for responsible use guidelines
+   - Review [Security Policy](security.md) for responsible use guidelines
 
 ---
 
@@ -395,7 +395,7 @@ docker run --rm -u $(id -u):$(id -g) -v $(pwd)/output:/output rankle example.com
 
 - **Documentation:** [Full Documentation](index.md)
 - **Issues:** [GitHub Issues](https://github.com/javicosvml/rankle/issues)
-- **Security:** [Security Policy](../SECURITY.md)
+- **Security:** [Security Policy](security.md)
 
 ---
 

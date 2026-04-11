@@ -37,6 +37,7 @@ except ImportError as e:
 try:
     from rich.console import Console
     from rich.table import Table
+    from rich.panel import Panel
     RICH_AVAILABLE = True
 except ImportError:
     RICH_AVAILABLE = False
@@ -74,6 +75,7 @@ def cmd_scan(args):
         print(f"❌ Invalid input: Invalid domain format: {args.domain}")
         sys.exit(1)
 
+    # Determine backend
     backend_type = args.backend
     if args.output and args.backend == OUTPUT_BACKEND:
         backend_type = "json"
@@ -87,15 +89,18 @@ def cmd_scan(args):
     print("=" * 80)
 
     try:
+        # Initialize database if using SQLite
         if backend_type == "sqlite":
             engine = get_engine(DATABASE_URL.replace("sqlite:///", ""))
             create_all_tables(engine)
 
+        # Run scan
         scanner = RankleScanner(domain, verbose=args.verbose)
         start_time = datetime.now(UTC)
         results = scanner.run_full_scan()
         duration_ms = int((datetime.now(UTC) - start_time).total_seconds() * 1000)
 
+        # Prepare metadata
         metadata = {
             "domain": domain,
             "scan_type": "full",
@@ -104,6 +109,7 @@ def cmd_scan(args):
             "status": "completed",
         }
 
+        # Write results
         if backend_type == "console":
             backend = OutputRegistry.get_backend("console")
             backend.write("1", results, metadata)
@@ -283,7 +289,7 @@ Examples:
     # Scan subcommand
     scan_parser = subparsers.add_parser("scan", help="Scan a domain")
     scan_parser.add_argument("domain", help="Domain to scan")
-    scan_parser.add_argument("-o", "--output", action="store_true", help="Save JSON output (deprecated)")
+    scan_parser.add_argument("-o", "--output", action="store_true", help="Save JSON output (deprecated, use --backend json)")
     scan_parser.add_argument("--backend", choices=["console", "json", "sqlite"], default=OUTPUT_BACKEND)
     scan_parser.add_argument("-v", "--verbose", action="store_true")
     scan_parser.set_defaults(func=cmd_scan)
@@ -304,7 +310,7 @@ Examples:
     list_parser.add_argument("--limit", type=int, default=100, help="Max scans to show")
     list_parser.set_defaults(func=cmd_list)
 
-    # Backward compatibility: allow positional domain argument
+    # Handle default scan command (for backward compatibility)
     parser.add_argument("domain", nargs="?", help="Domain to scan (if no subcommand given)")
     parser.add_argument("-o", "--output", action="store_true")
     parser.add_argument("--backend", choices=["console", "json", "sqlite"], default=OUTPUT_BACKEND)
@@ -313,13 +319,16 @@ Examples:
 
     args = parser.parse_args()
 
+    # If no subcommand but domain provided, assume scan command
     if not args.command and args.domain:
         args.func = cmd_scan
         return cmd_scan(args)
 
+    # If subcommand provided, execute it
     if hasattr(args, "func"):
         return args.func(args)
 
+    # Show help if no command
     parser.print_help()
 
 

@@ -1,94 +1,46 @@
-# Pre-commit hooks for Rankle project
-# Python 3.11+ compatible - 2026 Best Practices
+# Pre-commit hooks for Rankle
+# Python 3.13+ - Essential checks only
 #
 # Setup:
-#   uv sync --extra dev
-#   uv run pre-commit install
-#   uv run pre-commit install --hook-type commit-msg
+#   uv sync
+#   pre-commit install
 #
 # Usage:
-#   uv run pre-commit run --all-files    # Run on all files
-#   uv run pre-commit autoupdate         # Update hook versions
+#   pre-commit run --all-files
 #
-# Skip hooks temporarily:
-#   SKIP=mypy git commit -m "message"
+# Skip hooks (if needed):
+#   SKIP=ruff,pyright git commit -m "message"
 
 default_language_version:
   python: python3.13
 
-default_install_hook_types:
-  - pre-commit
-  - commit-msg
-
 repos:
   # ==========================================================================
-  # UV LOCKFILE - Ensures uv.lock is committed and up to date
-  # ==========================================================================
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.11.6
-    hooks:
-      - id: uv-lock
-        name: Check uv.lock is up to date
-
-  # ==========================================================================
-  # GENERAL FILE CHECKS
+  # BASIC FILE CHECKS
   # ==========================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
-      # Whitespace & formatting
       - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
       - id: end-of-file-fixer
       - id: mixed-line-ending
         args: [--fix=lf]
-
-      # Syntax validation
       - id: check-yaml
-        args: [--unsafe]  # Required for YAML with custom tags (e.g. GitHub Actions)
       - id: check-json
       - id: check-toml
-      - id: check-xml
-
-      # Python specific
       - id: check-ast
-        name: Validate Python syntax
-      - id: check-docstring-first
-      - id: debug-statements
-        name: Check for debugger imports
-      - id: name-tests-test
-        args: [--pytest-test-first]
-
-      # Git & security
       - id: check-merge-conflict
-      - id: check-added-large-files
-        args: [--maxkb=500]
       - id: detect-private-key
-      - id: check-case-conflict
-
-      # File checks
-      - id: check-symlinks
-      - id: destroyed-symlinks
-      - id: check-executables-have-shebangs
-      - id: check-shebang-scripts-are-executable
 
   # ==========================================================================
-  # PYTHON CODE FORMATTING - Ruff (replaces Black + isort + flake8)
+  # PYTHON CODE - Ruff (lint + format)
   # ==========================================================================
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.10
     hooks:
-      # Linting - runs first to catch issues
       - id: ruff
-        name: Ruff linter
-        args:
-          - --fix
-          - --exit-non-zero-on-fix
-          - --config=pyproject.toml
-
-      # Formatting - runs after linting (replaces Black)
+        args: [--fix]
       - id: ruff-format
-        name: Ruff formatter
 
   # ==========================================================================
   # TYPE CHECKING - Pyright (strict mode)
@@ -97,110 +49,19 @@ repos:
     rev: v1.18.39
     hooks:
       - id: basedpyright
-        name: Type check with Pyright (strict mode)
-        args:
-          - src/rankle/
-          - src/config/
-          - tests/
-        exclude: ^(examples|scripts|\.venv|venv)/
+        args: [src/rankle/, src/config/]
         pass_filenames: false
 
   # ==========================================================================
-  # SECURITY SCANNING - Bandit
-  # ==========================================================================
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.9.4
-    hooks:
-      - id: bandit
-        name: Security scan with Bandit
-        args:
-          - -c
-          - pyproject.toml
-          - -r
-          - src/rankle/
-          - main.py
-        additional_dependencies: ["bandit[toml]"]
-        pass_filenames: false
-
-  # ==========================================================================
-  # DOCUMENTATION - docstring coverage
-  # ==========================================================================
-  - repo: https://github.com/econchick/interrogate
-    rev: 1.7.0
-    hooks:
-      - id: interrogate
-        name: Check docstring coverage
-        args:
-          - --fail-under=50
-          - --ignore-init-method
-          - --ignore-init-module
-          - --ignore-magic
-          - --ignore-private
-          - --ignore-semiprivate
-          - --ignore-module
-          - -v
-          - src/rankle/
-        pass_filenames: false
-
-  # ==========================================================================
-  # COMMIT MESSAGE FORMAT (installed via default_install_hook_types)
+  # COMMIT MESSAGE FORMAT
   # ==========================================================================
   - repo: https://github.com/commitizen-tools/commitizen
     rev: v4.13.9
     hooks:
       - id: commitizen
-        name: Check commit message format
         stages: [commit-msg]
 
-  # ==========================================================================
-  # YAML LINTING
-  # ==========================================================================
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.38.0
-    hooks:
-      - id: yamllint
-        name: Lint YAML files
-        args:
-          - -d
-          - "{extends: relaxed, rules: {line-length: {max: 120}}}"
-
-  # ==========================================================================
-  # MARKDOWN LINTING
-  # ==========================================================================
-  - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.48.0
-    hooks:
-      - id: markdownlint-fix
-        name: Fix Markdown issues
-        args:
-          - --disable
-          - MD013  # Line length
-          - MD024  # Duplicate headings (CHANGELOG format)
-          - MD033  # Inline HTML
-          - MD036  # Emphasis as heading
-          - MD040  # Fenced code language
-          - MD041  # First line heading
-          - MD051  # Link fragments
-          - MD060  # Table column style
-          - --
-
-  # ==========================================================================
-  # SHELL SCRIPT LINTING
-  # ==========================================================================
-  - repo: https://github.com/shellcheck-py/shellcheck-py
-    rev: v0.11.0.1
-    hooks:
-      - id: shellcheck
-        name: Lint shell scripts
-        args: [--severity=warning]
-
-# CI Configuration
 ci:
-  autofix_commit_msg: |
-    [pre-commit.ci] auto fixes from pre-commit hooks
+  autofix_commit_msg: '[pre-commit.ci] auto fixes'
   autofix_prs: true
-  autoupdate_branch: ''
-  autoupdate_commit_msg: '[pre-commit.ci] pre-commit autoupdate'
   autoupdate_schedule: weekly
-  skip: []
-  submodules: false

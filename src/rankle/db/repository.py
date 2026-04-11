@@ -196,7 +196,7 @@ class ScanRepository:
             .order_by(desc(Scan.scanned_at))
             .limit(limit)
         )
-        return self.session.scalars(stmt).all()
+        return list(self.session.scalars(stmt).all())
 
     def list_all_scans(self, limit: int = 100) -> list[Scan]:
         """
@@ -209,7 +209,7 @@ class ScanRepository:
             List of Scan instances ordered by scanned_at DESC.
         """
         stmt = select(Scan).order_by(desc(Scan.scanned_at)).limit(limit)
-        return self.session.scalars(stmt).all()
+        return list(self.session.scalars(stmt).all())
 
     def get_dns_changes(self, domain: str) -> list[dict[str, Any]]:
         """

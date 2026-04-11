@@ -11,7 +11,7 @@ Four main tables:
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import ForeignKey, Index, Integer, String, Text, DateTime, Float
+from sqlalchemy import ForeignKey, Index, Integer, String, Text, DateTime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:

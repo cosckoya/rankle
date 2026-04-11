@@ -46,10 +46,10 @@ venv.bak/
 *.swo
 *~
 
-# Reports and outputs (JSON only - committed to reports/ at root, NOT src/)
+# Reports and outputs (JSON only - committed to reports/ at root)
 reports/*.json
 src/reports/
-src/output/
+# Note: src/rankle/output/ IS version controlled (backends code)
 
 # Old/deprecated directories - DO NOT USE
 output/

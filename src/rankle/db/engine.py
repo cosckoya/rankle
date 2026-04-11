@@ -8,7 +8,6 @@ Provides:
 """
 
 import contextlib
-from pathlib import Path
 from typing import Generator
 
 from sqlalchemy import create_engine, Engine

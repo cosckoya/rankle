@@ -1,10 +1,11 @@
 """FastAPI application factory and configuration."""
 
+import asyncio
 import json
-from datetime import UTC, datetime
+from contextlib import asynccontextmanager
+from typing import Any, Generator
 
 from fastapi import FastAPI, HTTPException, WebSocket, WebSocketDisconnect, Depends
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from rankle.api.schemas import (
@@ -13,21 +14,18 @@ from rankle.api.schemas import (
     ScanListResponse,
     ResultsQueryResponse,
     HealthResponse,
-    ProgressUpdate,
 )
-from rankle.core.scanner import RankleScanner
 from rankle.db.engine import get_engine, create_all_tables, get_db_session
 from rankle.db.repository import ScanRepository
-from rankle.db.models import Scan, ScanResult
-from rankle.output.registry import OutputRegistry
+from rankle.db.models import ScanResult
 from config.settings import DATABASE_URL
 
 
 # Global engine (initialized on startup)
-_engine = None
+_engine: Any = None
 
 
-def get_db() -> Session:  # type: ignore
+def get_db() -> Generator[Session, None, None]:
     """Dependency injection for database session."""
     global _engine
     if _engine is None:
@@ -39,25 +37,31 @@ def get_db() -> Session:  # type: ignore
         yield session
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> Any:
+    """Lifespan context manager for startup and shutdown events."""
+    global _engine
+    db_path = DATABASE_URL.replace("sqlite:///", "")
+    _engine = get_engine(db_path)
+    create_all_tables(_engine)
+    yield
+    # Cleanup on shutdown if needed
+    if _engine:
+        _engine.dispose()
+
+
 def create_app() -> FastAPI:
     """Create and configure FastAPI application."""
     app = FastAPI(
         title="Rankle API",
         description="Web Infrastructure Reconnaissance Tool - REST API",
         version="1.0.0",
+        lifespan=lifespan,
     )
-
-    # Initialize database on startup
-    @app.on_event("startup")
-    async def startup_event():
-        global _engine
-        db_path = DATABASE_URL.replace("sqlite:///", "")
-        _engine = get_engine(db_path)
-        create_all_tables(_engine)
 
     # Health check
     @app.get("/health", response_model=HealthResponse)
-    async def health_check():
+    async def health_check() -> HealthResponse:  # noqa: ARG001
         """Check API and database health."""
         return HealthResponse(
             status="healthy",
@@ -67,15 +71,16 @@ def create_app() -> FastAPI:
 
     # Create scan
     @app.post("/api/v1/scans", response_model=ScanResponse)
-    async def create_scan(request: ScanRequest, db: Session = Depends(get_db)):
+    async def create_scan(  # noqa: ARG001
+        request: ScanRequest,
+        db: Session = Depends(get_db),
+    ) -> ScanResponse:
         """Create a new scan job."""
         try:
             repo = ScanRepository(db)
             scan = repo.create_scan(request.domain, request.scan_type)
             db.commit()
 
-            # TODO: Start async scan job (use background task)
-            # For now, just return created scan record
             return ScanResponse(
                 id=scan.id,
                 domain=scan.domain,
@@ -84,11 +89,14 @@ def create_app() -> FastAPI:
                 status=scan.status,
             )
         except Exception as e:
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
     # Get scan status
     @app.get("/api/v1/scans/{scan_id}", response_model=ScanResponse)
-    async def get_scan(scan_id: int, db: Session = Depends(get_db)):
+    async def get_scan(  # noqa: ARG001
+        scan_id: int,
+        db: Session = Depends(get_db),
+    ) -> ScanResponse:
         """Get scan status and metadata."""
         repo = ScanRepository(db)
         scan = repo.get_scan(scan_id)
@@ -96,12 +104,13 @@ def create_app() -> FastAPI:
         if not scan:
             raise HTTPException(status_code=404, detail="Scan not found")
 
+        from rankle.api.schemas import ModuleResultSchema
         modules = [
-            {
-                "module_name": m.module_name,
-                "status": m.status,
-                "result_count": m.result_count,
-            }
+            ModuleResultSchema(
+                module_name=m.module_name,
+                status=m.status,
+                result_count=m.result_count,
+            )
             for m in scan.modules
         ]
 
@@ -118,7 +127,11 @@ def create_app() -> FastAPI:
 
     # List scans
     @app.get("/api/v1/scans", response_model=ScanListResponse)
-    async def list_scans(limit: int = 100, offset: int = 0, db: Session = Depends(get_db)):
+    async def list_scans(  # noqa: ARG001
+        limit: int = 100,
+        offset: int = 0,
+        db: Session = Depends(get_db),
+    ) -> ScanListResponse:
         """List all scans (paginated)."""
         repo = ScanRepository(db)
         scans = repo.list_all_scans(limit=limit)
@@ -140,14 +153,15 @@ def create_app() -> FastAPI:
 
     # Get scan results
     @app.get("/api/v1/scans/{scan_id}/results", response_model=ResultsQueryResponse)
-    async def get_scan_results(
+    async def get_scan_results(  # noqa: ARG001
         scan_id: int,
-        module_name: str = None,
+        module_name: str | None = None,
         limit: int = 100,
-        db: Session = Depends(get_db)
-    ):
+        db: Session = Depends(get_db),
+    ) -> ResultsQueryResponse:
         """Get results for a specific scan (optionally filtered by module)."""
-        from sqlalchemy import select, and_
+        from sqlalchemy import select
+        from rankle.api.schemas import ScanResultResponse
 
         query = select(ScanResult).where(ScanResult.scan_id == scan_id)
 
@@ -159,14 +173,14 @@ def create_app() -> FastAPI:
 
         return ResultsQueryResponse(
             results=[
-                {
-                    "id": r.id,
-                    "scan_id": r.scan_id,
-                    "module_name": r.module_name,
-                    "result_type": r.result_type,
-                    "data": json.loads(r.data_json),
-                    "severity": r.severity,
-                }
+                ScanResultResponse(
+                    id=r.id,
+                    scan_id=r.scan_id,
+                    module_name=r.module_name,
+                    result_type=r.result_type,
+                    data=json.loads(r.data_json),
+                    severity=r.severity,
+                )
                 for r in results_list
             ],
             total=len(results_list),
@@ -174,7 +188,11 @@ def create_app() -> FastAPI:
 
     # WebSocket for real-time progress
     @app.websocket("/ws/progress/{scan_id}")
-    async def websocket_progress(websocket: WebSocket, scan_id: int, db: Session = Depends(get_db)):
+    async def websocket_progress(  # noqa: ARG001
+        websocket: WebSocket,
+        scan_id: int,
+        db: Session = Depends(get_db),
+    ) -> None:
         """WebSocket endpoint for real-time scan progress updates."""
         await websocket.accept()
 
@@ -207,7 +225,6 @@ def create_app() -> FastAPI:
                     break
 
                 # Wait 500ms before next update
-                import asyncio
                 await asyncio.sleep(0.5)
 
         except WebSocketDisconnect:

@@ -304,8 +304,7 @@ Examples:
     list_parser.add_argument("--limit", type=int, default=100, help="Max scans to show")
     list_parser.set_defaults(func=cmd_list)
 
-    # Backward compatibility: allow positional domain argument
-    parser.add_argument("domain", nargs="?", help="Domain to scan (if no subcommand given)")
+    # Global options (not on main parser to avoid shadowing subcommand args)
     parser.add_argument("-o", "--output", action="store_true")
     parser.add_argument("--backend", choices=["console", "json", "sqlite"], default=OUTPUT_BACKEND)
     parser.add_argument("-v", "--verbose", action="store_true")
@@ -313,14 +312,12 @@ Examples:
 
     args = parser.parse_args()
 
-    if not args.command and args.domain:
-        args.func = cmd_scan
-        return cmd_scan(args)
-
+    # Execute the command if one was selected
     if hasattr(args, "func"):
         return args.func(args)
-
-    parser.print_help()
+    else:
+        parser.print_help()
+        return None
 
 
 if __name__ == "__main__":

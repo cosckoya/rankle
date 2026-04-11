@@ -86,7 +86,7 @@ def extract_endpoints_from_js(js_content: str) -> list[str]:
         matches = re.findall(pattern, js_content)
         for match in matches:
             # Handle tuples from regex groups
-            endpoint = match[0] if isinstance(match, tuple) else match
+            endpoint: str = match[0] if isinstance(match, tuple) else str(match)
             if endpoint:
                 endpoints.add(endpoint)
 

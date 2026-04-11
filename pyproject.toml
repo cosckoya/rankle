@@ -16,11 +16,11 @@ maintainers = [
 ]
 requires-python = ">=3.13"
 dependencies = [
-    "requests>=2.31.0",
-    "dnspython>=2.4.0",
-    "beautifulsoup4>=4.12.0",
+    "requests>=2.33.0",
+    "dnspython>=2.8.0",
+    "beautifulsoup4>=4.14.0",
     "python-wappalyzer>=0.3.1",  # Technology detection (3000+ signatures)
-    "mmh3>=5.0.0",                # Favicon hashing for fingerprinting
+    "mmh3>=5.2.0",                # Favicon hashing for fingerprinting
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -28,8 +28,6 @@ classifiers = [
     "Intended Audience :: System Administrators",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Security",
     "Topic :: System :: Networking",
@@ -50,15 +48,12 @@ keywords = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=8.0.0",
+    "pytest>=8.4.0",
     "pytest-cov>=4.1.0",
-    "pytest-xdist>=3.5.0",        # Parallel test execution
-    "ruff>=0.8.0",                 # Linting + formatting (replaces black, isort, flake8)
-    "mypy>=1.13.0",                # Type checking
-    "bandit[toml]>=1.7.10",        # Security scanning
-    "pre-commit>=3.8.0",           # Git hooks
-    "interrogate>=1.7.0",          # Docstring coverage
-    "pip-audit>=2.7.0",            # Dependency vulnerability scanning
+    "pytest-xdist>=3.8.0",         # Parallel test execution
+    "ruff>=0.15.0",                # Linting + formatting (replaces black, isort, flake8)
+    "basedpyright>=1.39.0",        # Type checking (strict mode)
+    "pre-commit>=3.9.0",           # Git hooks
 ]
 extended = [
     "python-whois>=0.9.0",

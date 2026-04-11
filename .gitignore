@@ -46,8 +46,12 @@ venv.bak/
 *.swo
 *~
 
-# Reports (JSON output only)
+# Reports and outputs (JSON only - committed to reports/)
 reports/*.json
+
+# Old/deprecated directories - DO NOT USE
+output/
+output_*
 
 # Scan results and reports (be specific to avoid catching config JSON files)
 bandit-report.json

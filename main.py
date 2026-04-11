@@ -25,8 +25,8 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 
-# Add project root to path
-sys.path.insert(0, str(Path(__file__).parent))
+# Add src directory to path
+sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
     from config.settings import OUTPUT_DIR

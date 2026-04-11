@@ -1,6 +1,6 @@
 # Rankle - Web Infrastructure Reconnaissance Tool
 
-![Rankle](rankle.png)
+![Rankle](img/rankle.png)
 
 **Passive reconnaissance. Zero API keys. 100% open source.**
 

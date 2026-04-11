@@ -195,49 +195,54 @@ class RankleScanner:
             >>> print(results["technologies"])
         """
         # 1. DNS Analysis (foundation for other modules)
-        print("\n[1/8] DNS Analysis...")
+        print("\n[1/9] DNS Analysis...")
         dns_results = self.analyze_dns()
         self.results["dns"] = dns_results
 
         # Cache resolved IPs for later use
         self._resolved_ips = dns_results.get("A", [])
 
-        # 2. Fetch HTTP response for header/body analysis
-        print("\n[2/8] Fetching HTTP Response...")
+        # 2. WHOIS Domain Lookup (early domain metadata)
+        print("\n[2/9] WHOIS Domain Lookup...")
+        whois_results = self.lookup_whois()
+        self.results["whois"] = whois_results
+
+        # 3. Fetch HTTP response for header/body analysis
+        print("\n[3/9] Fetching HTTP Response...")
         self._fetch_http_data()
 
-        # 3. SSL/TLS Analysis
-        print("\n[3/8] Analyzing SSL/TLS Certificate...")
+        # 4. SSL/TLS Analysis
+        print("\n[4/9] Analyzing SSL/TLS Certificate...")
         ssl_results = self.analyze_ssl_certificate()
         self.results["ssl"] = ssl_results
 
-        # 4. Technology Detection
-        print("\n[4/8] Detecting Technologies...")
+        # 5. Technology Detection
+        print("\n[5/9] Detecting Technologies...")
         tech_results = self.detect_technologies()
         self.results["technologies"] = tech_results
 
-        # 5. CDN/WAF Detection
-        print("\n[5/8] Detecting CDN/WAF...")
+        # 6. CDN/WAF Detection
+        print("\n[6/9] Detecting CDN/WAF...")
         cdn_waf_results = self.detect_cdn_waf()
         self.results["cdn"] = cdn_waf_results.get("cdn", {})
         self.results["waf"] = cdn_waf_results.get("waf", {})
 
-        # 6. Security Headers Audit
-        print("\n[6/8] Auditing Security Headers...")
+        # 7. Security Headers Audit
+        print("\n[7/9] Auditing Security Headers...")
         headers_results = self.audit_security_headers()
         self.results["security_headers"] = headers_results
 
-        # 7. Origin Discovery (if CDN detected)
+        # 8. Origin Discovery (if CDN detected)
         if cdn_waf_results.get("cdn", {}).get("detected"):
-            print("\n[7/8] Discovering Origin Infrastructure...")
+            print("\n[8/9] Discovering Origin Infrastructure...")
             origin_results = self.discover_origin()
             self.results["origin"] = origin_results
         else:
-            print("\n[7/8] Origin Discovery... (skipped - no CDN detected)")
+            print("\n[8/9] Origin Discovery... (skipped - no CDN detected)")
             self.results["origin"] = {"potential_origins": []}
 
-        # 8. Subdomain Discovery
-        print("\n[8/8] Discovering Subdomains...")
+        # 9. Subdomain Discovery
+        print("\n[9/9] Discovering Subdomains...")
         subdomain_results = self.discover_subdomains()
         self.results["subdomains"] = subdomain_results
 
@@ -670,6 +675,64 @@ class RankleScanner:
             ns_count = len(dns.get("NS", []))
             print(f"\n📡 DNS: {a_count} A | {mx_count} MX | {ns_count} NS records")
 
+    def _print_whois_summary(self) -> None:
+        """Print WHOIS domain registration section."""
+        whois = self.results.get("whois", {})
+
+        if not whois:
+            return
+
+        if whois.get("available"):
+            print(f"\n📋 DOMAIN REGISTRATION: AVAILABLE FOR REGISTRATION")
+            return
+
+        if whois.get("error"):
+            print(f"\n📋 DOMAIN REGISTRATION: ERROR - {whois['error']}")
+            return
+
+        print("\n📋 DOMAIN REGISTRATION")
+        print("─" * 40)
+
+        if whois.get("registrar"):
+            print(f"   Registrar:  {whois['registrar']}")
+
+        if whois.get("creation_date"):
+            print(f"   Created:    {whois['creation_date']}")
+
+        if whois.get("expiration_date"):
+            expiry = whois['expiration_date']
+            days = None
+            try:
+                from datetime import datetime, UTC
+                expiry_dt = datetime.strptime(expiry, "%Y-%m-%d").replace(tzinfo=UTC)
+                now = datetime.now(UTC)
+                days = (expiry_dt - now).days
+            except (ValueError, TypeError):
+                pass
+
+            if days is not None:
+                status_str = f"({days} days)" if days > 0 else "(EXPIRED)"
+                print(f"   Expires:    {expiry} {status_str}")
+            else:
+                print(f"   Expires:    {expiry}")
+
+        if whois.get("updated_date"):
+            print(f"   Updated:    {whois['updated_date']}")
+
+        if whois.get("nameservers"):
+            ns_list = whois['nameservers']
+            ns_display = ", ".join(ns_list[:3])
+            if len(ns_list) > 3:
+                ns_display += f", ... (+{len(ns_list)-3} more)"
+            print(f"   NS:         {ns_display}")
+
+        if whois.get("status"):
+            status_list = whois['status']
+            status_display = ", ".join(status_list[:3])
+            if len(status_list) > 3:
+                status_display += f", ... (+{len(status_list)-3} more)"
+            print(f"   Status:     {status_display}")
+
     def _print_full_summary(self):
         """
         Print comprehensive summary report with friendly formatting.
@@ -683,6 +746,7 @@ class RankleScanner:
         self._print_technologies_summary()
         self._print_origin_summary()
         self._print_subdomains_summary()
+        self._print_whois_summary()
         self._print_dns_summary()
 
         print("\n" + "─" * width)
@@ -709,6 +773,35 @@ class RankleScanner:
                 f.write(f"Domain: {self.domain}\n")
                 f.write(f"Scan Time: {self.scan_timestamp}\n")
                 f.write("=" * 80 + "\n\n")
+
+                # Write WHOIS results
+                if "whois" in self.results:
+                    whois = self.results["whois"]
+                    if not whois.get("available") and not whois.get("error"):
+                        f.write("WHOIS - DOMAIN REGISTRATION\n")
+                        f.write("-" * 80 + "\n")
+                        if whois.get("registrar"):
+                            f.write(f"Registrar: {whois['registrar']}\n")
+                        if whois.get("creation_date"):
+                            f.write(f"Created: {whois['creation_date']}\n")
+                        if whois.get("expiration_date"):
+                            f.write(f"Expiration: {whois['expiration_date']}\n")
+                        if whois.get("updated_date"):
+                            f.write(f"Updated: {whois['updated_date']}\n")
+                        if whois.get("nameservers"):
+                            f.write(f"Nameservers: {', '.join(whois['nameservers'][:5])}")
+                            if len(whois['nameservers']) > 5:
+                                f.write(f" ... and {len(whois['nameservers'])-5} more")
+                            f.write("\n")
+                        if whois.get("status"):
+                            f.write(f"Status: {', '.join(whois['status'][:5])}\n")
+                        f.write("\n")
+                    elif whois.get("available"):
+                        f.write("WHOIS - DOMAIN REGISTRATION: AVAILABLE FOR REGISTRATION\n")
+                        f.write("-" * 80 + "\n\n")
+                    elif whois.get("error"):
+                        f.write(f"WHOIS - ERROR: {whois['error']}\n")
+                        f.write("-" * 80 + "\n\n")
 
                 # Write DNS results
                 if "dns" in self.results:

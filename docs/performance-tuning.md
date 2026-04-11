@@ -58,7 +58,7 @@
 
 ### Understanding Timeouts
 
-**Location:** `config/settings.py`
+**Location:** `src/config/settings.py`
 
 ```python
 # Global timeout for all HTTP requests
@@ -108,7 +108,7 @@ DEFAULT_TIMEOUT = 30
 **Advanced:** Different timeouts for different operations
 
 ```python
-# In rankle/core/session.py
+# In src/rankle/core/session.py
 class SessionManager:
     def __init__(self, timeout: int = DEFAULT_TIMEOUT):
         self.timeout = timeout
@@ -132,7 +132,7 @@ class SessionManager:
 
 ### Configuration
 
-**Location:** `config/settings.py`
+**Location:** `src/config/settings.py`
 
 ```python
 # Delay between requests (seconds)
@@ -215,7 +215,7 @@ Rankle uses sequential scanning (one request at a time) for safety.
 
 ```python
 # --concurrent flag (future)
-python main.py example.com --concurrent 5
+uv run python main.py example.com --concurrent 5
 
 # Runs up to 5 modules simultaneously
 # Example: DNS + SSL + HTTP fetch in parallel
@@ -235,7 +235,7 @@ python main.py example.com --concurrent 5
 
 **Impact:** DNS is often the slowest part of reconnaissance
 
-**Configuration:** `config/settings.py`
+**Configuration:** `src/config/settings.py`
 
 ```python
 DNS_SERVERS = [
@@ -288,7 +288,7 @@ Future feature - cache DNS responses during scan session
 **1. Limit Subdomain Results:**
 
 ```python
-# In rankle/modules/subdomains.py
+# In src/rankle/modules/subdomains.py
 # Future: Add MAX_SUBDOMAINS configuration
 MAX_SUBDOMAINS = 100  # Stop after 100 subdomains found
 ```
@@ -314,16 +314,6 @@ for domain in domains:
     del scanner
 ```
 
-### Docker Memory Limits
-
-```bash
-# Limit Rankle container to 512MB
-docker run --memory="512m" --memory-swap="512m" rankle example.com
-
-# Monitor memory usage
-docker stats
-```
-
 ---
 
 ## Network Optimization
@@ -341,7 +331,7 @@ docker stats
 **Configuration:**
 
 ```python
-# In rankle/core/session.py
+# In src/rankle/core/session.py
 # Adjust pool size for future concurrent scanning
 adapter = HTTPAdapter(
     pool_connections=10,  # Connection pools
@@ -467,7 +457,7 @@ if any_js_framework_detected:
 ```bash
 # Scan multiple domains one by one
 for domain in $(cat domains.txt); do
-    python main.py "$domain" -o json > "${domain}.json"
+    uv run python main.py "$domain" -o json > "${domain}.json"
 done
 ```
 
@@ -482,7 +472,7 @@ done
 sudo apt install parallel
 
 # Scan 5 domains concurrently
-cat domains.txt | parallel -j 5 'python main.py {} -o json > {}.json'
+cat domains.txt | parallel -j 5 'uv run python main.py {} -o json > {}.json'
 
 # Performance: N domains ÷ 5 × ~30 seconds
 # Example: 100 domains in ~10 minutes vs 50 minutes
@@ -493,7 +483,7 @@ cat domains.txt | parallel -j 5 'python main.py {} -o json > {}.json'
 ```bash
 # Scan up to 5 at a time
 while read domain; do
-    python main.py "$domain" -o json > "${domain}.json" &
+    uv run python main.py "$domain" -o json > "${domain}.json" &
 
     # Limit to 5 concurrent
     if (( $(jobs -r | wc -l) >= 5 )); then
@@ -543,7 +533,7 @@ wait  # Wait for all remaining jobs
 
 ```bash
 # Profile a scan
-python -m cProfile -s cumtime main.py example.com
+uv run python -m cProfile -s cumtime main.py example.com
 
 # Output shows time spent in each function
 ```
@@ -552,7 +542,7 @@ python -m cProfile -s cumtime main.py example.com
 
 ```bash
 # Simple timing
-time python main.py example.com
+time uv run python main.py example.com
 
 # Output:
 # real    0m32.450s  # Total wall-clock time
@@ -574,7 +564,7 @@ echo "Domain,Time(s)" > benchmark.csv
 
 for domain in "${domains[@]}"; do
     start=$(date +%s.%N)
-    python main.py "$domain" > /dev/null 2>&1
+    uv run python main.py "$domain" > /dev/null 2>&1
     end=$(date +%s.%N)
 
     runtime=$(echo "$end - $start" | bc)
@@ -666,9 +656,9 @@ print(f"[DEBUG] {module_name} took {end_time - start_time:.2f}s")
 ### Resource Constraints
 
 ✅ Limit subdomain results
-✅ Use Docker with memory limits
 ✅ Clear results between batch scans
 ✅ Reduce concurrent batch scanning
+✅ Monitor memory usage with `htop` during large batch scans
 
 ---
 
@@ -678,7 +668,7 @@ print(f"[DEBUG] {module_name} took {end_time - start_time:.2f}s")
 
 ```bash
 # Fast Scan (15-20s)
-# config/settings.py:
+# src/config/settings.py:
 DEFAULT_TIMEOUT = 10
 RATE_LIMIT_DELAY = 0.5
 

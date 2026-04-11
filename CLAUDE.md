@@ -22,8 +22,7 @@ uv run python main.py example.com -v      # Verbose mode
 
 # Code quality (also available via make)
 ruff check . --fix && ruff format .  # Lint and format
-mypy rankle/                         # Type check
-bandit -c pyproject.toml -r rankle/  # Security scan
+pyright src/rankle/                  # Type check
 pre-commit run --all-files           # All checks at once
 
 # Testing
@@ -56,7 +55,7 @@ This tool performs **passive reconnaissance only**. Never implement or suggest a
 - Brute force or credential stuffing
 - Unauthorized access or exploitation
 
-Input validation lives in `rankle/utils/validators.py`.
+Input validation lives in `src/rankle/utils/validators.py`.
 
 ---
 

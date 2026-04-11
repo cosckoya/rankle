@@ -39,25 +39,15 @@ This guide will help you install Rankle and run your first reconnaissance scan.
 **Option 1: Install dependencies only**
 
 ```bash
-# Required libraries
-pip install requests dnspython beautifulsoup4
-
-# Optional (enhanced features)
-pip install python-whois
-
-# Or install all at once
-pip install -r requirements.txt
+# Install all dependencies
+uv sync
 ```
 
 **Option 2: Modern editable installation** (recommended for development)
 
 ```bash
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
 # Install Rankle in editable mode
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 
 # Install pre-commit hooks (for contributors)
 pre-commit install
@@ -70,15 +60,11 @@ pre-commit install
 git clone https://github.com/javicosvml/rankle.git
 cd rankle
 
-# Create virtual environment
-python3 -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
 # Install dependencies
-pip install -r requirements.txt
+uv sync
 
 # Run your first scan
-python main.py example.com
+uv run python main.py example.com
 ```
 
 ---
@@ -89,7 +75,7 @@ python main.py example.com
 
 ```bash
 # Basic scan (prints to terminal only)
-python main.py example.com
+uv run python main.py example.com
 
 # Expected output:
 DOMAIN: example.com
@@ -116,20 +102,14 @@ STATUS: 200
 
 ```bash
 # Save as JSON (machine-readable)
-python main.py example.com -o json
-
-# Save as text report (human-readable)
-python main.py example.com -o text
-
-# Save both formats
-python main.py example.com -o both
+uv run python main.py example.com -o json
 ```
 
 ### Verbose Output
 
 ```bash
 # Enable verbose mode for debugging
-python main.py example.com -v
+uv run python main.py example.com -v
 ```
 
 ---
@@ -139,24 +119,22 @@ python main.py example.com -v
 ### Command-Line Options
 
 ```
-python main.py <domain> [options]
+uv run python main.py <domain> [options]
 
 Required:
   domain              Target domain to scan (e.g., example.com)
 
 Options:
-  -o, --output TYPE   Save output to file (json/text/both)
+  -o, --output        Save output to file as JSON
                       If not specified, only prints to terminal
   -v, --verbose       Enable verbose output with debug info
-  --output-dir PATH   Output directory (default: ./output)
   --version           Show version number
   -h, --help          Show help message
 
 Examples:
-  python main.py example.com                    # Basic scan
-  python main.py example.com -o json            # JSON output
-  python main.py example.com -o both -v         # Both formats, verbose
-  python main.py example.com --output-dir /tmp  # Custom output directory
+  uv run python main.py example.com                    # Basic scan
+  uv run python main.py example.com -o json            # JSON output
+  uv run python main.py example.com -o json -v         # JSON output, verbose
 ```
 
 ### Output Formats
@@ -165,12 +143,12 @@ Examples:
 
 **Purpose:** Machine-readable structured data for automation and integration
 
-**File Location:** `output/<domain>_rankle.json`
+**File Location:** `reports/<domain>_rankle.json`
 
 **Use Cases:**
 
 - Automated processing with `jq`
-- Integration with security tools (Nuclei, Nmap, Metasploit)
+- Integration with security tools (Nuclei, Nmap, httpx)
 - Database storage (PostgreSQL JSONB, Elasticsearch)
 - Comparison and monitoring (diff between scans)
 - Pipeline integration (SIEM/SOAR)
@@ -189,44 +167,6 @@ cat scan.json | jq -r '.technologies_web.cms'
 
 # Feed subdomains to other tools
 cat scan.json | jq -r '.subdomains[]' | nuclei -l -
-```
-
-#### Text Output
-
-**Purpose:** Human-readable technical report
-
-**File Location:** `output/<domain>_report.txt`
-
-**Characteristics:**
-
-- Compact, technical format
-- Section-based layout
-- grep/awk friendly
-- Quick manual review
-
-**Structure:**
-
-```text
-DOMAIN: example.com
-SCAN_TIME: 2026-01-19 12:00:00
-STATUS: 200
-
-[INFRASTRUCTURE]  - IPs, DNS, geolocation, ISP
-[TECHNOLOGY]      - CMS, frameworks, server software
-[SECURITY]        - TLS, certificates, headers, CDN/WAF
-[SUBDOMAINS]      - Certificate transparency results
-[WHOIS]           - Registration information
-[DNS_RECORDS]     - TXT, SPF records
-```
-
-**Example Usage:**
-
-```bash
-# Extract security section
-grep -A 10 "^\[SECURITY\]" report.txt
-
-# Filter subdomains
-awk '/^\[SUBDOMAINS\]/,/^\[/' report.txt | grep -v "^\["
 ```
 
 ---
@@ -263,7 +203,7 @@ After installing and running your first scan:
 **Solution:**
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 ### DNS Resolution Failures
@@ -274,7 +214,7 @@ pip install -r requirements.txt
 
 - Check your internet connection
 - Try with a different domain
-- Configure custom DNS servers in `config/settings.py`:
+- Configure custom DNS servers in `src/config/settings.py`:
 
   ```python
   DNS_NAMESERVERS = ["8.8.8.8", "1.1.1.1"]
@@ -286,13 +226,13 @@ pip install -r requirements.txt
 
 **Solution:**
 
-- Increase timeout in `config/settings.py`:
+- Increase timeout in `src/config/settings.py`:
 
   ```python
   DEFAULT_TIMEOUT = 60  # Increase from 45
   ```
 
-- Use verbose mode to see which operations are slow: `python main.py example.com -v`
+- Use verbose mode to see which operations are slow: `uv run python main.py example.com -v`
 
 ---
 

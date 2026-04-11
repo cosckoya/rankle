@@ -17,15 +17,14 @@
 8. [Detection Issues](#detection-issues)
 9. [Output & Formatting Problems](#output--formatting-problems)
 10. [Performance Issues](#performance-issues)
-11. [Docker-Specific Issues](#docker-specific-issues)
-12. [Type Checking Errors](#type-checking-errors)
-13. [Getting Help](#getting-help)
+11. [Type Checking Errors](#type-checking-errors)
+12. [Getting Help](#getting-help)
 
 ---
 
 ## Installation Issues
 
-### Problem: `pip install` fails with "externally-managed-environment"
+### Problem: `uv pip install` fails with "externally-managed-environment"
 
 **Error Message:**
 
@@ -34,31 +33,21 @@ error: externally-managed-environment
 × This environment is externally managed
 ```
 
-**Cause:** Python 3.11+ on Debian/Ubuntu uses externally managed environments
+**Cause:** Python 3.13+ on Debian/Ubuntu uses externally managed environments
 
-**Solution 1 (Recommended):** Use virtual environment
+**Solution 1 (Recommended):** Use uv sync
 
 ```bash
-# Create virtual environment
-python3 -m venv .venv
-
-# Activate it
-source .venv/bin/activate
-
-# Install Rankle
-pip install -r requirements.txt
+uv sync
 ```
 
-**Solution 2:** Use UV (modern package manager)
+**Solution 2:** Use a virtual environment explicitly
 
 ```bash
-# Install UV
-curl -LsSf https://astral.sh/uv/install.sh | sh
-
 # Create venv and install
 uv venv
 source .venv/bin/activate
-uv pip install -r requirements.txt
+uv sync
 ```
 
 ---
@@ -76,11 +65,8 @@ ModuleNotFoundError: No module named 'Wappalyzer'
 **Solution:**
 
 ```bash
-# Activate virtual environment first
-source .venv/bin/activate
-
 # Install Wappalyzer and its dependencies
-pip install python-Wappalyzer setuptools
+uv pip install python-Wappalyzer setuptools
 
 # Verify installation
 python -c "import Wappalyzer; print('OK')"
@@ -105,7 +91,7 @@ ModuleNotFoundError: No module named 'pkg_resources'
 **Solution:**
 
 ```bash
-pip install setuptools
+uv pip install setuptools
 ```
 
 **Workaround for Deprecation Warning:**
@@ -129,15 +115,14 @@ The warning about `pkg_resources` being deprecated is expected and can be ignore
 **Diagnosis:** Check if dependencies are installed
 
 ```bash
-pip list | grep -i wappalyzer
-pip list | grep -i mmh3
+uv pip list | grep -i wappalyzer
+uv pip list | grep -i mmh3
 ```
 
 **Solution:** Install missing packages
 
 ```bash
-source .venv/bin/activate
-pip install python-Wappalyzer mmh3 setuptools
+uv pip install python-Wappalyzer mmh3 setuptools
 ```
 
 ---
@@ -156,10 +141,10 @@ ImportError: cannot import name 'RankleScanner' from 'rankle'
 
 ```bash
 # Install in development mode
-pip install -e .
+uv pip install -e .
 
 # Or install in editable mode with dev dependencies
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
 ```
 
 ---
@@ -175,17 +160,11 @@ ERROR: pip's dependency resolver does not currently take into account all the pa
 **Solution:** Clean install
 
 ```bash
-# Deactivate and remove old venv
-deactivate
+# Remove old venv
 rm -rf .venv
 
-# Create fresh environment
-python3 -m venv .venv
-source .venv/bin/activate
-
-# Install from scratch
-pip install --upgrade pip
-pip install -r requirements.txt
+# Create fresh environment and install
+uv sync
 ```
 
 ---
@@ -228,7 +207,7 @@ nslookup example.com
 **1. Increase timeout:**
 
 ```python
-# In config/settings.py
+# In src/config/settings.py
 DEFAULT_TIMEOUT = 30  # Increase from default 15
 ```
 
@@ -272,7 +251,7 @@ Max retries exceeded with url: / (Caused by SSLError(SSLCertVerificationError(..
 **Solution 2:** If you need to scan anyway (dev/testing)
 
 ```python
-# Edit config/settings.py
+# Edit src/config/settings.py
 VERIFY_SSL = False  # Use with caution!
 ```
 
@@ -296,13 +275,13 @@ socket.gaierror: [Errno -2] Name or service not known
 
 ```bash
 # Make sure domain is correct
-python main.py example.com  # Not "exmaple.com"
+uv run python main.py example.com  # Not "exmaple.com"
 ```
 
 **2. Try different DNS server:**
 
 ```python
-# Edit config/settings.py
+# Edit src/config/settings.py
 DNS_SERVERS = [
     "1.1.1.1",     # Cloudflare
     "8.8.8.8",     # Google
@@ -354,7 +333,7 @@ dig example.com CNAME
 
 ```bash
 # Try scanning with IP directly
-python main.py 93.184.216.34
+uv run python main.py 93.184.216.34
 
 # Or use --ip flag if implemented
 ```
@@ -374,7 +353,7 @@ dns.exception.Timeout: The DNS query timed out
 **1. Increase DNS timeout:**
 
 ```python
-# In rankle/modules/dns.py
+# In src/rankle/modules/dns.py
 resolver.timeout = 10  # Increase from default
 resolver.lifetime = 30  # Increase from default
 ```
@@ -382,7 +361,7 @@ resolver.lifetime = 30  # Increase from default
 **2. Use reliable DNS servers:**
 
 ```python
-# config/settings.py
+# src/config/settings.py
 DNS_SERVERS = ["1.1.1.1", "8.8.8.8"]  # Fast, reliable
 ```
 
@@ -471,7 +450,7 @@ HTTP 429: Too Many Requests
 **1. Increase delay between requests:**
 
 ```python
-# config/settings.py
+# src/config/settings.py
 RATE_LIMIT_DELAY = 2.0  # Seconds between requests (increase from 1.0)
 ```
 
@@ -479,7 +458,7 @@ RATE_LIMIT_DELAY = 2.0  # Seconds between requests (increase from 1.0)
 
 ```bash
 # If implemented, use --slow flag
-python main.py example.com --slow
+uv run python main.py example.com --slow
 ```
 
 **3. Scan fewer subdomains:**
@@ -494,7 +473,7 @@ python main.py example.com --slow
 ```bash
 # Rate limits often reset after time period
 sleep 3600  # Wait 1 hour
-python main.py example.com
+uv run python main.py example.com
 ```
 
 ---
@@ -519,7 +498,7 @@ HTTP 403: Forbidden
 **1. Check User-Agent:**
 
 ```python
-# config/settings.py - Ensure realistic User-Agent
+# src/config/settings.py - Ensure realistic User-Agent
 DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64)..."
 ```
 
@@ -577,7 +556,7 @@ Read timed out. (read timeout=15)
 **1. Increase global timeout:**
 
 ```python
-# config/settings.py
+# src/config/settings.py
 DEFAULT_TIMEOUT = 30  # Increase from 15 seconds
 ```
 
@@ -639,7 +618,7 @@ curl https://example.com | head -50
 **1. Try enhanced detection:**
 
 ```bash
-python main.py example.com
+uv run python main.py example.com
 ```
 
 **2. Manual inspection:**
@@ -737,7 +716,7 @@ json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
 
 ```bash
 # Ensure using --output json flag
-python main.py example.com --output json > results.json
+uv run python main.py example.com --output json > results.json
 
 # Validate JSON
 python -m json.tool results.json
@@ -760,7 +739,7 @@ UnicodeEncodeError: 'ascii' codec can't encode character
 export PYTHONIOENCODING=utf-8
 
 # Or run with UTF-8
-python main.py example.com | iconv -f utf-8
+uv run python main.py example.com | iconv -f utf-8
 ```
 
 ---
@@ -771,10 +750,10 @@ python main.py example.com | iconv -f utf-8
 
 ```bash
 # Reduce verbosity (if --verbose flag used)
-python main.py example.com  # Without --verbose
+uv run python main.py example.com  # Without --verbose
 
 # Redirect to file
-python main.py example.com > scan.txt 2>&1
+uv run python main.py example.com > scan.txt 2>&1
 ```
 
 ---
@@ -789,7 +768,7 @@ python main.py example.com > scan.txt 2>&1
 
 ```bash
 # Time the scan
-time python main.py example.com
+time uv run python main.py example.com
 ```
 
 **Common Causes & Solutions:**
@@ -820,7 +799,7 @@ Certificate Transparency logs may have thousands of entries.
 **3. Timeout settings too high:**
 
 ```python
-# config/settings.py
+# src/config/settings.py
 DEFAULT_TIMEOUT = 15  # Don't set too high (e.g., 60)
 ```
 
@@ -847,85 +826,11 @@ DEFAULT_TIMEOUT = 15  # Don't set too high (e.g., 60)
 # Save to file after each scan
 ```
 
-**3. Use Docker with memory limits:**
-
-```bash
-docker run --memory="512m" rankle example.com
-```
-
----
-
-## Docker-Specific Issues
-
-### Problem: Docker build fails
-
-**Error Message:**
-
-```
-ERROR [stage 1/2] failed to solve: dockerfile parse error
-```
-
-**Solutions:**
-
-**1. Check Docker version:**
-
-```bash
-docker --version
-# Require Docker 20.10+
-```
-
-**2. Clean build:**
-
-```bash
-docker system prune -a
-docker build --no-cache -t rankle .
-```
-
----
-
-### Problem: Container can't resolve DNS
-
-**Error Message:**
-
-```
-socket.gaierror: [Errno -2] Name or service not known
-```
-
-**Solution:**
-
-```bash
-# Use host network
-docker run --network host rankle example.com
-
-# Or specify DNS
-docker run --dns 1.1.1.1 rankle example.com
-```
-
----
-
-### Problem: Permission issues with output volume
-
-**Error Message:**
-
-```
-PermissionError: [Errno 13] Permission denied: '/output/results.json'
-```
-
-**Solution:**
-
-```bash
-# Fix permissions on host
-chmod 777 ./output
-
-# Or run as current user
-docker run --user $(id -u):$(id -g) -v ./output:/output rankle example.com
-```
-
 ---
 
 ## Type Checking Errors
 
-### Problem: mypy reports type errors
+### Problem: pyright reports type errors
 
 **Error Message:**
 
@@ -933,7 +838,7 @@ docker run --user $(id -u):$(id -g) -v ./output:/output rankle example.com
 error: Incompatible types in assignment (expression has type "str | None", variable has type "str")
 ```
 
-**Solution:** See [MYPY_GUIDE.md](MYPY_GUIDE.md) for detailed type checking guidance
+**Solution:** Run `pyright src/rankle/` for detailed type checking output
 
 **Quick fixes:**
 
@@ -941,7 +846,7 @@ error: Incompatible types in assignment (expression has type "str | None", varia
 
 ```python
 if result is not None:
-    # Now mypy knows result is str, not str | None
+    # Now pyright knows result is str, not str | None
     print(result.upper())
 ```
 
@@ -955,7 +860,7 @@ def analyze(domain: str) -> dict[str, Any]:  # Not Dict[str, Any]
 **3. Update imports:**
 
 ```python
-# Python 3.9+ - No typing imports needed for built-ins
+# Python 3.13+ - No typing imports needed for built-ins
 data: dict[str, list[int]] = {}  # Not Dict[str, List[int]]
 ```
 
@@ -971,15 +876,15 @@ data: dict[str, list[int]] = {}  # Not Dict[str, List[int]]
 
 ```bash
 # Should always work
-python main.py example.com
-python main.py google.com
+uv run python main.py example.com
+uv run python main.py google.com
 ```
 
 **4. Check for updates:**
 
 ```bash
 git pull
-pip install --upgrade -r requirements.txt
+uv sync
 ```
 
 ### Reporting Issues
@@ -1001,11 +906,11 @@ pip install --upgrade -r requirements.txt
 ```markdown
 **Environment:**
 - Rankle version: 2.0.0
-- Python: 3.11.5
+- Python: 3.13.x
 - OS: Ubuntu 22.04
 
 **Command:**
-`python main.py example.com --verbose`
+`uv run python main.py example.com --verbose`
 
 **Error:**
 ```
@@ -1043,14 +948,7 @@ whatweb example.com
 subfinder -d example.com
 ```
 
-**2. Use Docker (isolated environment):**
-
-```bash
-docker pull javicosvml/rankle:latest
-docker run --rm rankle example.com
-```
-
-**3. Fresh installation:**
+**2. Fresh installation:**
 
 ```bash
 # Nuclear option: start over
@@ -1058,10 +956,8 @@ cd ..
 rm -rf rankle
 git clone https://github.com/javicosvml/rankle.git
 cd rankle
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python main.py example.com
+uv sync
+uv run python main.py example.com
 ```
 
 ---
@@ -1080,14 +976,14 @@ logging.basicConfig(level=logging.DEBUG)
 
 ```bash
 # Use verbose flag if available
-python main.py example.com --verbose
+uv run python main.py example.com --verbose
 ```
 
 ### Isolate Components
 
 ```python
 # Test individual modules
-from rankle.modules.dns import DNSAnalyzer
+from src.rankle.modules.dns import DNSAnalyzer
 analyzer = DNSAnalyzer("example.com")
 print(analyzer.analyze())
 ```
@@ -1096,7 +992,7 @@ print(analyzer.analyze())
 
 ```python
 # Verify settings loaded correctly
-from config.settings import *
+from src.config.settings import *
 print(f"Timeout: {DEFAULT_TIMEOUT}")
 print(f"DNS Servers: {DNS_SERVERS}")
 print(f"User-Agent: {DEFAULT_USER_AGENT}")

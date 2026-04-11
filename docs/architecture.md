@@ -24,7 +24,7 @@ This document describes Rankle's modular architecture, key design patterns, and 
 rankle/
 ├── pyproject.toml          # Modern Python packaging (PEP 621)
 ├── main.py                 # Entry point
-├── rankle/                 # Main package
+├── src/rankle/             # Main package
 │   ├── core/
 │   │   ├── scanner.py      # RankleScanner - orchestrates all modules
 │   │   └── session.py      # SessionManager - HTTP with retry logic & pooling
@@ -46,7 +46,7 @@ rankle/
 │   │   ├── helpers.py      # save_json_file, truncate_list utilities
 │   │   └── rate_limiter.py # Request rate limiting
 │   └── reports/            # Report generation
-├── config/
+├── src/config/
 │   ├── settings.py         # Centralized configuration (timeouts, UA, DNS)
 │   ├── patterns.py         # Cloud providers, subdomains, ASN patterns
 │   └── tech_signatures.json # Technology detection signatures
@@ -56,7 +56,7 @@ rankle/
 │   ├── architecture.md     # This file
 │   └── detection-capabilities.md # Detection methods documentation
 ├── tests/                  # Unit tests (pytest)
-└── output/                 # Generated scan results
+└── reports/                # Generated scan results
 ```
 
 ---
@@ -102,7 +102,7 @@ class RankleScanner:
 
 ### 3. Centralized Configuration
 
-All configuration in `config/` directory:
+All configuration in `src/config/` directory:
 
 - `settings.py` - Timeouts, User-Agent, DNS servers
 - `patterns.py` - Cloud providers, ASN patterns
@@ -129,7 +129,7 @@ with RankleScanner(domain) as scanner:
 Full type hints throughout codebase:
 
 ```python
-# Modern Python 3.11+ syntax
+# Modern Python 3.13+ syntax
 def analyze(self) -> dict[str, Any]:  # ✅
 def query(self) -> str | None:        # ✅
 
@@ -144,7 +144,7 @@ def query(self) -> Optional[str]:     # ❌
 
 ### RankleScanner
 
-**File:** `rankle/core/scanner.py:15`
+**File:** `src/rankle/core/scanner.py:15`
 
 Main orchestrator class that coordinates all reconnaissance modules.
 
@@ -180,7 +180,7 @@ finally:
 
 ### SessionManager
 
-**File:** `rankle/core/session.py`
+**File:** `src/rankle/core/session.py`
 
 HTTP session manager with automatic retry logic and connection pooling.
 
@@ -217,7 +217,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### DNSAnalyzer
 
-**File:** `rankle/modules/dns.py:23`
+**File:** `src/rankle/modules/dns.py:23`
 
 **Purpose:** DNS enumeration using dnspython
 
@@ -239,7 +239,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### SSLAnalyzer
 
-**File:** `rankle/modules/ssl.py`
+**File:** `src/rankle/modules/ssl.py`
 
 **Purpose:** TLS/SSL certificate analysis
 
@@ -254,7 +254,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### SubdomainDiscovery
 
-**File:** `rankle/modules/subdomains.py`
+**File:** `src/rankle/modules/subdomains.py`
 
 **Purpose:** Subdomain discovery via Certificate Transparency logs
 
@@ -269,7 +269,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### WHOISLookup
 
-**File:** `rankle/modules/whois.py`
+**File:** `src/rankle/modules/whois.py`
 
 **Purpose:** Domain registration information
 
@@ -281,7 +281,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### GeolocationLookup
 
-**File:** `rankle/modules/geolocation.py`
+**File:** `src/rankle/modules/geolocation.py`
 
 **Purpose:** IP geolocation and cloud provider detection
 
@@ -295,7 +295,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### HTTPFingerprinter
 
-**File:** `rankle/modules/http_fingerprint.py`
+**File:** `src/rankle/modules/http_fingerprint.py`
 
 **Purpose:** HTTP fingerprinting with concurrent scanning
 
@@ -310,7 +310,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### SecurityHeadersAuditor
 
-**File:** `rankle/modules/security_headers.py`
+**File:** `src/rankle/modules/security_headers.py`
 
 **Purpose:** HTTP security headers audit
 
@@ -330,7 +330,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### TechnologyDetector
 
-**File:** `rankle/detectors/technology.py`
+**File:** `src/rankle/detectors/technology.py`
 
 **Purpose:** CMS, frameworks, and library detection
 
@@ -351,7 +351,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### CDNDetector
 
-**File:** `rankle/detectors/cdn.py`
+**File:** `src/rankle/detectors/cdn.py`
 
 **Purpose:** CDN provider detection
 
@@ -374,7 +374,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### WAFDetector
 
-**File:** `rankle/detectors/waf.py`
+**File:** `src/rankle/detectors/waf.py`
 
 **Purpose:** Web Application Firewall detection
 
@@ -399,7 +399,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### OriginDiscovery
 
-**File:** `rankle/detectors/origin.py`
+**File:** `src/rankle/detectors/origin.py`
 
 **Purpose:** Origin infrastructure discovery behind CDN/WAF
 
@@ -424,7 +424,7 @@ with SessionManager(timeout=45, retries=3) as session:
 
 ### settings.py
 
-**File:** `config/settings.py`
+**File:** `src/config/settings.py`
 
 **Global Configuration:**
 
@@ -445,7 +445,7 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36..."
 
 ### patterns.py
 
-**File:** `config/patterns.py`
+**File:** `src/config/patterns.py`
 
 **Cloud Provider Patterns:**
 
@@ -476,7 +476,7 @@ COMMON_SUBDOMAINS = [
 
 ### tech_signatures.json
 
-**File:** `config/tech_signatures.json`
+**File:** `src/config/tech_signatures.json`
 
 **Technology Detection Signatures:**
 
@@ -590,7 +590,7 @@ class DNSAnalyzer:
 
 ### Utility Functions
 
-**File:** `rankle/utils/validators.py`
+**File:** `src/rankle/utils/validators.py`
 
 ```python
 def validate_domain(domain: str) -> bool:
@@ -627,7 +627,7 @@ def sanitize_filename(filename: str) -> str:
     """
 ```
 
-**File:** `rankle/utils/helpers.py`
+**File:** `src/rankle/utils/helpers.py`
 
 ```python
 def save_json_file(data: dict[str, Any], filepath: str) -> None:

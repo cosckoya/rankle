@@ -10,11 +10,10 @@ This comprehensive guide covers everything you need to contribute to Rankle, fro
 4. [Code Quality](#code-quality)
 5. [Pre-commit Hooks](#pre-commit-hooks)
 6. [CI/CD](#cicd)
-7. [Docker Development](#docker-development)
-8. [Python Coding Standards](#python-coding-standards)
-9. [Security Best Practices](#security-best-practices)
-10. [Adding Detection Patterns](#adding-detection-patterns)
-11. [Release Process](#release-process)
+7. [Python Coding Standards](#python-coding-standards)
+8. [Security Best Practices](#security-best-practices)
+9. [Adding Detection Patterns](#adding-detection-patterns)
+10. [Release Process](#release-process)
 
 ---
 
@@ -64,7 +63,7 @@ Enhancement suggestions are welcome. Please include:
    pytest
 
    # Test manually
-   python main.py example.com
+   uv run python main.py example.com
 
    # Run linting
    ruff check .
@@ -98,9 +97,9 @@ Enhancement suggestions are welcome. Please include:
 
 ### Requirements
 
-- Python 3.11+ (tested on 3.11, 3.12, 3.13, 3.14)
+- Python 3.13+
 - Git
-- Docker (optional, for container development)
+- uv (package manager)
 
 ### Clone the Repository
 
@@ -109,37 +108,11 @@ git clone https://github.com/javicosvml/rankle.git
 cd rankle
 ```
 
-### Virtual Environment Setup
-
-```bash
-# Create virtual environment
-python3 -m venv venv
-
-# Activate virtual environment
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Verify activation
-which python  # Should show venv/bin/python
-```
-
 ### Install Dependencies
 
-#### Option 1: Editable Install (Recommended for Development)
-
 ```bash
-# Install with development dependencies
-pip install -e ".[dev]"
-
-# This installs:
-# - All runtime dependencies (requests, dnspython, beautifulsoup4)
-# - Development tools (pytest, ruff, mypy, bandit, pre-commit)
-```
-
-#### Option 2: Requirements File
-
-```bash
-# Install all dependencies
-pip install -r requirements.txt
+# Install all dependencies (creates venv automatically)
+uv sync
 
 # Install pre-commit hooks
 pre-commit install
@@ -149,14 +122,14 @@ pre-commit install
 
 ```bash
 # Check Python version
-python --version  # Should be 3.11+
+python --version  # Should be 3.13+
 
 # Run a test scan
-python main.py example.com
+uv run python main.py example.com
 
 # Verify linting tools
 ruff --version
-mypy --version
+pyright --version
 pytest --version
 ```
 
@@ -164,7 +137,7 @@ pytest --version
 
 ## Testing
 
-Rankle uses pytest for testing with a minimum coverage requirement of 50%.
+Rankle uses pytest for testing with a minimum coverage requirement of 85%.
 
 ### Running Tests
 
@@ -182,10 +155,10 @@ pytest tests/test_validators.py
 pytest tests/test_validators.py::test_validate_domain
 
 # Run with coverage report
-pytest --cov=rankle --cov-report=term-missing
+pytest --cov=src/rankle --cov-report=term-missing
 
 # Generate HTML coverage report
-pytest --cov=rankle --cov-report=html
+pytest --cov=src/rankle --cov-report=html
 # Open htmlcov/index.html in browser
 ```
 
@@ -199,15 +172,15 @@ addopts = [
     "-ra",                           # Show all test summary info
     "-q",                            # Quiet mode
     "--strict-markers",              # Error on unknown markers
-    "--cov=rankle",                  # Coverage for rankle package
+    "--cov=src/rankle",              # Coverage for rankle package
     "--cov-report=term-missing",     # Show missing lines
-    "--cov-fail-under=50",           # Require 50%+ coverage
+    "--cov-fail-under=85",           # Require 85%+ coverage
 ]
 ```
 
 ### Coverage Requirements
 
-- Minimum coverage: 50%
+- Minimum coverage: 85%
 - Branch coverage enabled
 - Reports show missing lines
 - HTML reports generated in `htmlcov/`
@@ -252,42 +225,39 @@ Ruff is a modern, fast linter that replaces Black, isort, flake8, and more.
 
 ```bash
 # Check for issues
-ruff check .
+uv run ruff check .
 
 # Auto-fix issues
-ruff check . --fix
+uv run ruff check . --fix
 
 # Format code
-ruff format .
+uv run ruff format .
 
 # Check specific file
-ruff check rankle/core/scanner.py
+uv run ruff check src/rankle/core/scanner.py
 ```
 
-### Type Checking with mypy
+### Type Checking with Pyright
 
 ```bash
 # Run type checking
-mypy rankle/
+uv run pyright src/rankle/
 
 # Check specific file
-mypy rankle/core/scanner.py
-
-# Generate HTML report
-mypy rankle/ --html-report mypy-report/
+uv run pyright src/rankle/core/scanner.py
 ```
 
 ### Security Scanning with Bandit
 
 ```bash
 # Run security checks
-bandit -c pyproject.toml -r rankle/
+bandit -c pyproject.toml -r src/rankle/
 
 # Verbose output
-bandit -c pyproject.toml -r rankle/ -v
+bandit -c pyproject.toml -r src/rankle/ -v
 
 # Check specific file
-bandit rankle/core/session.py
+bandit src/rankle/core/session.py
 ```
 
 ### Dependency Vulnerability Scanning
@@ -296,29 +266,19 @@ bandit rankle/core/session.py
 # Scan for vulnerable dependencies
 pip-audit
 
-# Scan requirements file
-pip-audit -r requirements.txt
-
 # Generate JSON report
 pip-audit --output json > audit-report.json
-```
-
-### Docstring Coverage
-
-```bash
-# Check docstring coverage (50% minimum)
-interrogate rankle/ -vv --fail-under=50
 ```
 
 ### All Quality Checks
 
 ```bash
 # Run all quality checks in sequence
-ruff check . && \
-ruff format . && \
-mypy rankle/ && \
-bandit -c pyproject.toml -r rankle/ && \
-pytest --cov=rankle --cov-fail-under=50
+uv run ruff check . && \
+uv run ruff format . && \
+uv run pyright src/rankle/ && \
+bandit -c pyproject.toml -r src/rankle/ && \
+pytest --cov=src/rankle --cov-fail-under=85
 ```
 
 ---
@@ -330,13 +290,13 @@ Pre-commit hooks automatically check code quality before each commit.
 ### Installation
 
 ```bash
-# Install pre-commit
-pip install pre-commit
+# Install pre-commit via uv
+uv pip install pre-commit
 
 # Install git hooks
 pre-commit install
 
-# Optional: install commit message hooks
+# Install commit message hooks
 pre-commit install --hook-type commit-msg
 ```
 
@@ -357,7 +317,7 @@ pre-commit autoupdate
 
 ```bash
 # Skip specific hook
-SKIP=mypy git commit -m "WIP: Experimental feature"
+SKIP=pyright git commit -m "WIP: Experimental feature"
 
 # Skip all hooks (use sparingly)
 git commit --no-verify -m "Emergency fix"
@@ -375,30 +335,20 @@ The following hooks run automatically on commit:
 
 2. **Python Checks**
    - Syntax validation
-   - Docstring-first enforcement
    - Debug statement detection
-   - Test naming validation
 
 3. **Security Checks**
    - Merge conflict detection
    - Large file detection (500KB limit)
    - Private key detection
-   - Symlink validation
 
 4. **Code Quality**
    - Ruff linting with auto-fix
    - Ruff formatting
-   - mypy type checking
-   - Bandit security scanning
+   - Pyright type checking
 
-5. **Documentation**
-   - Docstring coverage (50% minimum)
-   - Markdown linting
-   - YAML linting
-
-6. **Container & Scripts**
-   - Dockerfile linting (hadolint)
-   - Shell script linting (shellcheck)
+5. **Commit Standards**
+   - Commitizen commit message format enforcement
 
 ---
 
@@ -408,15 +358,17 @@ Rankle uses GitHub Actions for continuous integration and deployment.
 
 ### Workflows
 
-#### 1. Docker Build Test (`.github/workflows/docker-build.yml`)
+#### 1. Quality Checks
 
 Runs on every push and pull request to `main`:
 
 ```yaml
 - Checkout code
-- Set up Docker Buildx
-- Build Docker image
-- Test Docker image (run scan)
+- Set up Python 3.13+
+- Install dependencies via uv sync
+- Run ruff check + format
+- Run pyright
+- Run pytest with coverage
 ```
 
 **Triggers:**
@@ -424,139 +376,21 @@ Runs on every push and pull request to `main`:
 - Push to `main` branch
 - Pull requests to `main`
 
-**Purpose:** Ensure Docker image builds successfully and can run scans.
-
-#### 2. Docker Publish (`.github/workflows/docker-publish.yml`)
-
-Runs on version tags:
-
-```yaml
-- Build multi-platform images (linux/amd64, linux/arm64)
-- Push to Docker registries
-- Create GitHub release
-```
-
-**Triggers:**
-
-- Tags matching `v*.*.*` (e.g., `v1.2.0`)
-
-**Purpose:** Publish production Docker images.
-
-### Local CI Testing
-
-```bash
-# Build Docker image locally
-docker build -t rankle:test .
-
-# Test Docker image
-docker run --rm rankle:test example.com
-
-# Test with volume mount
-docker run --rm -v $(pwd)/output:/output rankle:test example.com -o json
-```
+**Purpose:** Ensure code quality and test coverage are maintained.
 
 ### CI Best Practices
 
 1. **Always test locally before pushing**
-2. **Keep workflows fast** - use caching
-3. **Fail fast** - critical checks first
-4. **Parallel jobs** - run independent checks concurrently
-5. **Clear failure messages** - easy debugging
-
----
-
-## Docker Development
-
-### Dockerfile Best Practices
-
-Rankle's Dockerfile implements security and optimization best practices:
-
-```dockerfile
-# Multi-stage build (if needed for optimization)
-# Alpine base for minimal size (~370MB)
-# Non-root user (rankle:1000)
-# Layer caching optimization
-# OCI annotations
-# Healthcheck included
-```
-
-### Building Images
-
-```bash
-# Basic build
-docker build -t rankle .
-
-# Build with specific tag
-docker build -t rankle:dev .
-
-# Build with no cache
-docker build --no-cache -t rankle .
-
-# Multi-platform build
-docker buildx build --platform linux/amd64,linux/arm64 -t rankle .
-```
-
-### Testing Containers
-
-```bash
-# Interactive mode
-docker run --rm -it rankle sh
-
-# Test scan
-docker run --rm rankle example.com
-
-# Test with verbose output
-docker run --rm rankle example.com -v
-
-# Test with output directory
-docker run --rm -v $(pwd)/test-output:/output rankle example.com -o both
-```
-
-### Docker Security Features
-
-1. **Non-root User**
-   - Runs as `rankle` user (UID 1000)
-   - Enhanced security posture
-   - Prevents privilege escalation
-
-2. **Minimal Base Image**
-   - Alpine Linux (~5MB base)
-   - Reduced attack surface
-   - Faster builds and downloads
-
-3. **No Exposed Ports**
-   - CLI tool, no network services
-   - No port mapping needed
-
-4. **Healthcheck**
-   - Built-in health monitoring
-   - Container orchestrator integration
-
-5. **OCI Metadata**
-   - Standard labels
-   - Provenance information
-   - License and author details
-
-### Docker Compose (Optional)
-
-Create `docker-compose.yml` for development:
-
-```yaml
-version: '3.8'
-services:
-  rankle:
-    build: .
-    volumes:
-      - ./output:/output
-    environment:
-      - PYTHONUNBUFFERED=1
-```
+2. **Keep workflows fast** — use caching
+3. **Fail fast** — critical checks first
+4. **Parallel jobs** — run independent checks concurrently
+5. **Clear failure messages** — easy debugging
 
 ---
 
 ## Python Coding Standards
 
-Rankle follows Python 3.11+ best practices and modern conventions.
+Rankle follows Python 3.13+ best practices and modern conventions.
 
 ### Type Hints
 
@@ -571,9 +405,9 @@ def analyze(self) -> Dict[str, Any]:    # NO (deprecated)
 def query(self) -> str | None:          # YES
 def query(self) -> Optional[str]:       # NO (deprecated)
 
-# Type aliases for complex types
-IPList = list[str]
-ConfigDict = dict[str, Any]
+# PEP 695 type aliases (Python 3.13+)
+type IPList = list[str]
+type ConfigDict = dict[str, Any]
 ```
 
 ### Docstrings
@@ -679,9 +513,9 @@ class RankleScanner:
 
 #### DRY (Don't Repeat Yourself)
 
-- Centralized configuration in `config/settings.py`
-- Shared patterns in `config/patterns.py`
-- Reusable utilities in `rankle/utils/`
+- Centralized configuration in `src/config/settings.py`
+- Shared patterns in `src/config/patterns.py`
+- Reusable utilities in `src/rankle/utils/`
 
 #### Meaningful Names
 
@@ -731,7 +565,7 @@ safe_filename = sanitize_filename(user_input)
 
 ### Safe Subprocess Usage
 
-**Never use `shell=True`** - it enables shell injection attacks:
+**Never use `shell=True`** — it enables shell injection attacks:
 
 ```python
 # Good
@@ -746,7 +580,7 @@ subprocess.run(f"nslookup {domain}", shell=True)
 **Always set timeouts** to prevent hanging requests:
 
 ```python
-from config.settings import DEFAULT_TIMEOUT
+from src.config.settings import DEFAULT_TIMEOUT
 
 # HTTP requests
 response = session.get(url, timeout=DEFAULT_TIMEOUT)
@@ -758,7 +592,7 @@ resolver.lifetime = DNS_TIMEOUT
 
 ### Error Handling
 
-**Graceful degradation** - don't crash on failures:
+**Graceful degradation** — don't crash on failures:
 
 ```python
 try:
@@ -784,7 +618,7 @@ def sanitize_filename(filename: str) -> str:
 **Respect server resources** with rate limiting:
 
 ```python
-from config.settings import RATE_LIMIT_DELAY
+from src.config.settings import RATE_LIMIT_DELAY
 import time
 
 for subdomain in subdomains:
@@ -796,12 +630,12 @@ for subdomain in subdomains:
 
 **All methods must be passive and use public data**:
 
-- ✅ DNS queries (public records)
-- ✅ Certificate Transparency logs (public)
-- ✅ SSL certificate analysis (public)
-- ❌ Port scanning (active)
-- ❌ Vulnerability exploitation
-- ❌ Unauthorized access attempts
+- DNS queries (public records)
+- Certificate Transparency logs (public)
+- SSL certificate analysis (public)
+- Port scanning is not implemented (active)
+- Vulnerability exploitation is not implemented
+- Unauthorized access attempts are not implemented
 
 ---
 
@@ -809,7 +643,7 @@ for subdomain in subdomains:
 
 ### Adding CMS Detection
 
-Edit `rankle/detectors/technology.py`:
+Edit `src/rankle/detectors/technology.py`:
 
 ```python
 def _detect_cms(self, html_lower: str, soup) -> str | None:
@@ -833,13 +667,13 @@ def _detect_cms(self, html_lower: str, soup) -> str | None:
 **Test your detection:**
 
 ```bash
-python main.py example-with-your-cms.com
+uv run python main.py example-with-your-cms.com
 pytest tests/test_detectors.py::test_cms_detection
 ```
 
 ### Adding CDN Detection
 
-Edit `config/patterns.py` or `rankle/detectors/cdn.py`:
+Edit `src/config/patterns.py` or `src/rankle/detectors/cdn.py`:
 
 ```python
 cdn_indicators = {
@@ -861,7 +695,7 @@ cdn_indicators = {
 
 ### Adding WAF Detection
 
-Edit `rankle/detectors/waf.py`:
+Edit `src/rankle/detectors/waf.py`:
 
 ```python
 waf_indicators = {
@@ -883,7 +717,7 @@ waf_indicators = {
 
 ### Adding Cloud Provider Detection
 
-Edit `config/patterns.py`:
+Edit `src/config/patterns.py`:
 
 ```python
 # Cloud provider patterns (ASN, hostnames, ISP names)
@@ -957,26 +791,19 @@ Rankle follows [Semantic Versioning](https://semver.org/):
 3. **Run all tests and checks**
 
    ```bash
-   pytest --cov=rankle --cov-fail-under=50
-   ruff check .
-   ruff format .
-   mypy rankle/
-   bandit -c pyproject.toml -r rankle/
+   pytest --cov=src/rankle --cov-fail-under=85
+   uv run ruff check .
+   uv run ruff format .
+   uv run pyright src/rankle/
+   bandit -c pyproject.toml -r src/rankle/
    ```
 
-4. **Test Docker build**
+4. **Manual testing**
 
    ```bash
-   docker build -t rankle:test .
-   docker run --rm rankle:test example.com
-   ```
-
-5. **Manual testing**
-
-   ```bash
-   python main.py example.com
-   python main.py example.com -o json
-   python main.py example.com -o both -v
+   uv run python main.py example.com
+   uv run python main.py example.com -o
+   uv run python main.py example.com -v
    ```
 
 ### Creating a Release
@@ -989,8 +816,6 @@ git tag -a v1.2.0 -m "Release v1.2.0 - New features"
 
 # Push tag to remote
 git push origin v1.2.0
-
-# This triggers docker-publish.yml workflow
 ```
 
 #### Option 2: GitHub CLI
@@ -1013,20 +838,13 @@ gh release create v1.2.0 \
 
 ### Post-release Tasks
 
-1. **Verify Docker images**
-
-   ```bash
-   docker pull ghcr.io/javicosvml/rankle:v1.2.0
-   docker run --rm ghcr.io/javicosvml/rankle:v1.2.0 example.com
-   ```
-
-2. **Update documentation**
+1. **Update documentation**
 
    - Ensure README.md is current
    - Update examples if APIs changed
    - Check all links work
 
-3. **Announce release**
+2. **Announce release**
 
    - GitHub Discussions
    - Social media (if applicable)
@@ -1046,7 +864,7 @@ git checkout -b hotfix/critical-fix main
 
 # Test thoroughly
 pytest
-python main.py example.com
+uv run python main.py example.com
 
 # Commit and tag
 git commit -m "Fix: Critical security issue"
@@ -1076,7 +894,7 @@ git checkout -b feature/new-detection
 # Edit files...
 
 # 4. Run quality checks (pre-commit does this automatically)
-ruff check .
+uv run ruff check .
 pytest
 
 # 5. Commit (pre-commit hooks run automatically)
@@ -1092,19 +910,19 @@ git push origin feature/new-detection
 
 ```bash
 # Format code
-ruff format .
+uv run ruff format .
 
 # Fix linting issues
-ruff check . --fix
+uv run ruff check . --fix
 
 # Run tests with coverage
-pytest --cov=rankle
+pytest --cov=src/rankle
 
 # Type check
-mypy rankle/
+uv run pyright src/rankle/
 
 # Security scan
-bandit -c pyproject.toml -r rankle/
+bandit -c pyproject.toml -r src/rankle/
 
 # Or run pre-commit manually
 pre-commit run --all-files
@@ -1113,7 +931,7 @@ pre-commit run --all-files
 ### Continuous Improvement
 
 - Write tests for new features
-- Maintain 50%+ code coverage
+- Maintain 85%+ code coverage
 - Keep dependencies updated
 - Document complex logic
 - Follow Python best practices
@@ -1126,17 +944,17 @@ pre-commit run --all-files
 ### Documentation
 
 - [README.md](../README.md) - Project overview and usage
-- [CONTRIBUTING.md](../CONTRIBUTING.md) - Contribution guidelines
 - [Changelog](changelog.md) - Version history
 - [Security Policy](security.md) - Security policy
 - [CLAUDE.md](../CLAUDE.md) - AI assistant instructions
 
 ### External Resources
 
-- [Python 3.11+ Documentation](https://docs.python.org/3.11/)
+- [Python 3.13+ Documentation](https://docs.python.org/3.13/)
 - [Ruff Documentation](https://docs.astral.sh/ruff/)
+- [Pyright Documentation](https://github.com/microsoft/pyright)
 - [pytest Documentation](https://docs.pytest.org/)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
+- [uv Documentation](https://docs.astral.sh/uv/)
 - [Semantic Versioning](https://semver.org/)
 - [Keep a Changelog](https://keepachangelog.com/)
 
@@ -1154,30 +972,25 @@ pre-commit run --all-files
 
 ```bash
 # Setup
-python3 -m venv venv && source venv/bin/activate
-pip install -e ".[dev]"
+uv sync
 pre-commit install
 
 # Testing
-pytest                                    # Run tests
-pytest --cov=rankle                       # With coverage
-pytest tests/test_validators.py           # Specific file
+pytest                                       # Run tests
+pytest --cov=src/rankle                      # With coverage
+pytest tests/test_validators.py              # Specific file
 
 # Code Quality
-ruff check .                              # Lint
-ruff format .                             # Format
-mypy rankle/                              # Type check
-bandit -c pyproject.toml -r rankle/       # Security scan
-pre-commit run --all-files                # Run all hooks
-
-# Docker
-docker build -t rankle .                  # Build image
-docker run --rm rankle example.com        # Test run
+uv run ruff check .                          # Lint
+uv run ruff format .                         # Format
+uv run pyright src/rankle/                   # Type check
+bandit -c pyproject.toml -r src/rankle/      # Security scan
+pre-commit run --all-files                   # Run all hooks
 
 # Git
-git checkout -b feature/name              # New branch
-git commit -m "Add: Description"          # Commit
-git tag -a v1.2.0 -m "Release v1.2.0"     # Tag release
+git checkout -b feature/name                 # New branch
+git commit -m "Add: Description"             # Commit
+git tag -a v1.2.0 -m "Release v1.2.0"        # Tag release
 ```
 
 ### File Structure
@@ -1185,21 +998,24 @@ git tag -a v1.2.0 -m "Release v1.2.0"     # Tag release
 ```
 rankle/
 ├── pyproject.toml          # Python packaging and tool configuration
+├── uv.lock                 # Locked dependency versions
 ├── main.py                 # Entry point
-├── rankle/                 # Main package
-│   ├── core/              # Scanner & session management
-│   ├── modules/           # Reconnaissance modules
-│   ├── detectors/         # Technology detectors
-│   └── utils/             # Utilities
-├── config/                 # Configuration
-│   ├── settings.py        # Settings
-│   ├── patterns.py        # Detection patterns
-│   └── tech_signatures.json
+├── src/
+│   ├── rankle/             # Main package
+│   │   ├── core/          # Scanner & session management
+│   │   ├── modules/       # Reconnaissance modules
+│   │   ├── detectors/     # Technology detectors
+│   │   └── utils/         # Utilities
+│   └── config/             # Configuration
+│       ├── settings.py    # Settings
+│       ├── patterns.py    # Detection patterns
+│       └── tech_signatures.json
 ├── tests/                  # Unit tests
+├── reports/                # Scan output reports
 ├── docs/                   # Documentation
 └── .github/workflows/      # CI/CD
 ```
 
 ---
 
-**Happy coding!** If you have questions, open an issue or start a discussion on GitHub.
+If you have questions, open an issue or start a discussion on GitHub.

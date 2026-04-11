@@ -36,7 +36,7 @@
 - [Architecture](architecture.md) - Modular design, key classes, and patterns
 - [Detection Capabilities](detection-capabilities.md) - CMS, CDN, WAF, cloud providers, and more
 - [Enhanced Detection (v2.0)](TECHNOLOGY_DETECTION_ENHANCEMENT.md) - Wappalyzer, favicon hashing, CVE mapping
-- [Type Checking Guide](MYPY_GUIDE.md) - mypy configuration and best practices
+- [Type Checking](architecture.md#type-checking) - pyright configuration and best practices
 - [API Usage Examples](api-usage-examples.md) - Using Rankle as a Python library
 - [Troubleshooting](troubleshooting.md) - Common issues and solutions
 - [Performance Tuning](performance-tuning.md) - Optimization strategies
@@ -68,9 +68,8 @@
 
 ### Common Tasks
 
-- **Run a scan:** `python main.py example.com`
-- **Save JSON output:** `python main.py example.com -o json`
-- **Docker scan:** `docker run --rm rankle example.com`
+- **Run a scan:** `uv run python main.py example.com`
+- **Save JSON output:** `uv run python main.py example.com -o json`
 - **Run tests:** `pytest`
 - **Lint code:** `ruff check . && ruff format .`
 
@@ -92,12 +91,12 @@
 
 **Repository:** <https://github.com/javicosvml/rankle>
 **License:** MIT
-**Python Version:** 3.11+
+**Python Version:** 3.13+
 **Standards:** PEP 621 (pyproject.toml), PEP 517/518, Ruff formatting
 
 **Compliance:**
 
-- ✅ Python 3.11-3.14 compatible
+- ✅ Python 3.13+ compatible
 - ✅ Full type hints support
 - ✅ Modern packaging with pyproject.toml
 - ✅ Pre-commit hooks for code quality

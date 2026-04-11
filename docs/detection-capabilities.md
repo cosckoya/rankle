@@ -1468,14 +1468,14 @@ Recommendation: Review CVE databases for known vulnerabilities in Django 4.2
 **Standard Detection (Traditional):**
 
 ```bash
-python main.py example.com
+uv run python main.py example.com
 ```
 
 **Enhanced Detection (v2.0):**
 
 ```python
 # Run Rankle for enhanced detection
-python main.py example.com
+uv run python main.py example.com
 
 # Output includes:
 # - 3000+ technology signatures checked
@@ -2151,7 +2151,7 @@ Security Headers:
 
 ```bash
 # Scan subdomains discovered by Rankle
-python main.py example.com --output json | \
+uv run python main.py example.com --output json | \
   jq -r '.subdomains[]' | \
   nuclei -l - -t nuclei-templates/
 ```
@@ -2654,7 +2654,7 @@ STATUS: 200
 ### Recommended Settings
 
 ```python
-# config/settings.py
+# src/config/settings.py
 
 # Timeouts
 DEFAULT_TIMEOUT = 45      # HTTP request timeout (seconds)
@@ -2690,14 +2690,14 @@ BACKOFF_FACTOR = 2        # Exponential backoff multiplier
 ```bash
 # Use custom DNS servers
 export DNS_NAMESERVERS="8.8.8.8,1.1.1.1"
-python main.py example.com
+uv run python main.py example.com
 ```
 
 #### Timeout Errors
 
 ```bash
 # Increase timeout
-# Edit config/settings.py:
+# Edit src/config/settings.py:
 DEFAULT_TIMEOUT = 60  # Increase from 45 to 60
 ```
 
@@ -2706,7 +2706,7 @@ DEFAULT_TIMEOUT = 60  # Increase from 45 to 60
 ```bash
 # Automatic retry with exponential backoff is built-in
 # To increase delay between requests:
-# Edit config/settings.py:
+# Edit src/config/settings.py:
 RATE_LIMIT_DELAY = 1.0  # Increase from 0.5 to 1.0
 ```
 
@@ -2715,7 +2715,7 @@ RATE_LIMIT_DELAY = 1.0  # Increase from 0.5 to 1.0
 ```bash
 # Behind corporate proxy with SSL inspection:
 export REQUESTS_CA_BUNDLE=/path/to/corporate-ca-bundle.crt
-python main.py example.com
+uv run python main.py example.com
 ```
 
 ---
@@ -2726,16 +2726,13 @@ python main.py example.com
 
 ```bash
 # Basic scan
-python main.py example.com
+uv run python main.py example.com
 
 # Save JSON output
-python main.py example.com -o json
+uv run python main.py example.com -o json
 
 # Verbose mode
-python main.py example.com -v
-
-# Docker scan
-docker run --rm rankle example.com
+uv run python main.py example.com -v
 
 # Extract subdomains
 jq -r '.subdomains[]' scan.json
@@ -2747,7 +2744,7 @@ jq '.technologies_web.detected_technologies | length' scan.json
 jq -r '.origin_discovery.potential_origins[].ip' scan.json
 
 # Pipe to Nuclei
-python main.py example.com -o json | jq -r '.subdomains[]' | nuclei -l -
+uv run python main.py example.com -o json | jq -r '.subdomains[]' | nuclei -l -
 
 # Pipe to Nmap
 jq -r '.dns.A[]' scan.json | nmap -iL - -sV

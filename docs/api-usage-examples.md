@@ -24,7 +24,7 @@
 
 ```bash
 # Install as editable package
-pip install -e /path/to/rankle
+uv pip install -e /path/to/rankle
 
 # Or add to requirements.txt
 # -e git+https://github.com/javicosvml/rankle.git@main#egg=rankle
@@ -770,9 +770,7 @@ print(f"Task ID: {result.id}")
 ### 1. Always Use Virtual Environments
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install rankle
+uv sync
 ```
 
 ### 2. Handle Errors Gracefully

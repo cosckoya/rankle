@@ -3,8 +3,7 @@
 Passive web infrastructure reconnaissance tool — DNS analysis, technology detection, and CDN/WAF fingerprinting with 100% open-source Python libraries.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue.svg)](https://www.python.org/downloads/)
-[![Docker](https://img.shields.io/badge/docker-ready-blue.svg)](https://www.docker.com/)
+[![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
 
 ---
 
@@ -91,13 +90,6 @@ python main.py example.com -o both
 
 # Verbose output with debug information
 python main.py example.com -v
-
-# Docker: basic scan
-docker build -t rankle .
-docker run --rm rankle example.com
-
-# Docker: save output with persistent volume
-docker run --rm -v $(pwd)/output:/output rankle example.com -o json
 ```
 
 Output files are saved to `output/` with timestamp: `output/example.com_20260410_143022.json`

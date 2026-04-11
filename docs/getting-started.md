@@ -9,13 +9,11 @@ This guide will help you install Rankle and run your first reconnaissance scan.
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Python Installation](#python-installation)
-  - [Docker Installation](#docker-installation)
   - [From Source](#from-source)
 - [Quick Start](#quick-start)
 - [Usage](#usage)
   - [Command-Line Options](#command-line-options)
   - [Output Formats](#output-formats)
-- [Docker Usage](#docker-usage)
 - [Next Steps](#next-steps)
 
 ---
@@ -25,7 +23,6 @@ This guide will help you install Rankle and run your first reconnaissance scan.
 **Minimum Requirements:**
 
 - Python 3.13 or higher
-- Docker (optional, for containerized usage)
 
 **Supported Operating Systems:**
 
@@ -65,27 +62,6 @@ pip install -e ".[dev]"
 # Install pre-commit hooks (for contributors)
 pre-commit install
 ```
-
-### Docker Installation
-
-```bash
-# Clone repository
-git clone https://github.com/javicosvml/rankle.git
-cd rankle
-
-# Build Docker image
-docker build -t rankle .
-
-# Image size: ~370MB (Alpine-based with all dependencies)
-# Note: Runs as non-root user (rankle:1000) for enhanced security
-```
-
-**Docker Security Features:**
-
-- **Non-root User:** Runs as dedicated `rankle` user (UID 1000)
-- **Healthcheck:** Built-in health monitoring
-- **OCI Metadata:** Complete OCI-compliant image annotations
-- **Minimal Base:** Alpine Linux for reduced attack surface
 
 ### From Source
 
@@ -255,62 +231,6 @@ awk '/^\[SUBDOMAINS\]/,/^\[/' report.txt | grep -v "^\["
 
 ---
 
-## Docker Usage
-
-### Basic Commands
-
-```bash
-# Basic scan (terminal output only)
-docker run --rm rankle example.com
-
-# Save JSON output
-docker run --rm -v $(pwd)/output:/output rankle example.com -o json
-
-# Save text report
-docker run --rm -v $(pwd)/output:/output rankle example.com -o text
-
-# Save both formats
-docker run --rm -v $(pwd)/output:/output rankle example.com -o both
-
-# Interactive mode with verbose output
-docker run --rm -it rankle example.com -v
-```
-
-### Volume Mounting
-
-To save results on your host machine:
-
-```bash
-# Mount current directory's output folder
-docker run --rm -v $(pwd)/output:/output rankle example.com -o json
-
-# Windows PowerShell
-docker run --rm -v ${PWD}/output:/output rankle example.com -o json
-
-# Custom output directory
-docker run --rm -v /path/to/results:/output rankle example.com -o both
-```
-
-### Docker Compose (Optional)
-
-Create `docker-compose.yml` for easier management:
-
-```yaml
-version: '3.8'
-
-services:
-  rankle:
-    build: .
-    image: rankle:latest
-    volumes:
-      - ./output:/output
-    command: example.com -o both
-```
-
-Run with: `docker-compose run --rm rankle example.com`
-
----
-
 ## Next Steps
 
 After installing and running your first scan:
@@ -359,21 +279,6 @@ pip install -r requirements.txt
   ```python
   DNS_NAMESERVERS = ["8.8.8.8", "1.1.1.1"]
   ```
-
-### Docker Permission Issues
-
-**Problem:** "Permission denied" when mounting volumes
-
-**Solution:**
-
-```bash
-# Linux: Ensure output directory exists and has correct permissions
-mkdir -p output
-chmod 755 output
-
-# Or run Docker with your user ID
-docker run --rm -u $(id -u):$(id -g) -v $(pwd)/output:/output rankle example.com -o json
-```
 
 ### Timeout Errors
 

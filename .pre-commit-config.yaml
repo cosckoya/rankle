@@ -185,15 +185,6 @@ repos:
           - --
 
   # ==========================================================================
-  # DOCKERFILE LINTING
-  # ==========================================================================
-  - repo: https://github.com/hadolint/hadolint
-    rev: v2.14.0
-    hooks:
-      - id: hadolint-docker
-        name: Lint Dockerfile
-
-  # ==========================================================================
   # SHELL SCRIPT LINTING
   # ==========================================================================
   - repo: https://github.com/shellcheck-py/shellcheck-py

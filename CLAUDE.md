@@ -27,14 +27,9 @@ bandit -c pyproject.toml -r rankle/  # Security scan
 pre-commit run --all-files           # All checks at once
 
 # Testing
-pytest -v --cov=rankle               # All tests with coverage (70% minimum)
+pytest -v --cov=src/rankle          # All tests with coverage (85% minimum)
 pytest -n auto                       # Parallel
 pytest -m "not slow"                 # Skip slow
-
-# Docker
-docker build -t rankle .
-docker run --rm rankle example.com
-docker run --rm -v $(pwd)/output:/output rankle example.com -o json
 
 # Makefile shortcuts
 make lint            # ruff check + format
@@ -76,11 +71,11 @@ Full details: `.claude/rules/architecture.md`
 
 ## Testing Strategy
 
-- Coverage target: **70% minimum** (`pyproject.toml` `--cov-fail-under=70`)
+- Coverage target: **85% minimum** (`pyproject.toml` `--cov-fail-under=85`)
 - Markers: `@pytest.mark.slow`, `@pytest.mark.integration`
 - Fixtures in `tests/conftest.py`
 
 ---
 
-**Last Updated:** 2026-04-10
+**Last Updated:** 2026-04-11
 **Version:** 2.1

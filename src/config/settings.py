@@ -9,13 +9,9 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # src/config/settings.py -> root
 CONFIG_DIR = BASE_DIR / "src" / "config"
 REPORTS_DIR = BASE_DIR / "reports"
-REPORTS_JSON_DIR = REPORTS_DIR / "JSON"
-REPORTS_HTML_DIR = REPORTS_DIR / "HTML"
 
 # Ensure directories exist
 REPORTS_DIR.mkdir(exist_ok=True)
-REPORTS_JSON_DIR.mkdir(exist_ok=True)
-REPORTS_HTML_DIR.mkdir(exist_ok=True)
 
 # HTTP Settings
 USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"

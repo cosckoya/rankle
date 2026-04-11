@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from config.settings import REPORTS_JSON_DIR, REPORTS_HTML_DIR
+    from config.settings import REPORTS_DIR
     from rankle.core.scanner import RankleScanner
     from rankle.utils.helpers import save_json_file
     from rankle.utils.validators import (
@@ -73,10 +73,9 @@ def parse_arguments():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python main.py example.com              # Scan and print to terminal
-  python main.py example.com -o json      # Save JSON report
-  python main.py example.com -o both      # Save JSON and text reports
-  python main.py example.com -v           # Verbose output
+  uv run python main.py example.com           # Scan and print to terminal
+  uv run python main.py example.com -o json   # Save JSON to reports/
+  uv run python main.py example.com -v        # Verbose output
 
 For more information, visit: https://github.com/javicosvml/rankle
         """,
@@ -90,9 +89,8 @@ For more information, visit: https://github.com/javicosvml/rankle
     parser.add_argument(
         "-o",
         "--output",
-        choices=["json", "text", "both"],
-        default=None,
-        help="Save output to file (json/text/both). If not specified, only prints to terminal.",
+        action="store_true",
+        help="Save JSON output to reports/ directory.",
     )
 
 
@@ -133,20 +131,13 @@ def main():
         # Run comprehensive scan
         results = scanner.run_full_scan()
 
-        # Save results only if explicitly requested
+        # Save JSON report if requested
         if args.output:
             timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
             base_filename = f"rankle_{sanitize_filename(domain)}_{timestamp}"
-
-            if args.output in ["json", "both"]:
-                json_path = REPORTS_JSON_DIR / f"{base_filename}.json"
-                if save_json_file(results, json_path):
-                    print(f"\n📁 JSON saved: {json_path}")
-
-            if args.output in ["text", "both"]:
-                html_path = REPORTS_HTML_DIR / f"{base_filename}.html"
-                scanner.save_text_report(html_path)
-                print(f"📁 HTML saved: {html_path}")
+            json_path = REPORTS_DIR / f"{base_filename}.json"
+            if save_json_file(results, json_path):
+                print(f"\n📁 JSON saved: {json_path}")
 
         print("\n" + "=" * 80)
         print("✅ Scan completed successfully!")

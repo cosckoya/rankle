@@ -79,22 +79,14 @@ rankle/
 # Scan all modules, print to terminal
 uv run python main.py example.com
 
-# Save JSON output to reports/JSON/
+# Scan and save JSON report to reports/
 uv run python main.py example.com -o json
-
-# Save HTML report to reports/HTML/
-uv run python main.py example.com -o text
-
-# Save both formats (JSON and HTML)
-uv run python main.py example.com -o both
 
 # Verbose output with debug information
 uv run python main.py example.com -v
 ```
 
-Output files are organized in:
-- **JSON reports:** `reports/JSON/rankle_<domain>_<timestamp>.json`
-- **HTML reports:** `reports/HTML/rankle_<domain>_<timestamp>.html`
+Output files are saved to `reports/rankle_<domain>_<timestamp>.json`
 
 Full documentation: [docs/getting-started.md](docs/getting-started.md)
 

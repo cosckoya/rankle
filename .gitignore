@@ -46,13 +46,8 @@ venv.bak/
 *.swo
 *~
 
-# Output files (but keep directory structure)
-reports/**/*
-!reports/**/.gitkeep
-!reports
-*_rankle.json
-*_rankle_report.txt
-*_enhanced_detection.json
+# Reports (JSON output only)
+reports/*.json
 
 # Scan results and reports (be specific to avoid catching config JSON files)
 bandit-report.json

@@ -5,6 +5,8 @@ Passive web infrastructure reconnaissance tool — DNS analysis, technology dete
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13%2B-blue.svg)](https://www.python.org/downloads/)
 
+![Rankle](img/rankle.png)
+
 ---
 
 ## Quick Start

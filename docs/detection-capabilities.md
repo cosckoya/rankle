@@ -2786,8 +2786,8 @@ Unauthorized access to computer systems is illegal.
 
 ---
 
-**Documentation Version**: 1.0.0
+**Documentation Version**: 0.1-alpha
 **Last Updated**: 2025-01-19
-**Rankle Version**: 1.0.0-RC
+**Rankle Version**: 0.1-alpha
 
 For more information, visit the [GitHub repository](https://github.com/javicosvml/rankle).

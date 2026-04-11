@@ -70,7 +70,7 @@ class RankleScanner:
         self.results: dict[str, Any] = {
             "domain": domain,
             "scan_timestamp": self.scan_timestamp,
-            "scan_version": "1.0.0",
+            "scan_version": "0.1-alpha",
         }
 
         # Initialize session manager

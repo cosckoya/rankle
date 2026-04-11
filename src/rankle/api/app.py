@@ -55,7 +55,7 @@ def create_app() -> FastAPI:
     app = FastAPI(
         title="Rankle API",
         description="Web Infrastructure Reconnaissance Tool - REST API",
-        version="1.0.0",
+        version="0.1-alpha",
         lifespan=lifespan,
     )
 
@@ -66,7 +66,7 @@ def create_app() -> FastAPI:
         return HealthResponse(
             status="healthy",
             database="ok",
-            version="1.0.0"
+            version="0.1-alpha"
         )
 
     # Create scan

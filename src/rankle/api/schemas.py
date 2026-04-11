@@ -72,4 +72,4 @@ class HealthResponse(BaseModel):
     """Health check response."""
     status: str = "healthy"
     database: str = "ok"
-    version: str = "1.0.0"
+    version: str = "0.1-alpha"

@@ -218,4 +218,4 @@ MIT License — see [LICENSE](LICENSE) for details.
 
 ---
 
-**Rankle v1.0.0** | Built with ❤️ by the security community | Passive reconnaissance, zero limitations
+**Rankle v0.1-alpha** | Built with ❤️ by the security community | Passive reconnaissance, zero limitations

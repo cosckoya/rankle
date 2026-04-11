@@ -76,9 +76,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2024-11-13
+## [0.1-alpha] - 2026-04-12
 
-### Initial Release
+### Alpha Release
+
+---
+
+## [1.0.0] - 2024-11-13 (Planned)
+
+### Stable Release
 
 - DNS enumeration (A, AAAA, MX, NS, TXT, SOA, CNAME)
 - Subdomain discovery via Certificate Transparency

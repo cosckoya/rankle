@@ -308,7 +308,7 @@ Examples:
     parser.add_argument("-o", "--output", action="store_true")
     parser.add_argument("--backend", choices=["console", "json", "sqlite"], default=OUTPUT_BACKEND)
     parser.add_argument("-v", "--verbose", action="store_true")
-    parser.add_argument("--version", action="version", version="Rankle v1.0.0")
+    parser.add_argument("--version", action="version", version="Rankle v0.1-alpha")
 
     args = parser.parse_args()
 

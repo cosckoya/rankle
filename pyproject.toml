@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "rankle"
-version = "1.0.0"
+version = "0.1-alpha"
 description = "Web Infrastructure Reconnaissance Tool - 100% Open Source, No API Keys"
 readme = "README.md"
 license = {file = "LICENSE"}

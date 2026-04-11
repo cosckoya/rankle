@@ -46,8 +46,10 @@ venv.bak/
 *.swo
 *~
 
-# Reports and outputs (JSON only - committed to reports/)
+# Reports and outputs (JSON only - committed to reports/ at root, NOT src/)
 reports/*.json
+src/reports/
+src/output/
 
 # Old/deprecated directories - DO NOT USE
 output/

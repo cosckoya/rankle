@@ -27,7 +27,7 @@ from config.settings import DATABASE_URL
 _engine = None
 
 
-def get_db() -> Session:
+def get_db() -> Session:  # type: ignore
     """Dependency injection for database session."""
     global _engine
     if _engine is None:

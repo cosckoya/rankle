@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from config.settings import OUTPUT_DIR
+    from config.settings import REPORTS_JSON_DIR, REPORTS_HTML_DIR
     from rankle.core.scanner import RankleScanner
     from rankle.utils.helpers import save_json_file
     from rankle.utils.validators import (
@@ -40,7 +40,7 @@ try:
 except ImportError as e:
     print(f"\n❌ Import Error: {e}")
     print("\nPlease ensure all dependencies are installed:")
-    print("  pip install -r requirements.txt")
+    print("  uv sync")
     sys.exit(1)
 
 
@@ -95,12 +95,6 @@ For more information, visit: https://github.com/javicosvml/rankle
         help="Save output to file (json/text/both). If not specified, only prints to terminal.",
     )
 
-    parser.add_argument(
-        "--output-dir",
-        type=Path,
-        default=OUTPUT_DIR,
-        help=f"Output directory (default: {OUTPUT_DIR})",
-    )
 
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enable verbose output"
@@ -145,14 +139,14 @@ def main():
             base_filename = f"rankle_{sanitize_filename(domain)}_{timestamp}"
 
             if args.output in ["json", "both"]:
-                json_path = args.output_dir / f"{base_filename}.json"
+                json_path = REPORTS_JSON_DIR / f"{base_filename}.json"
                 if save_json_file(results, json_path):
                     print(f"\n📁 JSON saved: {json_path}")
 
             if args.output in ["text", "both"]:
-                text_path = args.output_dir / f"{base_filename}.txt"
-                scanner.save_text_report(text_path)
-                print(f"📁 Text saved: {text_path}")
+                html_path = REPORTS_HTML_DIR / f"{base_filename}.html"
+                scanner.save_text_report(html_path)
+                print(f"📁 HTML saved: {html_path}")
 
         print("\n" + "=" * 80)
         print("✅ Scan completed successfully!")

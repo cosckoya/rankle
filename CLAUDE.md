@@ -16,9 +16,11 @@ uv sync                              # Install all dependencies
 pre-commit install                   # Install git hooks
 
 # Run scans
-python main.py example.com           # Basic scan
-python main.py example.com -o json   # Save as JSON
-python main.py example.com -v        # Verbose
+uv run python main.py example.com           # Basic scan (prints to terminal)
+uv run python main.py example.com -o json   # Save as JSON to reports/JSON/
+uv run python main.py example.com -o text   # Save as HTML to reports/HTML/
+uv run python main.py example.com -o both   # Save both formats
+uv run python main.py example.com -v        # Verbose mode
 
 # Code quality (also available via make)
 ruff check . --fix && ruff format .  # Lint and format

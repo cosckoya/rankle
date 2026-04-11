@@ -77,22 +77,24 @@ rankle/
 
 ```bash
 # Scan all modules, print to terminal
-python main.py example.com
+uv run python main.py example.com
 
-# Save JSON output (machine-readable for automation)
-python main.py example.com -o json
+# Save JSON output to reports/JSON/
+uv run python main.py example.com -o json
 
-# Save text report (human-readable)
-python main.py example.com -o text
+# Save HTML report to reports/HTML/
+uv run python main.py example.com -o text
 
-# Save both JSON and text simultaneously
-python main.py example.com -o both
+# Save both formats (JSON and HTML)
+uv run python main.py example.com -o both
 
 # Verbose output with debug information
-python main.py example.com -v
+uv run python main.py example.com -v
 ```
 
-Output files are saved to `output/` with timestamp: `output/example.com_20260410_143022.json`
+Output files are organized in:
+- **JSON reports:** `reports/JSON/rankle_<domain>_<timestamp>.json`
+- **HTML reports:** `reports/HTML/rankle_<domain>_<timestamp>.html`
 
 Full documentation: [docs/getting-started.md](docs/getting-started.md)
 

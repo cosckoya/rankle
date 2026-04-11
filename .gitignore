@@ -46,9 +46,10 @@ venv.bak/
 *.swo
 *~
 
-# Output files
-output/
-reports/
+# Output files (but keep directory structure)
+reports/**/*
+!reports/**/.gitkeep
+!reports
 *_rankle.json
 *_rankle_report.txt
 *_enhanced_detection.json

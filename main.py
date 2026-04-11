@@ -29,7 +29,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent / "src"))
 
 try:
-    from config.settings import REPORTS_DIR
+    from config.settings import REPORTS_DIR, OUTPUT_BACKEND, DATABASE_URL
     from rankle.core.scanner import RankleScanner
     from rankle.utils.helpers import save_json_file
     from rankle.utils.validators import (
@@ -37,6 +37,8 @@ try:
         sanitize_filename,
         validate_domain,
     )
+    from rankle.output.registry import OutputRegistry
+    from rankle.db.engine import get_engine, create_all_tables, get_db_session
 except ImportError as e:
     print(f"\n❌ Import Error: {e}")
     print("\nPlease ensure all dependencies are installed:")
@@ -90,9 +92,15 @@ For more information, visit: https://github.com/javicosvml/rankle
         "-o",
         "--output",
         action="store_true",
-        help="Save JSON output to reports/ directory.",
+        help="Save JSON output to reports/ directory (deprecated, use --backend json).",
     )
 
+    parser.add_argument(
+        "--backend",
+        choices=["console", "json", "sqlite"],
+        default=OUTPUT_BACKEND,
+        help=f"Output backend. Default: {OUTPUT_BACKEND}",
+    )
 
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Enable verbose output"
@@ -125,19 +133,69 @@ def main():
     print("=" * 80)
 
     try:
+        # Determine output backend
+        # Priority: --backend flag > -o flag > OUTPUT_BACKEND env var > console default
+        backend_type = args.backend
+        if args.output and args.backend == OUTPUT_BACKEND:
+            # -o flag was used and no explicit --backend, so use json
+            backend_type = "json"
+
+        # Initialize database if using SQLite backend
+        scan_id = None
+        if backend_type == "sqlite":
+            engine = get_engine(DATABASE_URL.replace("sqlite:///", ""))
+            create_all_tables(engine)
+
         # Initialize scanner
         scanner = RankleScanner(domain, verbose=args.verbose)
 
         # Run comprehensive scan
+        start_time = datetime.now(UTC)
         results = scanner.run_full_scan()
+        duration_ms = int((datetime.now(UTC) - start_time).total_seconds() * 1000)
 
-        # Save JSON report if requested
-        if args.output:
-            timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-            base_filename = f"rankle_{sanitize_filename(domain)}_{timestamp}"
-            json_path = REPORTS_DIR / f"{base_filename}.json"
-            if save_json_file(results, json_path):
-                print(f"\n📁 JSON saved: {json_path}")
+        # Prepare metadata for output backend
+        metadata = {
+            "domain": domain,
+            "scan_type": "full",
+            "scanned_at": start_time.isoformat(),
+            "duration_ms": duration_ms,
+            "status": "completed",
+        }
+
+        # Write results using selected backend
+        try:
+            if backend_type == "console":
+                backend = OutputRegistry.get_backend("console")
+                backend.write("1", results, metadata)
+            elif backend_type == "json":
+                backend = OutputRegistry.get_backend("json", output_dir=str(REPORTS_DIR))
+                backend.write("1", results, metadata)
+            elif backend_type == "sqlite":
+                with get_db_session(engine) as session:
+                    from rankle.db.repository import ScanRepository
+                    repo = ScanRepository(session)
+                    scan = repo.create_scan(domain, "full")
+                    scan_id = scan.id
+
+                    # Convert results to list-of-dicts format
+                    formatted_results = {}
+                    for module_name, module_data in results.items():
+                        if isinstance(module_data, dict):
+                            formatted_results[module_name] = [module_data]
+                        elif isinstance(module_data, list):
+                            formatted_results[module_name] = module_data
+                        else:
+                            formatted_results[module_name] = [{"value": str(module_data)}]
+
+                    backend = OutputRegistry.get_backend("sqlite", session=session)
+                    metadata["status"] = "completed"
+                    backend.write(str(scan_id), formatted_results, metadata)
+                    print(f"✓ Scan #{scan_id} saved to database")
+        except Exception as e:
+            print(f"⚠️  Error writing output: {e}")
+            if args.verbose:
+                traceback.print_exc()
 
         print("\n" + "=" * 80)
         print("✅ Scan completed successfully!")

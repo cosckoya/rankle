@@ -1,14 +1,32 @@
 """
 Configuration settings for Rankle
+
+Loads configuration from:
+1. Environment variables (highest priority)
+2. .env file (if exists)
+3. Hardcoded defaults (lowest priority)
 """
 
+import os
 from pathlib import Path
+
+try:
+    from dotenv import load_dotenv
+    HAS_DOTENV = True
+except ImportError:
+    HAS_DOTENV = False
 
 
 # Base paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent  # src/config/settings.py -> root
 CONFIG_DIR = BASE_DIR / "src" / "config"
 REPORTS_DIR = BASE_DIR / "reports"
+
+# Load .env file if it exists
+if HAS_DOTENV:
+    env_file = BASE_DIR / ".env"
+    if env_file.exists():
+        load_dotenv(env_file)
 
 # Ensure directories exist
 REPORTS_DIR.mkdir(exist_ok=True)
@@ -82,3 +100,33 @@ MAX_RESPONSE_TIME_SAMPLES = 10  # Number of response times to track for rate lim
 # Rate Limiting
 MAX_RETRY_WAIT_SECONDS = 60.0  # Maximum time to wait on retry-after
 RATE_LIMIT_DIMINISHING_FACTOR = 0.5  # Diminishing factor for confidence calculation
+
+# Database Configuration
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///rankle.db")
+"""
+Database URL for scan persistence.
+Env var: DATABASE_URL
+Default: sqlite:///rankle.db (SQLite file in project root)
+Examples:
+  - sqlite:///rankle.db (default)
+  - sqlite:///:memory: (in-memory for testing)
+  - postgresql://user:pass@localhost/rankle (PostgreSQL)
+"""
+
+# Output Configuration
+OUTPUT_BACKEND = os.getenv("OUTPUT_BACKEND", "console")
+"""
+Default output backend for scan results.
+Env var: OUTPUT_BACKEND
+Default: console
+Options: console, json, sqlite
+"""
+
+# Logging Configuration
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+"""
+Logging level.
+Env var: LOG_LEVEL
+Default: INFO
+Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+"""
